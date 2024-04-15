@@ -1,0 +1,6 @@
+@BetPlacer.Leagues_HostAddress = http://localhost:5196
+
+GET {{BetPlacer.Leagues_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
