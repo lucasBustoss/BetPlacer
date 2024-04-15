@@ -11,7 +11,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Leagues", "Leagues", "{91D1
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BetPlacer.Core", "src\building blocks\BetPlacer.Core\BetPlacer.Core.csproj", "{0B2EA931-4439-49A8-8893-AB815FD713BD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BetPlacer.Leagues", "src\services\BetPlacer.Leagues\BetPlacer.Leagues.csproj", "{DC2CBC73-8A0E-48A0-8230-18FADD052948}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BetPlacer.Leagues.API", "src\services\BetPlacer.Leagues\BetPlacer.Leagues.API.csproj", "{DC2CBC73-8A0E-48A0-8230-18FADD052948}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetPlacer.Core.API", "src\building blocks\BetPlacer.Core.API\BetPlacer.Core.API.csproj", "{048828EA-C5B2-4221-8DBB-2F2DC613070C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{DC2CBC73-8A0E-48A0-8230-18FADD052948}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DC2CBC73-8A0E-48A0-8230-18FADD052948}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DC2CBC73-8A0E-48A0-8230-18FADD052948}.Release|Any CPU.Build.0 = Release|Any CPU
+		{048828EA-C5B2-4221-8DBB-2F2DC613070C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{048828EA-C5B2-4221-8DBB-2F2DC613070C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{048828EA-C5B2-4221-8DBB-2F2DC613070C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{048828EA-C5B2-4221-8DBB-2F2DC613070C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -35,6 +41,7 @@ Global
 		{91D16BE3-68D5-4B1A-98E4-3AFC26E6FC2F} = {7923EB71-2A62-4C17-96FF-D53EA50F4EB3}
 		{0B2EA931-4439-49A8-8893-AB815FD713BD} = {A73EC245-D296-49A5-BA62-AA201E93734E}
 		{DC2CBC73-8A0E-48A0-8230-18FADD052948} = {91D16BE3-68D5-4B1A-98E4-3AFC26E6FC2F}
+		{048828EA-C5B2-4221-8DBB-2F2DC613070C} = {A73EC245-D296-49A5-BA62-AA201E93734E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6CD21AEF-04AF-438C-9F63-71F6131D5CED}
