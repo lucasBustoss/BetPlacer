@@ -1,5 +1,5 @@
 ﻿using BetPlacer.Core.Helpers.Database;
-using BetPlacer.Leagues.Models;
+using BetPlacer.Leagues.API.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace BetPlacer.Leagues.Database
@@ -11,6 +11,7 @@ namespace BetPlacer.Leagues.Database
         public LeaguesDbContext(DbContextOptions<LeaguesDbContext> options) : base(options) { }
 
         public DbSet<LeagueModel> Leagues { get; set; }
+        public DbSet<LeagueSeasonModel> LeagueSeasons { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

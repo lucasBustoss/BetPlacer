@@ -2,7 +2,7 @@
 
 namespace BetPlacer.Core.API.Models.Response.Leagues
 {
-    public class LeagueSeason 
+    public class LeagueSeasonResponseModel 
     { 
         [JsonPropertyName("id")]
         public int Id { get; set; }
@@ -26,6 +26,6 @@ namespace BetPlacer.Core.API.Models.Response.Leagues
         public string Image {  get; set; }
         
         [JsonPropertyName("season")]
-        public IEnumerable<LeagueSeason> Season { get; set; }
+        public IEnumerable<LeagueSeasonResponseModel> Season { get; set; }
     }
 }

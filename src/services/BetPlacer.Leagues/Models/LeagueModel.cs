@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BetPlacer.Leagues.Models
+namespace BetPlacer.Leagues.API.Models
 {
     public class LeagueModel
     {
@@ -17,7 +17,7 @@ namespace BetPlacer.Leagues.Models
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Code { get; set; }
+        public int? Code { get; set; }
         public string Name { get; set; }
         public string Country { get; set; }
         public string ImageUrl { get; set; }

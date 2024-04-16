@@ -1,7 +1,7 @@
 ﻿using BetPlacer.Core.API.Service;
 using BetPlacer.Core.Controllers;
 using BetPlacer.Leagues.API.Repositories;
-using BetPlacer.Leagues.Models;
+using BetPlacer.Leagues.API.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -32,9 +32,8 @@ namespace BetPlacer.Leagues.Controllers
             try
             {
                 var leagues = await _footballApiServices.GetLeagues();
-                List<LeagueModel> leaguesToSave = leagues.Select(league => new LeagueModel(league)).ToList();
 
-                _leaguesRepository.CreateOrUpdate(leaguesToSave);
+                await _leaguesRepository.CreateOrUpdate(leagues);
 
                 return OkResponse("Leagues synchronized.");
             }

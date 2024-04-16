@@ -1,10 +1,11 @@
-﻿using BetPlacer.Leagues.Models;
+﻿using BetPlacer.Core.API.Models.Response.Leagues;
+using BetPlacer.Leagues.API.Models;
 
 namespace BetPlacer.Leagues.API.Repositories
 {
     public interface ILeaguesRepository
     {
         IEnumerable<LeagueModel> List();
-        void CreateOrUpdate(IEnumerable<LeagueModel> leagues);
+        Task CreateOrUpdate(IEnumerable<LeagueResponseModel> leagues);
     }
 }
