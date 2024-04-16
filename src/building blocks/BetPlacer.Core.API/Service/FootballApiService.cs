@@ -20,14 +20,14 @@ namespace BetPlacer.Core.API.Service
             _httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
         }
 
-        public async Task<IEnumerable<LeagueResponse>> GetLeagues()
+        public async Task<IEnumerable<LeagueResponseModel>> GetLeagues()
         {
             var request = await _httpClient.GetAsync($"/league-list?key={_apiKey}");
 
             if (request.IsSuccessStatusCode)
             {
                 var responseLeaguesString = await request.Content.ReadAsStringAsync();
-                BaseResponse<LeagueResponse> responseLeague = JsonSerializer.Deserialize<BaseResponse<LeagueResponse>>(responseLeaguesString);
+                BaseResponse<LeagueResponseModel> responseLeague = JsonSerializer.Deserialize<BaseResponse<LeagueResponseModel>>(responseLeaguesString);
 
                 return responseLeague.Data;
             }

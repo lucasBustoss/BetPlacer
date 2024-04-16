@@ -10,7 +10,7 @@ namespace BetPlacer.Leagues.Database
 
         public LeaguesDbContext(DbContextOptions<LeaguesDbContext> options) : base(options) { }
 
-        public DbSet<League> Leagues { get; set; }
+        public DbSet<LeagueModel> Leagues { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

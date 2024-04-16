@@ -1,7 +1,9 @@
-﻿namespace BetPlacer.Core.API.Service
+﻿using BetPlacer.Core.API.Models.Response.Leagues;
+
+namespace BetPlacer.Core.API.Service
 {
     public interface IFootballApiService
     {
-        public Task<string> GetLeagues();
+        public Task<IEnumerable<LeagueResponseModel>> GetLeagues();
     }
 }

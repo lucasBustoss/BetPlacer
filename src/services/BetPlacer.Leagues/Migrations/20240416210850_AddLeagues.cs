@@ -3,7 +3,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace BetPlacer.Leagues.Migrations
+namespace BetPlacer.Leagues.API.Migrations
 {
     /// <inheritdoc />
     public partial class AddLeagues : Migration

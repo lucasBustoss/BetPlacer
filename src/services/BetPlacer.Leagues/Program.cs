@@ -2,6 +2,7 @@ using BetPlacer.Core.Config;
 using BetPlacer.Core.API.Service;
 using BetPlacer.Leagues.Database;
 using Microsoft.EntityFrameworkCore;
+using BetPlacer.Leagues.API.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,12 @@ builder.Services.AddDbContext<LeaguesDbContext>(options => options.UseNpgsql(con
 
 var dbContextBuilder = new DbContextOptionsBuilder<LeaguesDbContext>();
 dbContextBuilder.UseNpgsql(connection);
+
+#endregion
+
+#region RepositoriesConfig
+
+builder.Services.AddSingleton(new LeaguesRepository(dbContextBuilder.Options));
 
 #endregion
 

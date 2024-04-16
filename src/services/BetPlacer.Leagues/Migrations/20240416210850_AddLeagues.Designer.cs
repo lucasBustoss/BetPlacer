@@ -8,10 +8,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace BetPlacer.Leagues.Migrations
+namespace BetPlacer.Leagues.API.Migrations
 {
     [DbContext(typeof(LeaguesDbContext))]
-    [Migration("20240415200718_AddLeagues")]
+    [Migration("20240416210850_AddLeagues")]
     partial class AddLeagues
     {
         /// <inheritdoc />
@@ -24,7 +24,7 @@ namespace BetPlacer.Leagues.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("BetPlacer.Leagues.Models.League", b =>
+            modelBuilder.Entity("BetPlacer.Leagues.Models.LeagueModel", b =>
                 {
                     b.Property<int>("Code")
                         .ValueGeneratedOnAdd()
