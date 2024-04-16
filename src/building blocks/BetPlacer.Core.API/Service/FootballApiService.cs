@@ -1,4 +1,8 @@
-﻿namespace BetPlacer.Core.API.Service
+﻿using BetPlacer.Core.API.Models.Response;
+using BetPlacer.Core.API.Models.Response.Leagues;
+using System.Text.Json;
+
+namespace BetPlacer.Core.API.Service
 {
     public class FootballApiService : IFootballApiService
     {
@@ -16,17 +20,24 @@
             _httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
         }
 
-        public async Task<string> GetLeagues()
+        public async Task<IEnumerable<LeagueResponse>> GetLeagues()
         {
             var request = await _httpClient.GetAsync($"/league-list?key={_apiKey}");
 
             if (request.IsSuccessStatusCode)
             {
-                var responseTeamsString = await request.Content.ReadAsStringAsync();
-                Console.WriteLine(responseTeamsString);
-            }
+                var responseLeaguesString = await request.Content.ReadAsStringAsync();
+                BaseResponse<LeagueResponse> responseLeague = JsonSerializer.Deserialize<BaseResponse<LeagueResponse>>(responseLeaguesString);
 
-            return "OK";
+                return responseLeague.Data;
+            }
+            else
+            {
+                var errorMessage = JsonSerializer.Deserialize<object>(await request.Content.ReadAsStringAsync());
+                Console.WriteLine(errorMessage);
+                Console.WriteLine(request.StatusCode);
+                return null;
+            }
         }
     }
 }
