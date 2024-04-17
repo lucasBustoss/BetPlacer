@@ -8,7 +8,7 @@ namespace BetPlacer.Leagues.API.Models
     {
         public LeagueModel() { }
 
-        public LeagueModel(LeagueResponseModel leagueResponseModel)
+        public LeagueModel(LeaguesResponseModel leagueResponseModel)
         {
             Name = leagueResponseModel.Name;
             Country = leagueResponseModel.Country;

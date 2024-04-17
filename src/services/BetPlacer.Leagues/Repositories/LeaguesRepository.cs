@@ -21,7 +21,7 @@ namespace BetPlacer.Leagues.API.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task CreateOrUpdate(IEnumerable<LeagueResponseModel> leaguesResponse)
+        public async Task CreateOrUpdate(IEnumerable<LeaguesResponseModel> leaguesResponse)
         {
             #region Leagues
             

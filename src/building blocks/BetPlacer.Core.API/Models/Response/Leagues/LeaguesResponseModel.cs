@@ -11,7 +11,7 @@ namespace BetPlacer.Core.API.Models.Response.Leagues
         public int Year { get; set; }
     }
 
-    public class LeagueResponseModel
+    public class LeaguesResponseModel
     {
         [JsonPropertyName("name")]
         public string Name { get; set; }

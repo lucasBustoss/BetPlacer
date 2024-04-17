@@ -6,6 +6,6 @@ namespace BetPlacer.Leagues.API.Repositories
     public interface ILeaguesRepository
     {
         IEnumerable<LeagueModel> List();
-        Task CreateOrUpdate(IEnumerable<LeagueResponseModel> leagues);
+        Task CreateOrUpdate(IEnumerable<LeaguesResponseModel> leagues);
     }
 }

@@ -1,9 +1,7 @@
 ﻿using BetPlacer.Core.API.Service;
 using BetPlacer.Core.Controllers;
-using BetPlacer.Leagues.API.Repositories;
-using BetPlacer.Leagues.API.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using BetPlacer.Leagues.API.Repositories;
 
 namespace BetPlacer.Leagues.Controllers
 {
