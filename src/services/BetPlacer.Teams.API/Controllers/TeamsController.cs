@@ -43,6 +43,8 @@ namespace BetPlacer.Teams.API.Controllers
             {
                 if (syncRequestModel == null)
                     throw new Exception();
+                if (syncRequestModel.LeagueSeasonCode == null)
+                    throw new Exception("leagueSeasonCode is required.");
 
                 var request = await _httpClient.GetAsync($"teams?leagueSeasonCode={syncRequestModel.LeagueSeasonCode}");
 

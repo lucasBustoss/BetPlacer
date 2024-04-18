@@ -2,6 +2,6 @@
 {
     public class TeamsSyncRequestModel
     {
-        public int LeagueSeasonCode { get; set; }
+        public int? LeagueSeasonCode { get; set; }
     }
 }
