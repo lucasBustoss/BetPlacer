@@ -1,12 +1,8 @@
-﻿using BetPlacer.Core.API.Service;
-using BetPlacer.Core.Controllers;
+﻿using BetPlacer.Core.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using BetPlacer.Leagues.API.Repositories;
-using BetPlacer.Core.API.Models.Response.Teams;
 using BetPlacer.Core.Models;
-using System.Net.Http;
 using BetPlacer.Core.API.Models.Response.Leagues;
-using Microsoft.Extensions.Configuration;
 using System.Text.Json;
 
 namespace BetPlacer.Leagues.Controllers
