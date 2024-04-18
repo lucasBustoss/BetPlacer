@@ -1,21 +1,33 @@
-﻿using BetPlacer.Core.API.Service;
+﻿using BetPlacer.Core.API.Models.Response.Teams;
+using BetPlacer.Core.API.Service;
 using BetPlacer.Core.Controllers;
+using BetPlacer.Core.Models;
 using BetPlacer.Teams.API.Controllers.RequestModel;
 using BetPlacer.Teams.API.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace BetPlacer.Teams.API.Controllers
 {
     [Route("api/teams")]
     public class TeamsController : BaseController
     {
-        private readonly IFootballApiService _footballApiServices;
         private readonly TeamsRepository _teamsRepository;
+        private readonly HttpClient _httpClient;
+        private readonly string _apiUrl;
+        private readonly string _apiKey;
 
-        public TeamsController(IFootballApiService footballApiServices, TeamsRepository teamsRepository)
+        public TeamsController(TeamsRepository teamsRepository, IConfiguration configuration)
         {
-            _footballApiServices = footballApiServices;
             _teamsRepository = teamsRepository;
+
+            _httpClient = new HttpClient();
+            _apiUrl = configuration.GetValue<string>("CoreApi:AppUrl");
+            _apiKey = configuration.GetValue<string>("CoreApi:AppKey");
+
+            _httpClient = new HttpClient() { BaseAddress = new Uri(_apiUrl) };
+            _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
+            _httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
         }
 
         [HttpGet]
@@ -31,12 +43,25 @@ namespace BetPlacer.Teams.API.Controllers
             {
                 if (syncRequestModel == null)
                     throw new Exception();
-                
-                var teams = await _footballApiServices.GetTeams(syncRequestModel.LeagueSeasonCode);
 
-                await _teamsRepository.Create(teams);
+                var request = await _httpClient.GetAsync($"teams?leagueSeasonCode={syncRequestModel.LeagueSeasonCode}");
 
-                return OkResponse("Teams synchronized.");
+                if (request.IsSuccessStatusCode)
+                {
+                    var responseLeaguesString = await request.Content.ReadAsStringAsync();
+                    BaseCoreResponseModel<TeamsResponseModel> response = JsonSerializer.Deserialize<BaseCoreResponseModel<TeamsResponseModel>>(responseLeaguesString);
+
+                    await _teamsRepository.Create(response.Data);
+
+                    return OkResponse("Teams synchronized.");
+                }
+                else
+                {
+                    var errorMessage = JsonSerializer.Deserialize<object>(await request.Content.ReadAsStringAsync());
+                    Console.WriteLine(errorMessage);
+                    Console.WriteLine(request.StatusCode);
+                    return null;
+                }
             }
             catch (Exception ex)
             {

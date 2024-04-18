@@ -26,7 +26,6 @@ builder.Services.AddSingleton(new TeamsRepository(dbContextBuilder.Options));
 
 // Add services to the container.
 
-builder.Services.AddScoped<IFootballApiService, FootballApiService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
