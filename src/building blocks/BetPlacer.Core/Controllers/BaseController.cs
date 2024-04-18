@@ -30,7 +30,7 @@ namespace BetPlacer.Core.Controllers
             return BadRequest(new
             {
                 StatusCode = HttpStatusCode.BadRequest,
-                Error = message
+                Error = message ?? "error in request."
             });
         }
 
@@ -39,7 +39,7 @@ namespace BetPlacer.Core.Controllers
             return NotFound(new
             {
                 StatusCode = HttpStatusCode.NotFound,
-                Error = "Recurso não encontrado."
+                Error = "resource not found."
             });
         }
     }
