@@ -1,17 +1,16 @@
 ﻿using BetPlacer.Core.Helpers.Database;
-using BetPlacer.Leagues.API.Models;
+using BetPlacer.Teams.API.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace BetPlacer.Leagues.Database
+namespace BetPlacer.Teams.Config
 {
-    public class LeaguesDbContext : DbContext
+    public class TeamsDbContext : DbContext
     {
-        public LeaguesDbContext() { }
+        public TeamsDbContext() { }
 
-        public LeaguesDbContext(DbContextOptions<LeaguesDbContext> options) : base(options) { }
+        public TeamsDbContext(DbContextOptions<TeamsDbContext> options) : base(options) { }
 
-        public DbSet<LeagueModel> Leagues { get; set; }
-        public DbSet<LeagueSeasonModel> LeagueSeasons { get; set; }
+        public DbSet<TeamModel> Teams { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

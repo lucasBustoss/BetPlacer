@@ -8,6 +8,7 @@ namespace BetPlacer.Core.API.Service
     public class FootballApiService : IFootballApiService
     {
         private readonly HttpClient _httpClient;
+        private readonly HttpClient _httpClientTest;
         private readonly string _apiUrl;
         private readonly string _apiKey;
 
@@ -19,17 +20,19 @@ namespace BetPlacer.Core.API.Service
             _httpClient = new HttpClient() { BaseAddress = new Uri(_apiUrl) };
             _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
             _httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
+
+            _httpClientTest = new HttpClient();
         }
 
         public async Task<IEnumerable<LeaguesResponseModel>> GetLeagues()
         {
-            var request = await _httpClient.GetAsync($"/league-list?key={_apiKey}");
+            var request = await _httpClient.GetAsync($"league-list?key={_apiKey}");
             return await TreatApiRequest<LeaguesResponseModel>(request);
         }
 
         public async Task<IEnumerable<TeamsResponseModel>> GetTeams(int leagueSeasonCode)
         {
-            var request = await _httpClient.GetAsync($"/league-teams?season_id=${leagueSeasonCode}&key={_apiKey}");
+            var request = await _httpClient.GetAsync($"league-teams?season_id={leagueSeasonCode}&key={_apiKey}");
             return await TreatApiRequest<TeamsResponseModel>(request);
         }
 

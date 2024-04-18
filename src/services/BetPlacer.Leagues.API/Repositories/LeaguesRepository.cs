@@ -1,4 +1,4 @@
-﻿using BetPlacer.Leagues.Database;
+﻿using BetPlacer.Leagues.Config;
 using BetPlacer.Leagues.API.Models;
 using Microsoft.EntityFrameworkCore;
 using BetPlacer.Core.API.Models.Response.Leagues;
@@ -24,32 +24,29 @@ namespace BetPlacer.Leagues.API.Repositories
         public async Task CreateOrUpdate(IEnumerable<LeaguesResponseModel> leaguesResponse)
         {
             #region Leagues
-            
-            Stopwatch stopwatch1 = Stopwatch.StartNew();
+
             List<LeagueModel> leaguesSaved = new List<LeagueModel>();
+
+            var existingLeagues = _context.Leagues.ToDictionary(league => league.Name);
 
             foreach (var leagueResponse in leaguesResponse)
             {
                 var leagueModel = new LeagueModel(leagueResponse);
-                var leagueBd = _context.Leagues.FirstOrDefault(league => league.Name == leagueResponse.Name);
 
-                if (leagueBd == null)
+                if (!existingLeagues.ContainsKey(leagueResponse.Name))
                     _context.Leagues.Add(leagueModel);
                 else
-                    UpdateLeague(leagueBd, leagueModel);
-
-                await _context.SaveChangesAsync();
+                    UpdateLeague(existingLeagues[leagueResponse.Name], leagueModel);
+                
                 leaguesSaved.Add(leagueModel);
             }
 
-            stopwatch1.Stop();
-            Console.WriteLine($"Tempo de execução: {stopwatch1.Elapsed}");
+            await _context.SaveChangesAsync();
 
             #endregion
 
             #region LeagueSeasons
 
-            Stopwatch stopwatch2 = Stopwatch.StartNew();
             var leagueSeasons = leaguesSaved.SelectMany(leagueBd =>
             {
                 var leagueResponse = leaguesResponse.FirstOrDefault(league => league.Name == leagueBd.Name);
@@ -62,9 +59,7 @@ namespace BetPlacer.Leagues.API.Repositories
 
             await Task.Run(() => CreateSeasons(leagueSeasons));
 
-            stopwatch2.Stop();
-            Console.WriteLine($"Tempo de execução: {stopwatch2.Elapsed}");
-            
+
             #endregion
         }
 

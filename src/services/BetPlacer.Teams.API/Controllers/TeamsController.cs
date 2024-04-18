@@ -1,6 +1,7 @@
 ﻿using BetPlacer.Core.API.Service;
 using BetPlacer.Core.Controllers;
 using BetPlacer.Teams.API.Controllers.RequestModel;
+using BetPlacer.Teams.API.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BetPlacer.Teams.API.Controllers
@@ -9,12 +10,12 @@ namespace BetPlacer.Teams.API.Controllers
     public class TeamsController : BaseController
     {
         private readonly IFootballApiService _footballApiServices;
-        private readonly HttpClient _httpClient;
+        private readonly TeamsRepository _teamsRepository;
 
-        public TeamsController(IFootballApiService footballApiServices)
+        public TeamsController(IFootballApiService footballApiServices, TeamsRepository teamsRepository)
         {
             _footballApiServices = footballApiServices;
-            _httpClient = new HttpClient();
+            _teamsRepository = teamsRepository;
         }
 
         [HttpGet]
@@ -33,7 +34,7 @@ namespace BetPlacer.Teams.API.Controllers
                 
                 var teams = await _footballApiServices.GetTeams(syncRequestModel.LeagueSeasonCode);
 
-                //await _leaguesRepository.CreateOrUpdate(leagues);
+                await _teamsRepository.Create(teams);
 
                 return OkResponse("Teams synchronized.");
             }
