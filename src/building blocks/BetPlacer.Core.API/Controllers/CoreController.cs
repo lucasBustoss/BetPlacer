@@ -6,13 +6,27 @@ using Microsoft.AspNetCore.Mvc;
 namespace BetPlacer.Core.API.Controllers
 {
     [Route("api/core")]
-    public class TeamsCoreController : BaseController
+    public class CoreController : BaseController
     {
         private readonly IFootballApiService _footballApiService;
 
-        public TeamsCoreController(IFootballApiService footballApiService)
+        public CoreController(IFootballApiService footballApiService)
         {
             _footballApiService = footballApiService;
+        }
+
+        [HttpGet("leagues")]
+        public async Task<ActionResult> GetLeaguesFromApi()
+        {
+            try
+            {
+                var leagues = await _footballApiService.GetLeagues();
+                return OkResponse(leagues);
+            }
+            catch (HttpRequestException ex)
+            {
+                return BadRequestResponse(ex.Message);
+            }
         }
 
         [HttpGet("teams")]
