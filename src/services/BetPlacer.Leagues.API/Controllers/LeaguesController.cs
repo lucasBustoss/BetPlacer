@@ -1,9 +1,9 @@
 ﻿using BetPlacer.Core.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using BetPlacer.Leagues.API.Repositories;
-using BetPlacer.Core.Models;
-using BetPlacer.Core.API.Models.Response.Leagues;
 using System.Text.Json;
+using BetPlacer.Core.Models.Response.Core;
+using BetPlacer.Core.Models.Response.API.Leagues;
 
 namespace BetPlacer.Leagues.Controllers
 {
@@ -31,7 +31,8 @@ namespace BetPlacer.Leagues.Controllers
         [HttpGet]
         public ActionResult GetLeagues()
         {
-            return OkResponse("Deu certo!");
+            var leagues = _leaguesRepository.List(true);
+            return OkResponse(leagues);
         }
 
         [HttpPost]
@@ -48,9 +49,11 @@ namespace BetPlacer.Leagues.Controllers
 
                     await _leaguesRepository.CreateOrUpdate(response.Data);
 
-                    return OkResponse("Leagues synchronized.");
+                    var leagues = _leaguesRepository.List(true);
+
+                    return OkResponse(leagues);
                 }
-                else
+                //else
                 {
                     var errorMessage = JsonSerializer.Deserialize<object>(await request.Content.ReadAsStringAsync());
                     Console.WriteLine(errorMessage);

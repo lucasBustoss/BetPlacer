@@ -21,7 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\building blocks\BetPlacer.Core.API\BetPlacer.Core.API.csproj" />
     <ProjectReference Include="..\..\building blocks\BetPlacer.Core\BetPlacer.Core.csproj" />
   </ItemGroup>
 

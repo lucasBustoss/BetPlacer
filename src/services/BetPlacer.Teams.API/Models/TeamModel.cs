@@ -1,4 +1,4 @@
-﻿using BetPlacer.Core.API.Models.Response.Teams;
+﻿using BetPlacer.Core.Models.Response.API.Teams;
 using System.ComponentModel.DataAnnotations;
 
 namespace BetPlacer.Teams.API.Models

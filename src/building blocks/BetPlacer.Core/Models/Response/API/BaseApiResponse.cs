@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace BetPlacer.Core.API.Models.Response
+namespace BetPlacer.Core.Models.Response.API
 {
-    public class Pager 
+    public class Pager
     {
         [JsonPropertyName("current_page")]
         public int CurrentPage { get; set; }
@@ -11,7 +11,7 @@ namespace BetPlacer.Core.API.Models.Response
         public int MaxPage { get; set; }
 
         [JsonPropertyName("results_per_page")]
-        public int ResultsPerPage {  get; set; }
+        public int ResultsPerPage { get; set; }
 
         [JsonPropertyName("total_results")]
         public int TotalPages { get; set; }
@@ -26,11 +26,11 @@ namespace BetPlacer.Core.API.Models.Response
         public int? RequestRemaining { get; set; }
 
         [JsonPropertyName("request_reset_message")]
-        public string? RequestResetMessage { get; set; }
+        public string RequestResetMessage { get; set; }
     }
 
 
-    public class BaseResponse<T>
+    public class BaseApiResponse<T>
     {
         [JsonPropertyName("success")]
         public bool Success { get; set; }

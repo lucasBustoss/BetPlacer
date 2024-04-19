@@ -1,5 +1,4 @@
 using BetPlacer.Core.Config;
-using BetPlacer.Core.API.Service;
 using Microsoft.EntityFrameworkCore;
 using BetPlacer.Teams.Config;
 using BetPlacer.Teams.API.Repositories;

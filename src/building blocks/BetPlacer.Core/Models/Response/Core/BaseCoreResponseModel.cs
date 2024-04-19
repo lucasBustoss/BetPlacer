@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace BetPlacer.Core.Models
+namespace BetPlacer.Core.Models.Response.Core
 {
     public class BaseCoreResponseModel<T>
     {

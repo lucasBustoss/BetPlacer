@@ -1,5 +1,4 @@
 using BetPlacer.Core.Config;
-using BetPlacer.Core.API.Service;
 using BetPlacer.Leagues.Config;
 using Microsoft.EntityFrameworkCore;
 using BetPlacer.Leagues.API.Repositories;
@@ -26,7 +25,6 @@ builder.Services.AddSingleton(new LeaguesRepository(dbContextBuilder.Options));
 
 // Add services to the container.
 
-builder.Services.AddScoped<IFootballApiService, FootballApiService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

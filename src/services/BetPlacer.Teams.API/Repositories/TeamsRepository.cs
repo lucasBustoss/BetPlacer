@@ -1,8 +1,8 @@
 ﻿using BetPlacer.Teams.Config;
 using BetPlacer.Teams.API.Models;
 using Microsoft.EntityFrameworkCore;
-using BetPlacer.Core.API.Models.Response.Teams;
 using System.Diagnostics;
+using BetPlacer.Core.Models.Response.API.Teams;
 
 namespace BetPlacer.Teams.API.Repositories
 {

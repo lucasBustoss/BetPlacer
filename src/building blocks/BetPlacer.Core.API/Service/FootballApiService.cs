@@ -1,6 +1,6 @@
-﻿using BetPlacer.Core.API.Models.Response;
-using BetPlacer.Core.API.Models.Response.Leagues;
-using BetPlacer.Core.API.Models.Response.Teams;
+﻿using BetPlacer.Core.Models.Response.API;
+using BetPlacer.Core.Models.Response.API.Leagues;
+using BetPlacer.Core.Models.Response.API.Teams;
 using System.Text.Json;
 
 namespace BetPlacer.Core.API.Service
@@ -40,7 +40,7 @@ namespace BetPlacer.Core.API.Service
             if (request.IsSuccessStatusCode)
             {
                 var responseLeaguesString = await request.Content.ReadAsStringAsync();
-                BaseResponse<T> responseLeague = JsonSerializer.Deserialize<BaseResponse<T>>(responseLeaguesString);
+                BaseApiResponse<T> responseLeague = JsonSerializer.Deserialize<BaseApiResponse<T>>(responseLeaguesString);
 
                 return responseLeague.Data;
             }

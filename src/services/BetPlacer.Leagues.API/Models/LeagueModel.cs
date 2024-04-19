@@ -1,4 +1,4 @@
-﻿using BetPlacer.Core.API.Models.Response.Leagues;
+﻿using BetPlacer.Core.Models.Response.API.Leagues;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 

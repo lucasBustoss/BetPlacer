@@ -1,7 +1,6 @@
-﻿using BetPlacer.Core.API.Models.Response.Teams;
-using BetPlacer.Core.API.Service;
-using BetPlacer.Core.Controllers;
-using BetPlacer.Core.Models;
+﻿using BetPlacer.Core.Controllers;
+using BetPlacer.Core.Models.Response.API.Teams;
+using BetPlacer.Core.Models.Response.Core;
 using BetPlacer.Teams.API.Controllers.RequestModel;
 using BetPlacer.Teams.API.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -37,7 +36,7 @@ namespace BetPlacer.Teams.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> SyncTeams([FromBody] TeamsSyncRequestModel syncRequestModel)
+        public async Task<ActionResult> SyncTeams([FromBody] TeamsRequestModel syncRequestModel)
         {
             try
             {
@@ -51,7 +50,8 @@ namespace BetPlacer.Teams.API.Controllers
                     var responseLeaguesString = await request.Content.ReadAsStringAsync();
                     BaseCoreResponseModel<TeamsResponseModel> response = JsonSerializer.Deserialize<BaseCoreResponseModel<TeamsResponseModel>>(responseLeaguesString);
 
-                    await _teamsRepository.Create(response.Data);
+                    if (response != null && response.Data != null)
+                        await _teamsRepository.Create(response.Data);
 
                     return OkResponse("Teams synchronized.");
                 }

@@ -1,5 +1,4 @@
-﻿using BetPlacer.Core.API.Models.Response.Teams;
-using BetPlacer.Core.API.Service;
+﻿using BetPlacer.Core.API.Service;
 using BetPlacer.Core.Controllers;
 using Microsoft.AspNetCore.Mvc;
 

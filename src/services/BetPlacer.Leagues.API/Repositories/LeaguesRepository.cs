@@ -1,8 +1,8 @@
 ﻿using BetPlacer.Leagues.Config;
 using BetPlacer.Leagues.API.Models;
 using Microsoft.EntityFrameworkCore;
-using BetPlacer.Core.API.Models.Response.Leagues;
-using System.Diagnostics;
+using BetPlacer.Core.Models.Response.API.Leagues;
+using BetPlacer.Leagues.API.Models.ValueObjects;
 
 namespace BetPlacer.Leagues.API.Repositories
 {
@@ -16,9 +16,25 @@ namespace BetPlacer.Leagues.API.Repositories
         }
 
 
-        public IEnumerable<LeagueModel> List()
+        public List<League> List(bool withSeason)
         {
-            throw new NotImplementedException();
+            List<League> leaguesVO = new List<League>();
+            var leagues = _context.Leagues.ToList();
+
+            foreach (var league in leagues)
+            {
+                var seasons = new List<LeagueSeasonModel>();
+
+                if (withSeason)
+                {
+                    var seasonsBd = _context.LeagueSeasons.Where(ls => ls.LeagueCode == league.Code);
+                    seasons = seasonsBd.ToList();
+                }
+
+                leaguesVO.Add(new League(league, seasons));
+            }
+
+            return leaguesVO;
         }
 
         public async Task CreateOrUpdate(IEnumerable<LeaguesResponseModel> leaguesResponse)
@@ -36,8 +52,13 @@ namespace BetPlacer.Leagues.API.Repositories
                 if (!existingLeagues.ContainsKey(leagueResponse.Name))
                     _context.Leagues.Add(leagueModel);
                 else
-                    UpdateLeague(existingLeagues[leagueResponse.Name], leagueModel);
-                
+                {
+                    var oldLeague = existingLeagues[leagueResponse.Name];
+                    var newLeague = leagueModel;
+                    newLeague.Code = oldLeague.Code;
+                    _context.Entry(oldLeague).CurrentValues.SetValues(newLeague);
+                }
+
                 leaguesSaved.Add(leagueModel);
             }
 
@@ -64,12 +85,6 @@ namespace BetPlacer.Leagues.API.Repositories
         }
 
         #region Private methods
-
-        private void UpdateLeague(LeagueModel oldLeague, LeagueModel newLeague)
-        {
-            newLeague.Code = oldLeague.Code;
-            _context.Entry(oldLeague).CurrentValues.SetValues(newLeague);
-        }
 
         private async Task CreateSeasons(List<LeagueSeasonModel> leagueSeasons)
         {

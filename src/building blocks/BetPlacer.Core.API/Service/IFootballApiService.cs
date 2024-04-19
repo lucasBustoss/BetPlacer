@@ -1,5 +1,5 @@
-﻿using BetPlacer.Core.API.Models.Response.Leagues;
-using BetPlacer.Core.API.Models.Response.Teams;
+﻿using BetPlacer.Core.Models.Response.API.Leagues;
+using BetPlacer.Core.Models.Response.API.Teams;
 
 namespace BetPlacer.Core.API.Service
 {
