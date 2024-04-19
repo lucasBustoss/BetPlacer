@@ -29,9 +29,10 @@ namespace BetPlacer.Leagues.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetLeagues()
+        public ActionResult GetLeagues(bool? withSeasons)
         {
-            var leagues = _leaguesRepository.List(true);
+            bool getLeaguesWithSeason = withSeasons != null ? withSeasons.Value : false;
+            var leagues = _leaguesRepository.List(getLeaguesWithSeason);
             return OkResponse(leagues);
         }
 

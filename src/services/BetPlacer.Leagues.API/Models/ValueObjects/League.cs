@@ -25,6 +25,6 @@ namespace BetPlacer.Leagues.API.Models.ValueObjects
         public string Name { get; set; }
         public string Country { get; set; }
         public string ImageUrl { get; set; }
-        public List<LeagueSeasonModel> Seasons { get; set; } = new List<LeagueSeasonModel>();
+        public List<LeagueSeasonModel> Seasons { get; set; }
     }
 }
