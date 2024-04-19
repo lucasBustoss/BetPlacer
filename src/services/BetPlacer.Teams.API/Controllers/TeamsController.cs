@@ -1,7 +1,7 @@
 ﻿using BetPlacer.Core.Controllers;
 using BetPlacer.Core.Models.Response.API.Teams;
 using BetPlacer.Core.Models.Response.Core;
-using BetPlacer.Teams.API.Controllers.RequestModel;
+using BetPlacer.Teams.API.Models.RequestModel;
 using BetPlacer.Teams.API.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
@@ -32,7 +32,8 @@ namespace BetPlacer.Teams.API.Controllers
         [HttpGet]
         public ActionResult GetTeams()
         {
-            return OkResponse("Deu certo");
+            var teams = _teamsRepository.List();
+            return OkResponse(teams);
         }
 
         [HttpPost]

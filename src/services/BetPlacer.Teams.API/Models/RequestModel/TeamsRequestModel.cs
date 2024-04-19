@@ -1,4 +1,4 @@
-﻿namespace BetPlacer.Teams.API.Controllers.RequestModel
+﻿namespace BetPlacer.Teams.API.Models.RequestModel
 {
     public class TeamsRequestModel
     {

@@ -3,6 +3,7 @@ using BetPlacer.Teams.API.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using BetPlacer.Core.Models.Response.API.Teams;
+using BetPlacer.Teams.API.Models.ValueObjects;
 
 namespace BetPlacer.Teams.API.Repositories
 {
@@ -16,9 +17,14 @@ namespace BetPlacer.Teams.API.Repositories
         }
 
 
-        public IEnumerable<TeamModel> List()
+        public IEnumerable<Team> List()
         {
-            throw new NotImplementedException();
+            List<Team> teamsVO = new List<Team>();
+            var teams = _context.Teams.ToList();
+
+            teamsVO.AddRange(teams.Select(team => new Team(team)));
+
+            return teamsVO;
         }
 
         public async Task Create(IEnumerable<TeamsResponseModel> teamsResponse)

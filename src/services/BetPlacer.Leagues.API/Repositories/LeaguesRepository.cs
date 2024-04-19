@@ -16,7 +16,7 @@ namespace BetPlacer.Leagues.API.Repositories
         }
 
 
-        public List<League> List(bool withSeason)
+        public IEnumerable<League> List(bool withSeason)
         {
             List<League> leaguesVO = new List<League>();
             var leagues = _context.Leagues.ToList();
