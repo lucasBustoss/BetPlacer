@@ -1,4 +1,5 @@
 ﻿using BetPlacer.Core.Models.Response.API;
+using BetPlacer.Core.Models.Response.API.Fixtures;
 using BetPlacer.Core.Models.Response.API.Leagues;
 using BetPlacer.Core.Models.Response.API.Teams;
 using System.Text.Json;
@@ -33,8 +34,16 @@ namespace BetPlacer.Core.API.Service
             return await TreatApiRequest<TeamsResponseModel>(request);
         }
 
+        public async Task<IEnumerable<FixturesResponseModel>> GetCompleteFixtures(int leagueSeasonCode)
+        {
+            var request = await _httpClient.GetAsync($"league-matches?season_id={leagueSeasonCode}&key={_apiKey}");
+            var fixtures = await TreatApiRequest<FixturesResponseModel>(request);
+
+            return fixtures.Where(fixture => fixture.Status == "complete");
+        }
+
         #region Private methods
-        
+
         private async Task<IEnumerable<T>> TreatApiRequest<T>(HttpResponseMessage request)
         {
             if (request.IsSuccessStatusCode)

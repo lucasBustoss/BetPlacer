@@ -1,4 +1,5 @@
-﻿using BetPlacer.Core.Models.Response.API.Leagues;
+﻿using BetPlacer.Core.Models.Response.API.Fixtures;
+using BetPlacer.Core.Models.Response.API.Leagues;
 using BetPlacer.Core.Models.Response.API.Teams;
 
 namespace BetPlacer.Core.API.Service
@@ -7,5 +8,6 @@ namespace BetPlacer.Core.API.Service
     {
         public Task<IEnumerable<LeaguesResponseModel>> GetLeagues();
         public Task<IEnumerable<TeamsResponseModel>> GetTeams(int leagueSeasonCode);
+        public Task<IEnumerable<FixturesResponseModel>> GetCompleteFixtures(int leagueSeasonCode);
     }
 }

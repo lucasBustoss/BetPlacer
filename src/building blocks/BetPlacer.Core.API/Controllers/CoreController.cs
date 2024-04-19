@@ -15,7 +15,7 @@ namespace BetPlacer.Core.API.Controllers
         }
 
         [HttpGet("leagues")]
-        public async Task<ActionResult> GetLeaguesFromApi()
+        public async Task<ActionResult> GetLeagues()
         {
             try
             {
@@ -29,7 +29,7 @@ namespace BetPlacer.Core.API.Controllers
         }
 
         [HttpGet("teams")]
-        public async Task<ActionResult> GetTeamsFromApi([FromQuery] int leagueSeasonCode)
+        public async Task<ActionResult> GetTeams([FromQuery] int leagueSeasonCode)
         {
             try
             {
@@ -38,6 +38,23 @@ namespace BetPlacer.Core.API.Controllers
 
                 var teams = await _footballApiService.GetTeams(leagueSeasonCode);
                 return OkResponse(teams);
+            }
+            catch (HttpRequestException ex)
+            {
+                return BadRequestResponse(ex.Message);
+            }
+        }
+
+        [HttpGet("fixtures/complete")]
+        public async Task<ActionResult> GetCompleteFixtures([FromQuery] int leagueSeasonCode)
+        {
+            try
+            {
+                if (leagueSeasonCode == 0)
+                    throw new HttpRequestException("leagueSeasonCode param is required");
+
+                var fixtures = await _footballApiService.GetCompleteFixtures(leagueSeasonCode);
+                return OkResponse(fixtures);
             }
             catch (HttpRequestException ex)
             {
