@@ -61,5 +61,22 @@ namespace BetPlacer.Core.API.Controllers
                 return BadRequestResponse(ex.Message);
             }
         }
+
+        [HttpGet("fixtures/next")]
+        public async Task<ActionResult> GetNextFixtures([FromQuery] int leagueSeasonCode)
+        {
+            try
+            {
+                if (leagueSeasonCode == 0)
+                    throw new HttpRequestException("leagueSeasonCode param is required");
+
+                var fixtures = await _footballApiService.GetNextFixtures(leagueSeasonCode);
+                return OkResponse(fixtures);
+            }
+            catch (HttpRequestException ex)
+            {
+                return BadRequestResponse(ex.Message);
+            }
+        }
     }
 }

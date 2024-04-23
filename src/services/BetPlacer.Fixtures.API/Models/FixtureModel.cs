@@ -1,0 +1,48 @@
+﻿using BetPlacer.Core.Models.Response.API.Fixtures;
+using System.ComponentModel.DataAnnotations;
+
+namespace BetPlacer.Fixtures.API.Models
+{
+    public class FixtureModel
+    {
+        public FixtureModel() { }
+
+        public FixtureModel(FixturesResponseModel fixtureResponseModel)
+        {
+            Code = fixtureResponseModel.Code;
+            SeasonCode = fixtureResponseModel.LeagueSeasonCode;
+            StartDate = DateTimeOffset.FromUnixTimeSeconds(fixtureResponseModel.DateTimestamp).UtcDateTime;
+            Status = fixtureResponseModel.Status;
+            HomeTeamId = fixtureResponseModel.HomeTeamId;
+            AwayTeamId = fixtureResponseModel.AwayTeamId;
+            HomeTeamName = fixtureResponseModel.HomeTeamName;
+            AwayTeamName = fixtureResponseModel.AwayTeamName;
+            HomeTeamImage = fixtureResponseModel.HomeTeamImage;
+            AwayTeamImage = fixtureResponseModel.AwayTeamImage;
+            HomeTeamGoals = fixtureResponseModel.HomeGoals;
+            AwayTeamGoals = fixtureResponseModel.AwayGoals;
+            HomeTeamPPG = fixtureResponseModel.HomePointsPerGame;
+            AwayTeamPPG = fixtureResponseModel.AwayPointsPerGame;
+            HomeTeamXG = fixtureResponseModel.HomeTeamXG;
+            AwayTeamXG = fixtureResponseModel.AwayTeamXG;
+        }
+
+        [Key]
+        public int Code { get; set; }
+        public int SeasonCode { get; set; }
+        public DateTime StartDate { get; set; }
+        public string Status { get; set; }
+        public int HomeTeamId { get; set; }
+        public int AwayTeamId { get; set; }
+        public string HomeTeamName { get; set; }
+        public string AwayTeamName { get; set; }
+        public string HomeTeamImage { get; set; }
+        public string AwayTeamImage { get; set; }
+        public int HomeTeamGoals { get; set; }
+        public int AwayTeamGoals { get; set; }
+        public double HomeTeamPPG { get; set; }
+        public double AwayTeamPPG { get; set; }
+        public double HomeTeamXG { get; set; }
+        public double AwayTeamXG { get; set; }
+    }
+}

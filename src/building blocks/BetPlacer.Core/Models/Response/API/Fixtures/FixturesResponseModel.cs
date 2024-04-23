@@ -7,6 +7,9 @@ namespace BetPlacer.Core.Models.Response.API.Fixtures
         [JsonPropertyName("id")]
         public int Code { get; set; }
 
+        [JsonPropertyName("competition_id")]
+        public int LeagueSeasonCode { get; set; }
+
         [JsonPropertyName("date_unix")]
         public int DateTimestamp { get; set; }
 
@@ -54,5 +57,5 @@ namespace BetPlacer.Core.Models.Response.API.Fixtures
 
         [JsonPropertyName("team_b_xg")]
         public double AwayTeamXG { get; set;}
-    }
+    }                                                                                                                                                                                                                                   
 }

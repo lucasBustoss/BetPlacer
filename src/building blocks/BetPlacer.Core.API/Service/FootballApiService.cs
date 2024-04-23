@@ -42,6 +42,14 @@ namespace BetPlacer.Core.API.Service
             return fixtures.Where(fixture => fixture.Status == "complete");
         }
 
+        public async Task<IEnumerable<FixturesResponseModel>> GetNextFixtures(int leagueSeasonCode)
+        {
+            var request = await _httpClient.GetAsync($"league-matches?season_id={leagueSeasonCode}&key={_apiKey}");
+            var fixtures = await TreatApiRequest<FixturesResponseModel>(request);
+
+            return fixtures.Where(fixture => fixture.Status == "incomplete" && DateTimeOffset.FromUnixTimeSeconds(fixture.DateTimestamp) > DateTime.Now);
+        }
+
         #region Private methods
 
         private async Task<IEnumerable<T>> TreatApiRequest<T>(HttpResponseMessage request)

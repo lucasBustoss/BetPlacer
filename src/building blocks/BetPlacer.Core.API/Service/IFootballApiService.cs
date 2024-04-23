@@ -9,5 +9,6 @@ namespace BetPlacer.Core.API.Service
         public Task<IEnumerable<LeaguesResponseModel>> GetLeagues();
         public Task<IEnumerable<TeamsResponseModel>> GetTeams(int leagueSeasonCode);
         public Task<IEnumerable<FixturesResponseModel>> GetCompleteFixtures(int leagueSeasonCode);
+        public Task<IEnumerable<FixturesResponseModel>> GetNextFixtures(int leagueSeasonCode);
     }
 }
