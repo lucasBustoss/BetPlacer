@@ -43,28 +43,16 @@ namespace BetPlacer.Core.Models.Response.API.Fixtures
         [JsonPropertyName("away_ppg")]
         public double AwayPointsPerGame { get; set; }
 
-        /// <summary>
-        /// PPG pré partida como mandante
-        /// </summary>
-        [JsonPropertyName("pre_match_home_ppg")]
-        public double HomePreMatchPointsPerGame { get; set; }
+        [JsonPropertyName("homeGoals")]
+        public string[] HomeGoalsMinutes { get; set; }
 
-        /// <summary>
-        /// PPG pré partida como visitante
-        /// </summary>
-        [JsonPropertyName("pre_match_away_ppg")]
-        public double AwayPreMatchPointsPerGame { get; set; }
+        [JsonPropertyName("awayGoals")]
+        public string[] AwayGoalsMinutes { get; set; }
 
-        /// <summary>
-        /// PPG pré partida total do mandante no campeonato
-        /// </summary>
-        [JsonPropertyName("pre_match_teamA_overall_ppg")]
-        public double HomePreMatchOverallPointsPerGame { get; set; }
+        [JsonPropertyName("team_a_xg")]
+        public double HomeTeamXG { get; set; }
 
-        /// <summary>
-        /// PPG pré partida total do visitante no campeonato
-        /// </summary>
-        [JsonPropertyName("pre_match_teamB_overall_ppg")]
-        public double AwayPreMatchOverallPointsPerGame { get; set; }
+        [JsonPropertyName("team_b_xg")]
+        public double AwayTeamXG { get; set;}
     }
 }
