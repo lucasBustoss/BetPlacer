@@ -44,6 +44,22 @@ namespace BetPlacer.Fixtures.API.Controllers
             return OkResponse("Next");
         }
 
+        [HttpPost]
+        public async Task<ActionResult> SyncFixtures([FromBody] FixturesRequestModel syncRequestModel)
+        {
+            try
+            {
+                await SyncCompleteFixtures(syncRequestModel);
+                await SyncNextFixtures(syncRequestModel);
+                
+                return OkResponse("Fixtures synchronized");
+            }
+            catch (Exception ex)
+            {
+                return BadRequestResponse(ex.Message);
+            }
+        }
+
         [HttpPost("complete")]
         public async Task<ActionResult> SyncCompleteFixtures([FromBody] FixturesRequestModel syncRequestModel)
         {
@@ -90,7 +106,7 @@ namespace BetPlacer.Fixtures.API.Controllers
                 {
                     var responseLeaguesString = await request.Content.ReadAsStringAsync();
                     BaseCoreResponseModel<FixturesResponseModel> response = JsonSerializer.Deserialize<BaseCoreResponseModel<FixturesResponseModel>>(responseLeaguesString);
-                    
+
                     await _fixturesRepository.CreateNextFixtures(response.Data);
 
                     return OkResponse("Next fixtures synchronized");

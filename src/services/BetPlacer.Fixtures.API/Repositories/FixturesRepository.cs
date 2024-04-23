@@ -68,17 +68,17 @@ namespace BetPlacer.Fixtures.API.Repositories
         {
             #region Fixtures
 
-            var existingFixtures = _context.Fixtures.ToDictionary(team => team.Code);
+            var existingFixtures = _context.Fixtures.ToDictionary(fixture => fixture.Code);
             List<FixtureModel> fixturesSaved = new List<FixtureModel>();
 
             foreach (var fixtureResponse in fixturesResponse)
             {
                 if (!existingFixtures.ContainsKey(fixtureResponse.Code))
                 {
-                    var teamModel = new FixtureModel(fixtureResponse);
-                    _context.Fixtures.Add(teamModel);
+                    var fixtureModel = new FixtureModel(fixtureResponse);
+                    _context.Fixtures.Add(fixtureModel);
 
-                    fixturesSaved.Add(teamModel);
+                    fixturesSaved.Add(fixtureModel);
                 }
             }
 

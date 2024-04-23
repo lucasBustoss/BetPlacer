@@ -1,11 +1,8 @@
 ﻿using BetPlacer.Core.Controllers;
 using BetPlacer.Core.Models.Response.Core;
 using BetPlacer.Sync.API.Models.Response.Leagues;
-using BetPlacer.Teams.API.Controllers.RequestModel;
 using Microsoft.AspNetCore.Mvc;
-using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace BetPlacer.Sync.API.Controllers
 {
@@ -15,12 +12,14 @@ namespace BetPlacer.Sync.API.Controllers
         private readonly HttpClient _httpClient;
         private readonly string _leaguesApiUrl;
         private readonly string _teamsApiUrl;
+        private readonly string _fixturesApiUrl;
 
         public SyncController(IConfiguration configuration)
         {
             _httpClient = new HttpClient();
             _leaguesApiUrl = configuration.GetValue<string>("Apis:LeaguesApi");
             _teamsApiUrl = configuration.GetValue<string>("Apis:TeamsApi");
+            _fixturesApiUrl = configuration.GetValue<string>("Apis:FixturesApi");
         }
 
         [HttpPost]
@@ -39,7 +38,11 @@ namespace BetPlacer.Sync.API.Controllers
                         if (league.Name != "England Premier League")
                             continue;
 
-                        await Task.Run(() => SyncTeams(league.Seasons));
+                        await Task.Run(() =>
+                        {
+                            SyncTeams(league.Seasons);
+                            SyncFixtures(league.Seasons);
+                        });
                     }
                 }
 
@@ -86,6 +89,22 @@ namespace BetPlacer.Sync.API.Controllers
 
                 if (!requestTeams.IsSuccessStatusCode)
                     throw new Exception("error synchronizing teams.");
+            }
+        }
+
+        private async Task SyncFixtures(List<LeagueSeasonSyncModel> leagueSeasons)
+        {
+            foreach (var leagueSeason in leagueSeasons)
+            {
+                // Verificação dos leagueSeasonCode que não estão presentes na key de teste
+                if (leagueSeason.Code != 1625 && leagueSeason.Code != 2012 && leagueSeason.Code != 4759 && leagueSeason.Code != 9660)
+                    continue;
+
+                var body = new Dictionary<string, object> { { "leagueSeasonCode", leagueSeason.Code } };
+                var requestTeams = await _httpClient.PostAsJsonAsync(_fixturesApiUrl, body);
+
+                if (!requestTeams.IsSuccessStatusCode)
+                    throw new Exception("error synchronizing complete fixtures.");
             }
         }
 
