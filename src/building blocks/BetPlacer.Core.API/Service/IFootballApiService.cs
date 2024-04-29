@@ -1,14 +1,14 @@
-﻿using BetPlacer.Core.Models.Response.API.Fixtures;
-using BetPlacer.Core.Models.Response.API.Leagues;
-using BetPlacer.Core.Models.Response.API.Teams;
+﻿using BetPlacer.Core.Models.Response.FootballAPI.Fixtures;
+using BetPlacer.Core.Models.Response.FootballAPI.Leagues;
+using BetPlacer.Core.Models.Response.FootballAPI.Teams;
 
 namespace BetPlacer.Core.API.Service
 {
     public interface IFootballApiService
     {
-        public Task<IEnumerable<LeaguesResponseModel>> GetLeagues();
-        public Task<IEnumerable<TeamsResponseModel>> GetTeams(int leagueSeasonCode);
-        public Task<IEnumerable<FixturesResponseModel>> GetCompleteFixtures(int leagueSeasonCode);
-        public Task<IEnumerable<FixturesResponseModel>> GetNextFixtures(int leagueSeasonCode);
+        public Task<IEnumerable<LeaguesFootballResponseModel>> GetLeagues();
+        public Task<IEnumerable<TeamsFootballResponseModel>> GetTeams(int leagueSeasonCode);
+        public Task<IEnumerable<FixturesFootballResponseModel>> GetCompleteFixtures(int leagueSeasonCode);
+        public Task<IEnumerable<FixturesFootballResponseModel>> GetNextFixtures(int leagueSeasonCode);
     }
 }

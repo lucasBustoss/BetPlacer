@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace BetPlacer.Core.Models.Response.API.Leagues
+namespace BetPlacer.Core.Models.Response.FootballAPI.Leagues
 {
     public class LeagueSeasonResponseModel
     {
@@ -11,8 +11,11 @@ namespace BetPlacer.Core.Models.Response.API.Leagues
         public int Year { get; set; }
     }
 
-    public class LeaguesResponseModel
+    public class LeaguesFootballResponseModel
     {
+        [JsonPropertyName("Code")]
+        public string? Code { get; set; }
+
         [JsonPropertyName("name")]
         public string Name { get; set; }
 

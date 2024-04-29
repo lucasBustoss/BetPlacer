@@ -1,7 +1,11 @@
 ﻿using BetPlacer.Fixtures.Config;
-using BetPlacer.Fixtures.API.Models;
 using Microsoft.EntityFrameworkCore;
-using BetPlacer.Core.Models.Response.API.Fixtures;
+using BetPlacer.Core.Models.Response.FootballAPI.Fixtures;
+using BetPlacer.Fixtures.API.Models.Enums;
+using BetPlacer.Fixtures.API.Models.Entities;
+using BetPlacer.Fixtures.API.Models.ValueObjects;
+using BetPlacer.Core.Models.Response.Microservice.Teams;
+using BetPlacer.Core.Models.Response.Microservice.Leagues;
 
 namespace BetPlacer.Fixtures.API.Repositories
 {
@@ -14,17 +18,48 @@ namespace BetPlacer.Fixtures.API.Repositories
             _context = new FixturesDbContext(db);
         }
 
-        //public IEnumerable<Fixture> List()
-        //{
-        //    List<Fixture> fixturesVO = new List<Fixture>();
-        //    var fixtures = _context.Fixtures.ToList();
+        public IEnumerable<Fixture> List(FixtureListSearchType searchType, IEnumerable<LeaguesApiResponseModel> leagues, IEnumerable<TeamsApiResponseModel> teams)
+        {
+            List<Fixture> fixturesVO = new List<Fixture>();
 
-        //    fixturesVO.AddRange(fixtures.Select(fixture => new Fixture(fixture)));
+            var query = _context.Fixtures.AsQueryable();
 
-        //    return fixturesVO;
-        //}
+            switch (searchType)
+            {
+                case FixtureListSearchType.All:
+                    break;
 
-        public async Task CreateOrUpdateCompleteFixtures(IEnumerable<FixturesResponseModel> fixturesResponse)
+                case FixtureListSearchType.OnlyCompleted:
+                    query = query.Where(a => a.Status == "complete");
+                    break;
+
+                case FixtureListSearchType.OnlyNext:
+                    query = query.Where(f => f.Status == "incomplete");
+                    break;
+
+                default:
+                    throw new ArgumentException("Tipo de consulta não suportado", nameof(searchType));
+            }
+
+            var fixtures = query.ToList();
+
+            foreach (FixtureModel fixture in fixtures)
+            {
+                LeaguesApiResponseModel league = leagues.FirstOrDefault(l => l.Season.Any(s => s.Id == fixture.SeasonCode));
+                TeamsApiResponseModel homeTeam = teams.FirstOrDefault(t => t.Code == fixture.HomeTeamId);
+                TeamsApiResponseModel awayTeam = teams.FirstOrDefault(t => t.Code == fixture.AwayTeamId);
+
+                if (league != null && homeTeam != null && awayTeam != null)
+                {
+                    Fixture fixtureVO = new Fixture(fixture, league, homeTeam, awayTeam);
+                    fixturesVO.Add(fixtureVO);
+                }
+            }
+
+            return fixturesVO;
+        }
+
+        public async Task CreateOrUpdateCompleteFixtures(IEnumerable<FixturesFootballResponseModel> fixturesResponse)
         {
             #region Fixtures
 
@@ -64,7 +99,7 @@ namespace BetPlacer.Fixtures.API.Repositories
             #endregion
         }
 
-        public async Task CreateNextFixtures(IEnumerable<FixturesResponseModel> fixturesResponse)
+        public async Task CreateNextFixtures(IEnumerable<FixturesFootballResponseModel> fixturesResponse)
         {
             #region Fixtures
 
@@ -95,7 +130,7 @@ namespace BetPlacer.Fixtures.API.Repositories
 
         #region Private methods
 
-        private async Task CreateFixtureGoals(IEnumerable<FixturesResponseModel> fixturesResponse, List<FixtureModel> fixturesSaved)
+        private async Task CreateFixtureGoals(IEnumerable<FixturesFootballResponseModel> fixturesResponse, List<FixtureModel> fixturesSaved)
         {
             #region HomeGoals
 

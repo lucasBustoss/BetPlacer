@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using BetPlacer.Leagues.API.Repositories;
 using System.Text.Json;
 using BetPlacer.Core.Models.Response.Core;
-using BetPlacer.Core.Models.Response.API.Leagues;
+using BetPlacer.Core.Models.Response.FootballAPI.Leagues;
 
 namespace BetPlacer.Leagues.Controllers
 {
@@ -46,7 +46,7 @@ namespace BetPlacer.Leagues.Controllers
                 if (request.IsSuccessStatusCode)
                 {
                     var responseLeaguesString = await request.Content.ReadAsStringAsync();
-                    BaseCoreResponseModel<LeaguesResponseModel> response = JsonSerializer.Deserialize<BaseCoreResponseModel<LeaguesResponseModel>>(responseLeaguesString);
+                    BaseCoreResponseModel<LeaguesFootballResponseModel> response = JsonSerializer.Deserialize<BaseCoreResponseModel<LeaguesFootballResponseModel>>(responseLeaguesString);
 
                     await _leaguesRepository.CreateOrUpdate(response.Data);
 

@@ -1,4 +1,4 @@
-﻿using BetPlacer.Core.Models.Response.API.Fixtures;
+﻿using BetPlacer.Core.Models.Response.FootballAPI.Fixtures;
 using BetPlacer.Fixtures.API.Models;
 
 namespace BetPlacer.Fixtures.API.Repositories
@@ -6,7 +6,7 @@ namespace BetPlacer.Fixtures.API.Repositories
     public interface IFixturesRepository
     {
         /*IEnumerable<Fixture> List();*/
-        Task CreateOrUpdateCompleteFixtures(IEnumerable<FixturesResponseModel> fixtures);
-        Task CreateNextFixtures(IEnumerable<FixturesResponseModel> fixtures);
+        Task CreateOrUpdateCompleteFixtures(IEnumerable<FixturesFootballResponseModel> fixtures);
+        Task CreateNextFixtures(IEnumerable<FixturesFootballResponseModel> fixtures);
     }
 }

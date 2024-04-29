@@ -1,4 +1,4 @@
-﻿using BetPlacer.Core.Models.Response.API.Leagues;
+﻿using BetPlacer.Core.Models.Response.FootballAPI.Leagues;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -8,7 +8,7 @@ namespace BetPlacer.Leagues.API.Models
     {
         public LeagueModel() { }
 
-        public LeagueModel(LeaguesResponseModel leagueResponseModel)
+        public LeagueModel(LeaguesFootballResponseModel leagueResponseModel)
         {
             Name = leagueResponseModel.Name;
             Country = leagueResponseModel.Country;

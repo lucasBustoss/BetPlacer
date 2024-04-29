@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BetPlacer.Fixtures.API.Models
+namespace BetPlacer.Fixtures.API.Models.Entities
 {
     public class FixtureGoalsModel
     {
@@ -13,9 +13,9 @@ namespace BetPlacer.Fixtures.API.Models
             Minute = goalMinute;
             TeamId = teamId;
         }
-        
+
         public FixtureModel Fixture { get; set; }
-        
+
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Code { get; set; }

@@ -1,5 +1,5 @@
 ﻿using BetPlacer.Core.Helpers.Database;
-using BetPlacer.Fixtures.API.Models;
+using BetPlacer.Fixtures.API.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace BetPlacer.Fixtures.Config

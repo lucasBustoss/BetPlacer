@@ -2,7 +2,7 @@
 using BetPlacer.Teams.API.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
-using BetPlacer.Core.Models.Response.API.Teams;
+using BetPlacer.Core.Models.Response.FootballAPI.Teams;
 using BetPlacer.Teams.API.Models.ValueObjects;
 
 namespace BetPlacer.Teams.API.Repositories
@@ -27,7 +27,7 @@ namespace BetPlacer.Teams.API.Repositories
             return teamsVO;
         }
 
-        public async Task Create(IEnumerable<TeamsResponseModel> teamsResponse)
+        public async Task Create(IEnumerable<TeamsFootballResponseModel> teamsResponse)
         {
             #region Teams
 

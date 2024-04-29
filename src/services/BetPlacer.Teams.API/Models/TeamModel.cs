@@ -1,4 +1,4 @@
-﻿using BetPlacer.Core.Models.Response.API.Teams;
+﻿using BetPlacer.Core.Models.Response.FootballAPI.Teams;
 using System.ComponentModel.DataAnnotations;
 
 namespace BetPlacer.Teams.API.Models
@@ -7,7 +7,7 @@ namespace BetPlacer.Teams.API.Models
     {
         public TeamModel() { }
 
-        public TeamModel(TeamsResponseModel teamResponseModel)
+        public TeamModel(TeamsFootballResponseModel teamResponseModel)
         {
             Code = teamResponseModel.Id;
             Name = teamResponseModel.Name;

@@ -1,13 +1,16 @@
 ﻿using BetPlacer.Core.Controllers;
-using BetPlacer.Core.Models.Response.API.Fixtures;
-using BetPlacer.Core.Models.Response.API.Leagues;
+using BetPlacer.Core.Models.Response.FootballAPI.Fixtures;
 using BetPlacer.Core.Models.Response.Core;
+using BetPlacer.Core.Models.Response.Microservice.Leagues;
+using BetPlacer.Core.Models.Response.Microservice.Teams;
+using BetPlacer.Fixtures.API.Models.Enums;
 using BetPlacer.Fixtures.API.Models.RequestModel;
 using BetPlacer.Fixtures.API.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.Net.Http;
 using System.Text.Json;
+using BetPlacer.Fixtures.API.Models.ValueObjects;
 
 namespace BetPlacer.Fixtures.API.Controllers
 {
@@ -19,28 +22,73 @@ namespace BetPlacer.Fixtures.API.Controllers
         private readonly string _apiUrl;
         private readonly string _apiKey;
 
+        HttpClient _teamsClient = new HttpClient();
+        private readonly string _teamsApiUrl;
+
+        HttpClient _leaguesClient = new HttpClient();
+        private readonly string _leaguesApiUrl;
+
         public FixturesController(FixturesRepository fixturesRepository, IConfiguration configuration)
         {
             _fixturesRepository = fixturesRepository;
 
-            _httpClient = new HttpClient();
+            #region CoreApi
+
             _apiUrl = configuration.GetValue<string>("CoreApi:AppUrl");
             _apiKey = configuration.GetValue<string>("CoreApi:AppKey");
 
             _httpClient = new HttpClient() { BaseAddress = new Uri(_apiUrl) };
             _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
             _httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
+
+            #endregion
+
+            #region TeamsApi
+
+            _teamsApiUrl = configuration.GetValue<string>("TeamsApi:AppUrl");
+            _teamsClient = new HttpClient() { BaseAddress = new Uri(_teamsApiUrl) };
+
+            #endregion
+
+            #region LeaguesApi
+
+            _leaguesApiUrl = configuration.GetValue<string>("LeaguesApi:AppUrl");
+            _leaguesClient = new HttpClient() { BaseAddress = new Uri(_leaguesApiUrl) };
+
+            #endregion
+
         }
 
-        [HttpGet("complete")]
-        public ActionResult GetCompleteFixtures()
+        [HttpGet("")]
+        public async Task<ActionResult> GetFixtures([FromQuery] string searchType)
         {
-            return OkResponse("Complete");
+            FixtureListSearchType type = FixtureListSearchType.All;
+
+            if (searchType == "completed")
+                type = FixtureListSearchType.OnlyCompleted;
+            else if (searchType == "incompleted")
+                type = FixtureListSearchType.OnlyNext;
+
+
+            Task<IEnumerable<LeaguesApiResponseModel>> taskLeagues = GetLeagues();
+            Task<IEnumerable<TeamsApiResponseModel>> taskTeams = GetTeams();
+
+            await Task.WhenAll(taskLeagues, taskTeams);
+
+            IEnumerable<LeaguesApiResponseModel> leagues = taskLeagues.Result;
+            IEnumerable<TeamsApiResponseModel> teams = taskTeams.Result;
+
+            List<Fixture> fixtures = _fixturesRepository.List(type, leagues, teams).ToList();
+
+            return OkResponse(fixtures);
         }
 
         [HttpGet("next")]
-        public ActionResult GetNextFixtures()
+        public async Task<ActionResult> GetNextFixtures()
         {
+            IEnumerable<LeaguesApiResponseModel> leagues = await GetLeagues();
+            IEnumerable<TeamsApiResponseModel> teams = await GetTeams();
+
             return OkResponse("Next");
         }
 
@@ -51,7 +99,7 @@ namespace BetPlacer.Fixtures.API.Controllers
             {
                 await SyncCompleteFixtures(syncRequestModel);
                 await SyncNextFixtures(syncRequestModel);
-                
+
                 return OkResponse("Fixtures synchronized");
             }
             catch (Exception ex)
@@ -73,7 +121,7 @@ namespace BetPlacer.Fixtures.API.Controllers
                 if (request.IsSuccessStatusCode)
                 {
                     var responseLeaguesString = await request.Content.ReadAsStringAsync();
-                    BaseCoreResponseModel<FixturesResponseModel> response = JsonSerializer.Deserialize<BaseCoreResponseModel<FixturesResponseModel>>(responseLeaguesString);
+                    BaseCoreResponseModel<FixturesFootballResponseModel> response = JsonSerializer.Deserialize<BaseCoreResponseModel<FixturesFootballResponseModel>>(responseLeaguesString);
 
                     await _fixturesRepository.CreateOrUpdateCompleteFixtures(response.Data);
 
@@ -105,7 +153,7 @@ namespace BetPlacer.Fixtures.API.Controllers
                 if (request.IsSuccessStatusCode)
                 {
                     var responseLeaguesString = await request.Content.ReadAsStringAsync();
-                    BaseCoreResponseModel<FixturesResponseModel> response = JsonSerializer.Deserialize<BaseCoreResponseModel<FixturesResponseModel>>(responseLeaguesString);
+                    BaseCoreResponseModel<FixturesFootballResponseModel> response = JsonSerializer.Deserialize<BaseCoreResponseModel<FixturesFootballResponseModel>>(responseLeaguesString);
 
                     await _fixturesRepository.CreateNextFixtures(response.Data);
 
@@ -123,5 +171,49 @@ namespace BetPlacer.Fixtures.API.Controllers
                 return BadRequestResponse(ex.Message);
             }
         }
+
+        #region Private methods
+
+        private async Task<IEnumerable<TeamsApiResponseModel>> GetTeams()
+        {
+            var request = await _teamsClient.GetAsync("");
+
+            if (request.IsSuccessStatusCode)
+            {
+                var responseLeaguesString = await request.Content.ReadAsStringAsync();
+                BaseCoreResponseModel<TeamsApiResponseModel> response = JsonSerializer.Deserialize<BaseCoreResponseModel<TeamsApiResponseModel>>(responseLeaguesString);
+
+                return response.Data;
+            }
+            else
+            {
+                var errorMessage = JsonSerializer.Deserialize<object>(await request.Content.ReadAsStringAsync());
+                Console.WriteLine(errorMessage);
+                Console.WriteLine(request.StatusCode);
+                return null;
+            }
+        }
+
+        private async Task<IEnumerable<LeaguesApiResponseModel>> GetLeagues()
+        {
+            var request = await _leaguesClient.GetAsync("?withSeasons=true");
+
+            if (request.IsSuccessStatusCode)
+            {
+                var responseLeaguesString = await request.Content.ReadAsStringAsync();
+                BaseCoreResponseModel<LeaguesApiResponseModel> response = JsonSerializer.Deserialize<BaseCoreResponseModel<LeaguesApiResponseModel>>(responseLeaguesString);
+
+                return response.Data;
+            }
+            else
+            {
+                var errorMessage = JsonSerializer.Deserialize<object>(await request.Content.ReadAsStringAsync());
+                Console.WriteLine(errorMessage);
+                Console.WriteLine(request.StatusCode);
+                return null;
+            }
+        }
+
+        #endregion
     }
 }

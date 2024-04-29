@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace BetPlacer.Core.Models.Response.API.Teams
+namespace BetPlacer.Core.Models.Response.FootballAPI.Teams
 {
-    public class TeamsResponseModel
+    public class TeamsFootballResponseModel
     {
         [JsonPropertyName("id")]
         public int Id { get; set; }

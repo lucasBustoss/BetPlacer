@@ -1,13 +1,13 @@
-﻿using BetPlacer.Core.Models.Response.API.Fixtures;
+﻿using BetPlacer.Core.Models.Response.FootballAPI.Fixtures;
 using System.ComponentModel.DataAnnotations;
 
-namespace BetPlacer.Fixtures.API.Models
+namespace BetPlacer.Fixtures.API.Models.Entities
 {
     public class FixtureModel
     {
         public FixtureModel() { }
 
-        public FixtureModel(FixturesResponseModel fixtureResponseModel)
+        public FixtureModel(FixturesFootballResponseModel fixtureResponseModel)
         {
             Code = fixtureResponseModel.Code;
             SeasonCode = fixtureResponseModel.LeagueSeasonCode;

@@ -1,7 +1,7 @@
 ﻿using BetPlacer.Core.Models.Response.API;
-using BetPlacer.Core.Models.Response.API.Fixtures;
-using BetPlacer.Core.Models.Response.API.Leagues;
-using BetPlacer.Core.Models.Response.API.Teams;
+using BetPlacer.Core.Models.Response.FootballAPI.Fixtures;
+using BetPlacer.Core.Models.Response.FootballAPI.Leagues;
+using BetPlacer.Core.Models.Response.FootballAPI.Teams;
 using System.Text.Json;
 
 namespace BetPlacer.Core.API.Service
@@ -22,30 +22,30 @@ namespace BetPlacer.Core.API.Service
             _httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
         }
 
-        public async Task<IEnumerable<LeaguesResponseModel>> GetLeagues()
+        public async Task<IEnumerable<LeaguesFootballResponseModel>> GetLeagues()
         {
             var request = await _httpClient.GetAsync($"league-list?key={_apiKey}");
-            return await TreatApiRequest<LeaguesResponseModel>(request);
+            return await TreatApiRequest<LeaguesFootballResponseModel>(request);
         }
 
-        public async Task<IEnumerable<TeamsResponseModel>> GetTeams(int leagueSeasonCode)
+        public async Task<IEnumerable<TeamsFootballResponseModel>> GetTeams(int leagueSeasonCode)
         {
             var request = await _httpClient.GetAsync($"league-teams?season_id={leagueSeasonCode}&key={_apiKey}");
-            return await TreatApiRequest<TeamsResponseModel>(request);
+            return await TreatApiRequest<TeamsFootballResponseModel>(request);
         }
 
-        public async Task<IEnumerable<FixturesResponseModel>> GetCompleteFixtures(int leagueSeasonCode)
+        public async Task<IEnumerable<FixturesFootballResponseModel>> GetCompleteFixtures(int leagueSeasonCode)
         {
             var request = await _httpClient.GetAsync($"league-matches?season_id={leagueSeasonCode}&key={_apiKey}");
-            var fixtures = await TreatApiRequest<FixturesResponseModel>(request);
+            var fixtures = await TreatApiRequest<FixturesFootballResponseModel>(request);
 
             return fixtures.Where(fixture => fixture.Status == "complete");
         }
 
-        public async Task<IEnumerable<FixturesResponseModel>> GetNextFixtures(int leagueSeasonCode)
+        public async Task<IEnumerable<FixturesFootballResponseModel>> GetNextFixtures(int leagueSeasonCode)
         {
             var request = await _httpClient.GetAsync($"league-matches?season_id={leagueSeasonCode}&key={_apiKey}");
-            var fixtures = await TreatApiRequest<FixturesResponseModel>(request);
+            var fixtures = await TreatApiRequest<FixturesFootballResponseModel>(request);
 
             return fixtures.Where(fixture => fixture.Status == "incomplete" && DateTimeOffset.FromUnixTimeSeconds(fixture.DateTimestamp) > DateTime.Now);
         }

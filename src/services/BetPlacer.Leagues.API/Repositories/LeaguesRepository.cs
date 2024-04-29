@@ -1,7 +1,7 @@
 ﻿using BetPlacer.Leagues.Config;
 using BetPlacer.Leagues.API.Models;
 using Microsoft.EntityFrameworkCore;
-using BetPlacer.Core.Models.Response.API.Leagues;
+using BetPlacer.Core.Models.Response.FootballAPI.Leagues;
 using BetPlacer.Leagues.API.Models.ValueObjects;
 
 namespace BetPlacer.Leagues.API.Repositories
@@ -37,7 +37,7 @@ namespace BetPlacer.Leagues.API.Repositories
             return leaguesVO;
         }
 
-        public async Task CreateOrUpdate(IEnumerable<LeaguesResponseModel> leaguesResponse)
+        public async Task CreateOrUpdate(IEnumerable<LeaguesFootballResponseModel> leaguesResponse)
         {
             #region Leagues
 

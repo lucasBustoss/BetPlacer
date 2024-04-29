@@ -1,5 +1,5 @@
 ﻿using BetPlacer.Core.Controllers;
-using BetPlacer.Core.Models.Response.API.Teams;
+using BetPlacer.Core.Models.Response.FootballAPI.Teams;
 using BetPlacer.Core.Models.Response.Core;
 using BetPlacer.Teams.API.Models.RequestModel;
 using BetPlacer.Teams.API.Repositories;
@@ -49,7 +49,7 @@ namespace BetPlacer.Teams.API.Controllers
                 if (request.IsSuccessStatusCode)
                 {
                     var responseLeaguesString = await request.Content.ReadAsStringAsync();
-                    BaseCoreResponseModel<TeamsResponseModel> response = JsonSerializer.Deserialize<BaseCoreResponseModel<TeamsResponseModel>>(responseLeaguesString);
+                    BaseCoreResponseModel<TeamsFootballResponseModel> response = JsonSerializer.Deserialize<BaseCoreResponseModel<TeamsFootballResponseModel>>(responseLeaguesString);
 
                     if (response != null && response.Data != null)
                         await _teamsRepository.Create(response.Data);
