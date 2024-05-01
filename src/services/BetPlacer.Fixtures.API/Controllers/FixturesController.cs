@@ -83,15 +83,6 @@ namespace BetPlacer.Fixtures.API.Controllers
             return OkResponse(fixtures);
         }
 
-        [HttpGet("next")]
-        public async Task<ActionResult> GetNextFixtures()
-        {
-            IEnumerable<LeaguesApiResponseModel> leagues = await GetLeagues();
-            IEnumerable<TeamsApiResponseModel> teams = await GetTeams();
-
-            return OkResponse("Next");
-        }
-
         [HttpPost]
         public async Task<ActionResult> SyncFixtures([FromBody] FixturesRequestModel syncRequestModel)
         {

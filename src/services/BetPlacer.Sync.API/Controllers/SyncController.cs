@@ -38,11 +38,10 @@ namespace BetPlacer.Sync.API.Controllers
                         if (league.Name != "England Premier League")
                             continue;
 
-                        await Task.Run(() =>
-                        {
-                            SyncTeams(league.Seasons);
-                            SyncFixtures(league.Seasons);
-                        });
+                        await Task.WhenAll(
+                            Task.Run(() => SyncTeams(league.Seasons)),
+                            Task.Run(() => SyncFixtures(league.Seasons))
+                        );
                     }
                 }
 
