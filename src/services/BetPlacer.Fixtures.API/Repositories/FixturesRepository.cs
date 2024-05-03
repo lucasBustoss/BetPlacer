@@ -6,16 +6,19 @@ using BetPlacer.Fixtures.API.Models.Entities;
 using BetPlacer.Fixtures.API.Models.ValueObjects;
 using BetPlacer.Core.Models.Response.Microservice.Teams;
 using BetPlacer.Core.Models.Response.Microservice.Leagues;
+using BetPlacer.Fixtures.API.Services;
 
 namespace BetPlacer.Fixtures.API.Repositories
 {
     public class FixturesRepository : IFixturesRepository
     {
         private readonly FixturesDbContext _context;
+        private readonly CalculateFixtureStatsService _calculateService;
 
         public FixturesRepository(DbContextOptions<FixturesDbContext> db)
         {
             _context = new FixturesDbContext(db);
+            _calculateService = new CalculateFixtureStatsService();
         }
 
         public IEnumerable<Fixture> List(FixtureListSearchType searchType, IEnumerable<LeaguesApiResponseModel> leagues, IEnumerable<TeamsApiResponseModel> teams)
@@ -136,7 +139,7 @@ namespace BetPlacer.Fixtures.API.Repositories
                 OrderBy(f => f.StartDate)
                 .ToListAsync();
 
-            Console.WriteLine(fixtures);
+            var stats = _calculateService.Calculate(fixtures);
         }
           
         #region Private methods
