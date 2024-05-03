@@ -1,5 +1,6 @@
 ﻿using BetPlacer.Core.Helpers.Database;
 using BetPlacer.Fixtures.API.Models.Entities;
+using BetPlacer.Fixtures.API.Models.Entities.Trade;
 using Microsoft.EntityFrameworkCore;
 
 namespace BetPlacer.Fixtures.Config
@@ -12,6 +13,7 @@ namespace BetPlacer.Fixtures.Config
 
         public DbSet<FixtureModel> Fixtures { get; set; }
         public DbSet<FixtureGoalsModel> FixtureGoals { get; set; }
+        public DbSet<FixtureStatsTradeModel> FixtureStatsTrade { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

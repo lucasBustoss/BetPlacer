@@ -128,6 +128,17 @@ namespace BetPlacer.Fixtures.API.Repositories
             #endregion
         }
 
+        public async Task CalculateFixtureStats(int leagueSeasonCode)
+        {
+            IEnumerable<FixtureModel> fixtures =
+                await _context.Fixtures
+                .Where(f => f.SeasonCode == leagueSeasonCode && f.Status == "complete").
+                OrderBy(f => f.StartDate)
+                .ToListAsync();
+
+            Console.WriteLine(fixtures);
+        }
+          
         #region Private methods
 
         private async Task CreateFixtureGoals(IEnumerable<FixturesFootballResponseModel> fixturesResponse, List<FixtureModel> fixturesSaved)

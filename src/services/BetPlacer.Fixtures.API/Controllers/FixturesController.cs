@@ -163,6 +163,26 @@ namespace BetPlacer.Fixtures.API.Controllers
             }
         }
 
+        [HttpPost("stats")]
+        public async Task<ActionResult> CalculateStats([FromBody] FixturesRequestModel syncRequestModel)
+        {
+            try
+            {
+                if (syncRequestModel == null || !syncRequestModel.IsValid())
+                    throw new Exception("param leagueSeasonCode is required.");
+
+
+                await _fixturesRepository.CalculateFixtureStats(syncRequestModel.LeagueSeasonCode.Value);
+
+                return OkResponse("stats calculated.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequestResponse(ex.Message);
+            }
+        }
+
+
         #region Private methods
 
         private async Task<IEnumerable<TeamsApiResponseModel>> GetTeams()
