@@ -133,15 +133,46 @@ namespace BetPlacer.Fixtures.API.Repositories
 
         public async Task CalculateFixtureStats(int leagueSeasonCode)
         {
+            List<FixtureModel> fixturesToCalculate = new List<FixtureModel>();
+
             IEnumerable<FixtureModel> fixtures =
                 await _context.Fixtures
-                .Where(f => f.SeasonCode == leagueSeasonCode && f.Status == "complete").
-                OrderBy(f => f.StartDate)
+                .Where(f => f.SeasonCode == leagueSeasonCode)
+                .OrderBy(f => f.StartDate)
                 .ToListAsync();
 
-            var stats = _calculateService.Calculate(fixtures);
+            foreach (var fixture in fixtures)
+            {
+                if (fixture.Status == "complete")
+                {
+                    fixturesToCalculate.Add(fixture);
+                    continue;
+                }
+
+                FixtureModel existentFixtureInList = fixturesToCalculate
+                .Where(f => f.Status == "incomplete" &&
+                ((f.HomeTeamId == fixture.HomeTeamId || f.HomeTeamId == fixture.AwayTeamId) ||
+                (f.AwayTeamId == fixture.HomeTeamId || f.AwayTeamId == fixture.AwayTeamId)))
+                .FirstOrDefault();
+
+                if (fixture.Status == "incomplete" && existentFixtureInList == null && fixture.StartDate > DateTime.UtcNow)
+                {
+                    fixturesToCalculate.Add(fixture);
+                    continue;
+                }
+            }
+
+            var teste = fixturesToCalculate.Where(f => f.Status == "incomplete").Select(f => new { f.Code, f.StartDate, f.HomeTeamName, f.AwayTeamName }).ToList();
+            var fixtureCodes = fixturesToCalculate.Select(f => f.Code).ToList();
+
+            IEnumerable<FixtureGoalsModel> fixturesGoals =
+                await _context.FixtureGoals
+                .Where(fg => fixtureCodes.Contains(fg.FixtureCode))
+                .ToListAsync();
+
+            var stats = _calculateService.Calculate(fixturesToCalculate, fixturesGoals);
         }
-          
+
         #region Private methods
 
         private async Task CreateFixtureGoals(IEnumerable<FixturesFootballResponseModel> fixturesResponse, List<FixtureModel> fixturesSaved)

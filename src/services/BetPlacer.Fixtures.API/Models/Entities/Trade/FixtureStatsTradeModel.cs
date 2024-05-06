@@ -20,7 +20,7 @@ namespace BetPlacer.Fixtures.API.Models.Entities.Trade
         public int HomeWinsTotal { get; set; }
         public double HomeWinsPercentTotal { get; set; }
         public double HomeFirstToScorePercentTotal { get; set; }
-        public double HomeFixturesWithoutConcededGoalsPercentTotal { get; set; }
+        public double HomeCleanSheetsPercentTotal { get; set; }
         public double HomeFailedToScorePercentTotal { get; set; }
         public double HomeBothToScorePercentTotal { get; set; }
         public int HomeGoalsScoredTotal { get; set; }
@@ -36,7 +36,7 @@ namespace BetPlacer.Fixtures.API.Models.Entities.Trade
         public double HomeDrawsPercentHTTotal { get; set; }
         public double HomeLossesPercentHTTotal { get; set; }
         public double HomeFailedToScorePercentHTTotal { get; set; }
-        public double HomeFixturesWithoutConcededGoalsPercentHTTotal { get; set; }
+        public double HomeCleanSheetsPercentHTTotal { get; set; }
         public int HomeGoalsScoredHTTotal { get; set; }
         public int HomeGoalsConcededHTTotal { get; set; }
         public double HomeAverageGoalsScoredHTTotal { get; set; }
@@ -50,7 +50,7 @@ namespace BetPlacer.Fixtures.API.Models.Entities.Trade
         public double HomeDrawsPercentFTTotal { get; set; }
         public double HomeLossesPercentFTTotal { get; set; }
         public double HomeFailedToScorePercentFTTotal { get; set; }
-        public double HomeFixturesWithoutConcededGoalsPercentFTTotal { get; set; }
+        public double HomeCleanSheetsPercentFTTotal { get; set; }
         public int HomeGoalsScoredFTTotal { get; set; }
         public int HomeGoalsConcededFTTotal { get; set; }
         public double HomeAverageGoalsScoredFTTotal { get; set; }
@@ -106,7 +106,7 @@ namespace BetPlacer.Fixtures.API.Models.Entities.Trade
         public int HomeWinsTotalAtHome { get; set; }
         public double HomeWinsPercentTotalAtHome { get; set; }
         public double HomeFirstToScorePercentTotalAtHome { get; set; }
-        public double HomeFixturesWithoutConcededGoalsPercentTotalAtHome { get; set; }
+        public double HomeCleanSheetsPercentTotalAtHome { get; set; }
         public double HomeFailedToScorePercentTotalAtHome { get; set; }
         public double HomeBothToScorePercentTotalAtHome { get; set; }
         public int HomeGoalsScoredTotalAtHome { get; set; }
@@ -122,7 +122,7 @@ namespace BetPlacer.Fixtures.API.Models.Entities.Trade
         public double HomeDrawsPercentHTTotalAtHome { get; set; }
         public double HomeLossesPercentHTTotalAtHome { get; set; }
         public double HomeFailedToScorePercentHTTotalAtHome { get; set; }
-        public double HomeFixturesWithoutConcededGoalsPercentHTTotalAtHome { get; set; }
+        public double HomeCleanSheetsPercentHTTotalAtHome { get; set; }
         public int HomeGoalsScoredHTTotalAtHome { get; set; }
         public int HomeGoalsConcededHTTotalAtHome { get; set; }
         public double HomeAverageGoalsScoredHTTotalAtHome { get; set; }
@@ -136,7 +136,7 @@ namespace BetPlacer.Fixtures.API.Models.Entities.Trade
         public double HomeDrawsPercentFTTotalAtHome { get; set; }
         public double HomeLossesPercentFTTotalAtHome { get; set; }
         public double HomeFailedToScorePercentFTTotalAtHome { get; set; }
-        public double HomeFixturesWithoutConcededGoalsPercentFTTotalAtHome { get; set; }
+        public double HomeCleanSheetsPercentFTTotalAtHome { get; set; }
         public int HomeGoalsScoredFTTotalAtHome { get; set; }
         public int HomeGoalsConcededFTTotalAtHome { get; set; }
         public double HomeAverageGoalsScoredFTTotalAtHome { get; set; }
@@ -196,7 +196,7 @@ namespace BetPlacer.Fixtures.API.Models.Entities.Trade
         public int AwayWinsTotal { get; set; }
         public double AwayWinsPercentTotal { get; set; }
         public double AwayFirstToScorePercentTotal { get; set; }
-        public double AwayFixturesWithoutConcededGoalsPercentTotal { get; set; }
+        public double AwayCleanSheetsPercentTotal { get; set; }
         public double AwayFailedToScorePercentTotal { get; set; }
         public double AwayBothToScorePercentTotal { get; set; }
         public int AwayGoalsScoredTotal { get; set; }
@@ -212,7 +212,7 @@ namespace BetPlacer.Fixtures.API.Models.Entities.Trade
         public double AwayDrawsPercentHTTotal { get; set; }
         public double AwayLossesPercentHTTotal { get; set; }
         public double AwayFailedToScorePercentHTTotal { get; set; }
-        public double AwayFixturesWithoutConcededGoalsPercentHTTotal { get; set; }
+        public double AwayCleanSheetsPercentHTTotal { get; set; }
         public int AwayGoalsScoredHTTotal { get; set; }
         public int AwayGoalsConcededHTTotal { get; set; }
         public double AwayAverageGoalsScoredHTTotal { get; set; }
@@ -226,7 +226,7 @@ namespace BetPlacer.Fixtures.API.Models.Entities.Trade
         public double AwayDrawsPercentFTTotal { get; set; }
         public double AwayLossesPercentFTTotal { get; set; }
         public double AwayFailedToScorePercentFTTotal { get; set; }
-        public double AwayFixturesWithoutConcededGoalsPercentFTTotal { get; set; }
+        public double AwayCleanSheetsPercentFTTotal { get; set; }
         public int AwayGoalsScoredFTTotal { get; set; }
         public int AwayGoalsConcededFTTotal { get; set; }
         public double AwayAverageGoalsScoredFTTotal { get; set; }
@@ -282,7 +282,7 @@ namespace BetPlacer.Fixtures.API.Models.Entities.Trade
         public int AwayWinsTotalAtAway { get; set; }
         public double AwayWinsPercentTotalAtAway { get; set; }
         public double AwayFirstToScorePercentTotalAtAway { get; set; }
-        public double AwayFixturesWithoutConcededGoalsPercentTotalAtAway { get; set; }
+        public double AwayCleanSheetsPercentTotalAtAway { get; set; }
         public double AwayFailedToScorePercentTotalAtAway { get; set; }
         public double AwayBothToScorePercentTotalAtAway { get; set; }
         public int AwayGoalsScoredTotalAtAway { get; set; }
@@ -298,7 +298,7 @@ namespace BetPlacer.Fixtures.API.Models.Entities.Trade
         public double AwayDrawsPercentHTTotalAtAway { get; set; }
         public double AwayLossesPercentHTTotalAtAway { get; set; }
         public double AwayFailedToScorePercentHTTotalAtAway { get; set; }
-        public double AwayFixturesWithoutConcededGoalsPercentHTTotalAtAway { get; set; }
+        public double AwayCleanSheetsPercentHTTotalAtAway { get; set; }
         public int AwayGoalsScoredHTTotalAtAway { get; set; }
         public int AwayGoalsConcededHTTotalAtAway { get; set; }
         public double AwayAverageGoalsScoredHTTotalAtAway { get; set; }
@@ -312,7 +312,7 @@ namespace BetPlacer.Fixtures.API.Models.Entities.Trade
         public double AwayDrawsPercentFTTotalAtAway { get; set; }
         public double AwayLossesPercentFTTotalAtAway { get; set; }
         public double AwayFailedToScorePercentFTTotalAtAway { get; set; }
-        public double AwayFixturesWithoutConcededGoalsPercentFTTotalAtAway { get; set; }
+        public double AwayCleanSheetsPercentFTTotalAtAway { get; set; }
         public int AwayGoalsScoredFTTotalAtAway { get; set; }
         public int AwayGoalsConcededFTTotalAtAway { get; set; }
         public double AwayAverageGoalsScoredFTTotalAtAway { get; set; }
