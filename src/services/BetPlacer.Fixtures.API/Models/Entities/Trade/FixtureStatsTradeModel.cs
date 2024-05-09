@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BetPlacer.Fixtures.API.Models.Entities.Trade
 {
@@ -16,10 +17,13 @@ namespace BetPlacer.Fixtures.API.Models.Entities.Trade
 
         #region Total
 
+        [Column("home_ppg_total")]
         public double HomePPGTotal { get; set; }
+
         public int HomeWinsTotal { get; set; }
         public double HomeWinsPercentTotal { get; set; }
         public double HomeFirstToScorePercentTotal { get; set; }
+        public double HomeToScoreTwoZeroPercentTotal { get; set; }
         public double HomeCleanSheetsPercentTotal { get; set; }
         public double HomeFailedToScorePercentTotal { get; set; }
         public double HomeBothToScorePercentTotal { get; set; }
@@ -32,28 +36,62 @@ namespace BetPlacer.Fixtures.API.Models.Entities.Trade
 
         #region HT
 
+        [Column("home_wins_percent_ht_total")]
         public double HomeWinsPercentHTTotal { get; set; }
+
+        [Column("home_draws_percent_ht_total")]
         public double HomeDrawsPercentHTTotal { get; set; }
+        
+        [Column("home_losses_percent_ht_total")]
         public double HomeLossesPercentHTTotal { get; set; }
+        
+        [Column("home_failed_to_score_percent_ht_total")]
         public double HomeFailedToScorePercentHTTotal { get; set; }
+        
+        [Column("home_clean_sheets_percent_ht_total")]
         public double HomeCleanSheetsPercentHTTotal { get; set; }
+        
+        [Column("home_goals_scored_ht_total")]
         public int HomeGoalsScoredHTTotal { get; set; }
+        
+        [Column("home_goals_conceded_ht_total")]
         public int HomeGoalsConcededHTTotal { get; set; }
+        
+        [Column("home_avg_goals_scored_ht_total")]
         public double HomeAverageGoalsScoredHTTotal { get; set; }
+        
+        [Column("home_average_goals_conceded_ht_total")]
         public double HomeAverageGoalsConcededHTTotal { get; set; }
 
         #endregion
 
         #region FT
 
+        [Column("home_wins_percent_ft_total")]
         public double HomeWinsPercentFTTotal { get; set; }
+
+        [Column("home_draws_percent_ft_total")]
         public double HomeDrawsPercentFTTotal { get; set; }
+
+        [Column("home_losses_percent_ft_total")]
         public double HomeLossesPercentFTTotal { get; set; }
+
+        [Column("home_failed_to_score_percent_ft_total")]
         public double HomeFailedToScorePercentFTTotal { get; set; }
+
+        [Column("home_clean_sheets_percent_ft_total")]
         public double HomeCleanSheetsPercentFTTotal { get; set; }
+
+        [Column("home_goals_scored_ft_total")]
         public int HomeGoalsScoredFTTotal { get; set; }
+
+        [Column("home_goals_conceded_ft_total")]
         public int HomeGoalsConcededFTTotal { get; set; }
+
+        [Column("home_avg_goals_scored_ft_total")]
         public double HomeAverageGoalsScoredFTTotal { get; set; }
+
+        [Column("home_average_goals_conceded_ft_total")]
         public double HomeAverageGoalsConcededFTTotal { get; set; }
 
         #endregion
@@ -62,34 +100,80 @@ namespace BetPlacer.Fixtures.API.Models.Entities.Trade
 
         #region Scored
 
-        public int HomeGoalsScoredAt00To15 { get; set; }
-        public double HomeGoalsScoredAt00To15Percent { get; set; }
+        [Column("home_goals_scored_at_0_to_15")]
+        public int HomeGoalsScoredAt0To15 { get; set; }
+
+        [Column("home_goals_scored_at_0_to_15_percent")]
+        public double HomeGoalsScoredAt0To15Percent { get; set; }
+
+        [Column("home_goals_scored_at_16_to_30")]
         public int HomeGoalsScoredAt16To30 { get; set; }
+
+        [Column("home_goals_scored_at_16_to_30_percent")]
         public double HomeGoalsScoredAt16To30Percent { get; set; }
+
+        [Column("home_goals_scored_at_31_to_45")]
         public int HomeGoalsScoredAt31To45 { get; set; }
+
+        [Column("home_goals_scored_at_31_to_45_percent")]
         public double HomeGoalsScoredAt31To45Percent { get; set; }
+
+        [Column("home_goals_scored_at_46_to_60")]
         public int HomeGoalsScoredAt46To60 { get; set; }
+
+        [Column("home_goals_scored_at_46_to_60_percent")]
         public double HomeGoalsScoredAt46To60Percent { get; set; }
+
+        [Column("home_goals_scored_at_61_to_75")]
         public int HomeGoalsScoredAt61To75 { get; set; }
+
+        [Column("home_goals_scored_at_61_to_75_percent")]
         public double HomeGoalsScoredAt61To75Percent { get; set; }
+
+        [Column("home_goals_scored_at_75_to_90")]
         public int HomeGoalsScoredAt76To90 { get; set; }
+
+        [Column("home_goals_scored_at_75_to_90_percent")]
         public double HomeGoalsScoredAt76To90Percent { get; set; }
 
         #endregion
 
         #region Conceded
 
-        public int HomeGoalsConcededAt00To15 { get; set; }
-        public double HomeGoalsConcededAt00To15Percent { get; set; }
+        [Column("home_goals_conceded_at_0_to_15")]
+        public int HomeGoalsConcededAt0To15 { get; set; }
+
+        [Column("home_goals_conceded_at_0_to_15_percent")]
+        public double HomeGoalsConcededAt0To15Percent { get; set; }
+
+        [Column("home_goals_conceded_at_16_to_30")]
         public int HomeGoalsConcededAt16To30 { get; set; }
+
+        [Column("home_goals_conceded_at_16_to_30_percent")]
         public double HomeGoalsConcededAt16To30Percent { get; set; }
+
+        [Column("home_goals_conceded_at_31_to_45")]
         public int HomeGoalsConcededAt31To45 { get; set; }
+
+        [Column("home_goals_conceded_at_31_to_45_percent")]
         public double HomeGoalsConcededAt31To45Percent { get; set; }
+
+        [Column("home_goals_conceded_at_46_to_60")]
         public int HomeGoalsConcededAt46To60 { get; set; }
+
+        [Column("home_goals_conceded_at_46_to_60_percent")]
         public double HomeGoalsConcededAt46To60Percent { get; set; }
+
+        [Column("home_goals_conceded_at_61_to_75")]
         public int HomeGoalsConcededAt61To75 { get; set; }
+
+        [Column("home_goals_conceded_at_61_to_75_percent")]
         public double HomeGoalsConcededAt61To75Percent { get; set; }
+
+        [Column("home_goals_conceded_at_75_to_90")]
         public int HomeGoalsConcededAt76To90 { get; set; }
+
+        [Column("home_goals_conceded_at_75_to_90_percent")]
         public double HomeGoalsConcededAt76To90Percent { get; set; }
 
         #endregion
@@ -102,80 +186,163 @@ namespace BetPlacer.Fixtures.API.Models.Entities.Trade
 
         #region Total
 
-        public double HomePPGTotalAtHome { get; set; }
-        public int HomeWinsTotalAtHome { get; set; }
-        public double HomeWinsPercentTotalAtHome { get; set; }
-        public double HomeFirstToScorePercentTotalAtHome { get; set; }
-        public double HomeCleanSheetsPercentTotalAtHome { get; set; }
-        public double HomeFailedToScorePercentTotalAtHome { get; set; }
-        public double HomeBothToScorePercentTotalAtHome { get; set; }
-        public int HomeGoalsScoredTotalAtHome { get; set; }
-        public int HomeGoalsConcededTotalAtHome { get; set; }
-        public double HomeAverageGoalsScoredTotalAtHome { get; set; }
-        public double HomeAverageGoalsConcededTotalAtHome { get; set; }
+        [Column("home_ppg_at_home")]
+        public double HomePPGAtHome { get; set; }
+
+        public int HomeWinsAtHome { get; set; }
+        public double HomeWinsPercentAtHome { get; set; }
+        public double HomeFirstToScorePercentAtHome { get; set; }
+        public double HomeToScoreTwoZeroPercentAtHome { get; set; }
+        public double HomeCleanSheetsPercentAtHome { get; set; }
+        public double HomeFailedToScorePercentAtHome { get; set; }
+        public double HomeBothToScorePercentAtHome { get; set; }
+        public int HomeGoalsScoredAtHome { get; set; }
+        public int HomeGoalsConcededAtHome { get; set; }
+        public double HomeAverageGoalsScoredAtHome { get; set; }
+        public double HomeAverageGoalsConcededAtHome { get; set; }
 
         #endregion
 
         #region HT
 
-        public double HomeWinsPercentHTTotalAtHome { get; set; }
-        public double HomeDrawsPercentHTTotalAtHome { get; set; }
-        public double HomeLossesPercentHTTotalAtHome { get; set; }
-        public double HomeFailedToScorePercentHTTotalAtHome { get; set; }
-        public double HomeCleanSheetsPercentHTTotalAtHome { get; set; }
-        public int HomeGoalsScoredHTTotalAtHome { get; set; }
-        public int HomeGoalsConcededHTTotalAtHome { get; set; }
-        public double HomeAverageGoalsScoredHTTotalAtHome { get; set; }
-        public double HomeAverageGoalsConcededHTTotalAtHome { get; set; }
+        [Column("home_wins_percent_ht_at_home")]
+        public double HomeWinsPercentHTAtHome { get; set; }
+        
+        [Column("home_draws_percent_ht_at_home")]
+        public double HomeDrawsPercentHTAtHome { get; set; }
+        
+        [Column("home_losses_percent_ht_at_home")]
+        public double HomeLossesPercentHTAtHome { get; set; }
+        
+        [Column("home_failed_to_score_percent_ht_at_home")]
+        public double HomeFailedToScorePercentHTAtHome { get; set; }
+        
+        [Column("home_clean_sheets_percent_ht_at_home")]
+        public double HomeCleanSheetsPercentHTAtHome { get; set; }
+        
+        [Column("home_goals_scored_ht_at_home")]
+        public int HomeGoalsScoredHTAtHome { get; set; }
+        
+        [Column("home_goals_conceded_ht_at_home")]
+        public int HomeGoalsConcededHTAtHome { get; set; }
+        
+        [Column("home_avg_goals_scored_ht_at_home")]
+        public double HomeAverageGoalsScoredHTAtHome { get; set; }
+        
+        [Column("home_avg_goals_conceded_ht_at_home")]
+        public double HomeAverageGoalsConcededHTAtHome { get; set; }
 
         #endregion
 
         #region FT
 
-        public double HomeWinsPercentFTTotalAtHome { get; set; }
-        public double HomeDrawsPercentFTTotalAtHome { get; set; }
-        public double HomeLossesPercentFTTotalAtHome { get; set; }
-        public double HomeFailedToScorePercentFTTotalAtHome { get; set; }
-        public double HomeCleanSheetsPercentFTTotalAtHome { get; set; }
-        public int HomeGoalsScoredFTTotalAtHome { get; set; }
-        public int HomeGoalsConcededFTTotalAtHome { get; set; }
-        public double HomeAverageGoalsScoredFTTotalAtHome { get; set; }
-        public double HomeAverageGoalsConcededFTTotalAtHome { get; set; }
+        [Column("home_wins_percent_ft_at_home")]
+        public double HomeWinsPercentFTAtHome { get; set; }
 
-        #endregion        
-        
+        [Column("home_draws_percent_ft_at_home")]
+        public double HomeDrawsPercentFTAtHome { get; set; }
+
+        [Column("home_losses_percent_ft_at_home")]
+        public double HomeLossesPercentFTAtHome { get; set; }
+
+        [Column("home_failed_to_score_percent_ft_at_home")]
+        public double HomeFailedToScorePercentFTAtHome { get; set; }
+
+        [Column("home_clean_sheets_percent_ft_at_home")]
+        public double HomeCleanSheetsPercentFTAtHome { get; set; }
+
+        [Column("home_goals_scored_ft_at_home")]
+        public int HomeGoalsScoredFTAtHome { get; set; }
+
+        [Column("home_goals_conceded_ft_at_home")]
+        public int HomeGoalsConcededFTAtHome { get; set; }
+
+        [Column("home_avg_goals_scored_ft_at_home")]
+        public double HomeAverageGoalsScoredFTAtHome { get; set; }
+
+        [Column("home_avg_goals_conceded_ft_at_home")]
+        public double HomeAverageGoalsConcededFTAtHome { get; set; }
+
+        #endregion
+
         #region GoalsMoment
 
         #region Scored
 
-        public int HomeGoalsScoredAt00To15AtHome { get; set; }
-        public double HomeGoalsScoredAt00To15PercentAtHome { get; set; }
+        [Column("home_goals_scored_at_0_to_15_at_home")]
+        public int HomeGoalsScoredAt0To15AtHome { get; set; }
+
+        [Column("home_goals_scored_at_0_to_15_percent_at_home")]
+        public double HomeGoalsScoredAt0To15PercentAtHome { get; set; }
+
+        [Column("home_goals_scored_at_15_to_30_at_home")]
         public int HomeGoalsScoredAt16To30AtHome { get; set; }
+
+        [Column("home_goals_scored_at_15_to_30_percent_at_home")]
         public double HomeGoalsScoredAt16To30PercentAtHome { get; set; }
+
+        [Column("home_goals_scored_at_31_to_45_at_home")]
         public int HomeGoalsScoredAt31To45AtHome { get; set; }
+
+        [Column("home_goals_scored_at_31_to_45_percent_at_home")]
         public double HomeGoalsScoredAt31To45PercentAtHome { get; set; }
+
+        [Column("home_goals_scored_at_46_to_60_at_home")]
         public int HomeGoalsScoredAt46To60AtHome { get; set; }
+
+        [Column("home_goals_scored_at_46_to_60_percent_at_home")]
         public double HomeGoalsScoredAt46To60PercentAtHome { get; set; }
+
+        [Column("home_goals_scored_at_61_to_75_at_home")]
         public int HomeGoalsScoredAt61To75AtHome { get; set; }
+
+        [Column("home_goals_scored_at_61_to_75_percent_at_home")]
         public double HomeGoalsScoredAt61To75PercentAtHome { get; set; }
+
+        [Column("home_goals_scored_at_76_to_90_at_home")]
         public int HomeGoalsScoredAt76To90AtHome { get; set; }
+
+        [Column("home_goals_scored_at_76_to_90_percent_at_home")]
         public double HomeGoalsScoredAt76To90PercentAtHome { get; set; }
 
         #endregion
 
         #region Conceded
 
-        public int HomeGoalsConcededAt00To15AtHome { get; set; }
-        public double HomeGoalsConcededAt00To15PercentAtHome { get; set; }
+        [Column("home_goals_conceded_at_0_to_15_at_home")]
+        public int HomeGoalsConcededAt0To15AtHome { get; set; }
+
+        [Column("home_goals_conceded_at_0_to_15_percent_at_home")]
+        public double HomeGoalsConcededAt0To15PercentAtHome { get; set; }
+
+        [Column("home_goals_conceded_at_15_to_30_at_home")]
         public int HomeGoalsConcededAt16To30AtHome { get; set; }
+
+        [Column("home_goals_conceded_at_15_to_30_percent_at_home")]
         public double HomeGoalsConcededAt16To30PercentAtHome { get; set; }
+
+        [Column("home_goals_conceded_at_31_to_45_at_home")]
         public int HomeGoalsConcededAt31To45AtHome { get; set; }
+
+        [Column("home_goals_conceded_at_31_to_45_percent_at_home")]
         public double HomeGoalsConcededAt31To45PercentAtHome { get; set; }
+
+        [Column("home_goals_conceded_at_46_to_60_at_home")]
         public int HomeGoalsConcededAt46To60AtHome { get; set; }
+
+        [Column("home_goals_conceded_at_46_to_60_percent_at_home")]
         public double HomeGoalsConcededAt46To60PercentAtHome { get; set; }
+
+        [Column("home_goals_conceded_at_61_to_75_at_home")]
         public int HomeGoalsConcededAt61To75AtHome { get; set; }
+
+        [Column("home_goals_conceded_at_61_to_75_percent_at_home")]
         public double HomeGoalsConcededAt61To75PercentAtHome { get; set; }
+
+        [Column("home_goals_conceded_at_76_to_90_at_home")]
         public int HomeGoalsConcededAt76To90AtHome { get; set; }
+
+        [Column("home_goals_conceded_at_76_to_90_percent_at_home")]
         public double HomeGoalsConcededAt76To90PercentAtHome { get; set; }
 
         #endregion
@@ -192,10 +359,13 @@ namespace BetPlacer.Fixtures.API.Models.Entities.Trade
 
         #region Total
 
+        [Column("away_ppg_total")]
         public double AwayPPGTotal { get; set; }
+
         public int AwayWinsTotal { get; set; }
         public double AwayWinsPercentTotal { get; set; }
         public double AwayFirstToScorePercentTotal { get; set; }
+        public double AwayToScoreTwoZeroPercentTotal { get; set; }
         public double AwayCleanSheetsPercentTotal { get; set; }
         public double AwayFailedToScorePercentTotal { get; set; }
         public double AwayBothToScorePercentTotal { get; set; }
@@ -208,28 +378,62 @@ namespace BetPlacer.Fixtures.API.Models.Entities.Trade
 
         #region HT
 
+        [Column("away_wins_percent_ht_total")]
         public double AwayWinsPercentHTTotal { get; set; }
+
+        [Column("away_draws_percent_ht_total")]
         public double AwayDrawsPercentHTTotal { get; set; }
+
+        [Column("away_losses_percent_ht_total")]
         public double AwayLossesPercentHTTotal { get; set; }
+
+        [Column("away_failed_to_score_percent_ht_total")]
         public double AwayFailedToScorePercentHTTotal { get; set; }
+
+        [Column("away_clean_sheets_percent_ht_total")]
         public double AwayCleanSheetsPercentHTTotal { get; set; }
+
+        [Column("away_goals_scored_ht_total")]
         public int AwayGoalsScoredHTTotal { get; set; }
+
+        [Column("away_goals_conceded_ht_total")]
         public int AwayGoalsConcededHTTotal { get; set; }
+
+        [Column("away_avg_goals_scored_ht_total")]
         public double AwayAverageGoalsScoredHTTotal { get; set; }
+
+        [Column("away_average_goals_conceded_ht_total")]
         public double AwayAverageGoalsConcededHTTotal { get; set; }
 
         #endregion
 
         #region FT
 
+        [Column("away_wins_percent_ft_total")]
         public double AwayWinsPercentFTTotal { get; set; }
+
+        [Column("away_draws_percent_ft_total")]
         public double AwayDrawsPercentFTTotal { get; set; }
+
+        [Column("away_losses_percent_ft_total")]
         public double AwayLossesPercentFTTotal { get; set; }
+
+        [Column("away_failed_to_score_percent_ft_total")]
         public double AwayFailedToScorePercentFTTotal { get; set; }
+
+        [Column("away_clean_sheets_percent_ft_total")]
         public double AwayCleanSheetsPercentFTTotal { get; set; }
+
+        [Column("away_goals_scored_ft_total")]
         public int AwayGoalsScoredFTTotal { get; set; }
+
+        [Column("away_goals_conceded_ft_total")]
         public int AwayGoalsConcededFTTotal { get; set; }
+
+        [Column("away_avg_goals_scored_ft_total")]
         public double AwayAverageGoalsScoredFTTotal { get; set; }
+
+        [Column("away_average_goals_conceded_ft_total")]
         public double AwayAverageGoalsConcededFTTotal { get; set; }
 
         #endregion
@@ -238,34 +442,80 @@ namespace BetPlacer.Fixtures.API.Models.Entities.Trade
 
         #region Scored
 
-        public int AwayGoalsScoredAt00To15 { get; set; }
-        public double AwayGoalsScoredAt00To15Percent { get; set; }
+        [Column("away_goals_scored_at_0_to_15")]
+        public int AwayGoalsScoredAt0To15 { get; set; }
+
+        [Column("away_goals_scored_at_0_to_15_percent")]
+        public double AwayGoalsScoredAt0To15Percent { get; set; }
+
+        [Column("away_goals_scored_at_16_to_30")]
         public int AwayGoalsScoredAt16To30 { get; set; }
+
+        [Column("away_goals_scored_at_16_to_30_percent")]
         public double AwayGoalsScoredAt16To30Percent { get; set; }
+
+        [Column("away_goals_scored_at_31_to_45")]
         public int AwayGoalsScoredAt31To45 { get; set; }
+
+        [Column("away_goals_scored_at_31_to_45_percent")]
         public double AwayGoalsScoredAt31To45Percent { get; set; }
+
+        [Column("away_goals_scored_at_46_to_60")]
         public int AwayGoalsScoredAt46To60 { get; set; }
+
+        [Column("away_goals_scored_at_46_to_60_percent")]
         public double AwayGoalsScoredAt46To60Percent { get; set; }
+
+        [Column("away_goals_scored_at_61_to_75")]
         public int AwayGoalsScoredAt61To75 { get; set; }
+
+        [Column("away_goals_scored_at_61_to_75_percent")]
         public double AwayGoalsScoredAt61To75Percent { get; set; }
+
+        [Column("away_goals_scored_at_75_to_90")]
         public int AwayGoalsScoredAt76To90 { get; set; }
+
+        [Column("away_goals_scored_at_75_to_90_percent")]
         public double AwayGoalsScoredAt76To90Percent { get; set; }
 
         #endregion
 
         #region Conceded
 
-        public int AwayGoalsConcededAt00To15 { get; set; }
-        public double AwayGoalsConcededAt00To15Percent { get; set; }
+        [Column("away_goals_conceded_at_0_to_15")]
+        public int AwayGoalsConcededAt0To15 { get; set; }
+
+        [Column("away_goals_conceded_at_0_to_15_percent")]
+        public double AwayGoalsConcededAt0To15Percent { get; set; }
+
+        [Column("away_goals_conceded_at_16_to_30")]
         public int AwayGoalsConcededAt16To30 { get; set; }
+
+        [Column("away_goals_conceded_at_16_to_30_percent")]
         public double AwayGoalsConcededAt16To30Percent { get; set; }
+
+        [Column("away_goals_conceded_at_31_to_45")]
         public int AwayGoalsConcededAt31To45 { get; set; }
+
+        [Column("away_goals_conceded_at_31_to_45_percent")]
         public double AwayGoalsConcededAt31To45Percent { get; set; }
+
+        [Column("away_goals_conceded_at_46_to_60")]
         public int AwayGoalsConcededAt46To60 { get; set; }
+
+        [Column("away_goals_conceded_at_46_to_60_percent")]
         public double AwayGoalsConcededAt46To60Percent { get; set; }
+
+        [Column("away_goals_conceded_at_61_to_75")]
         public int AwayGoalsConcededAt61To75 { get; set; }
+
+        [Column("away_goals_conceded_at_61_to_75_percent")]
         public double AwayGoalsConcededAt61To75Percent { get; set; }
+
+        [Column("away_goals_conceded_at_75_to_90")]
         public int AwayGoalsConcededAt76To90 { get; set; }
+
+        [Column("away_goals_conceded_at_75_to_90_percent")]
         public double AwayGoalsConcededAt76To90Percent { get; set; }
 
         #endregion
@@ -278,45 +528,82 @@ namespace BetPlacer.Fixtures.API.Models.Entities.Trade
 
         #region Total
 
-        public double AwayPPGTotalAtAway { get; set; }
-        public int AwayWinsTotalAtAway { get; set; }
-        public double AwayWinsPercentTotalAtAway { get; set; }
-        public double AwayFirstToScorePercentTotalAtAway { get; set; }
-        public double AwayCleanSheetsPercentTotalAtAway { get; set; }
-        public double AwayFailedToScorePercentTotalAtAway { get; set; }
-        public double AwayBothToScorePercentTotalAtAway { get; set; }
-        public int AwayGoalsScoredTotalAtAway { get; set; }
-        public int AwayGoalsConcededTotalAtAway { get; set; }
-        public double AwayAverageGoalsScoredTotalAtAway { get; set; }
-        public double AwayAverageGoalsConcededTotalAtAway { get; set; }
+        [Column("away_ppg_at_away")]
+        public double AwayPPGAtAway { get; set; }
+
+        public int AwayWinsAtAway { get; set; }
+        public double AwayWinsPercentAtAway { get; set; }
+        public double AwayFirstToScorePercentAtAway { get; set; }
+        public double AwayToScoreTwoZeroPercentAtAway { get; set; }
+        public double AwayCleanSheetsPercentAtAway { get; set; }
+        public double AwayFailedToScorePercentAtAway { get; set; }
+        public double AwayBothToScorePercentAtAway { get; set; }
+        public int AwayGoalsScoredAtAway { get; set; }
+        public int AwayGoalsConcededAtAway { get; set; }
+        public double AwayAverageGoalsScoredAtAway { get; set; }
+        public double AwayAverageGoalsConcededAtAway { get; set; }
 
         #endregion
 
         #region HT
 
-        public double AwayWinsPercentHTTotalAtAway { get; set; }
-        public double AwayDrawsPercentHTTotalAtAway { get; set; }
-        public double AwayLossesPercentHTTotalAtAway { get; set; }
-        public double AwayFailedToScorePercentHTTotalAtAway { get; set; }
-        public double AwayCleanSheetsPercentHTTotalAtAway { get; set; }
-        public int AwayGoalsScoredHTTotalAtAway { get; set; }
-        public int AwayGoalsConcededHTTotalAtAway { get; set; }
-        public double AwayAverageGoalsScoredHTTotalAtAway { get; set; }
-        public double AwayAverageGoalsConcededHTTotalAtAway { get; set; }
+        [Column("away_wins_percent_ht_at_away")]
+        public double AwayWinsPercentHTAtAway { get; set; }
+
+        [Column("away_draws_percent_ht_at_away")]
+        public double AwayDrawsPercentHTAtAway { get; set; }
+
+        [Column("away_losses_percent_ht_at_away")]
+        public double AwayLossesPercentHTAtAway { get; set; }
+
+        [Column("away_failed_to_score_percent_ht_at_away")]
+        public double AwayFailedToScorePercentHTAtAway { get; set; }
+
+        [Column("away_clean_sheets_percent_ht_at_away")]
+        public double AwayCleanSheetsPercentHTAtAway { get; set; }
+
+        [Column("away_goals_scored_ht_at_away")]
+        public int AwayGoalsScoredHTAtAway { get; set; }
+
+        [Column("away_goals_conceded_ht_at_away")]
+        public int AwayGoalsConcededHTAtAway { get; set; }
+
+        [Column("away_avg_goals_scored_ht_at_away")]
+        public double AwayAverageGoalsScoredHTAtAway { get; set; }
+
+        [Column("away_avg_goals_conceded_ht_at_away")]
+        public double AwayAverageGoalsConcededHTAtAway { get; set; }
 
         #endregion
 
         #region FT
 
-        public double AwayWinsPercentFTTotalAtAway { get; set; }
-        public double AwayDrawsPercentFTTotalAtAway { get; set; }
-        public double AwayLossesPercentFTTotalAtAway { get; set; }
-        public double AwayFailedToScorePercentFTTotalAtAway { get; set; }
-        public double AwayCleanSheetsPercentFTTotalAtAway { get; set; }
-        public int AwayGoalsScoredFTTotalAtAway { get; set; }
-        public int AwayGoalsConcededFTTotalAtAway { get; set; }
-        public double AwayAverageGoalsScoredFTTotalAtAway { get; set; }
-        public double AwayAverageGoalsConcededFTTotalAtAway { get; set; }
+        [Column("away_wins_percent_ft_at_away")]
+        public double AwayWinsPercentFTAtAway { get; set; }
+
+        [Column("away_draws_percent_ft_at_away")]
+        public double AwayDrawsPercentFTAtAway { get; set; }
+
+        [Column("away_losses_percent_ft_at_away")]
+        public double AwayLossesPercentFTAtAway { get; set; }
+
+        [Column("away_failed_to_score_percent_ft_at_away")]
+        public double AwayFailedToScorePercentFTAtAway { get; set; }
+
+        [Column("away_clean_sheets_percent_ft_at_away")]
+        public double AwayCleanSheetsPercentFTAtAway { get; set; }
+
+        [Column("away_goals_scored_ft_at_away")]
+        public int AwayGoalsScoredFTAtAway { get; set; }
+
+        [Column("away_goals_conceded_ft_at_away")]
+        public int AwayGoalsConcededFTAtAway { get; set; }
+
+        [Column("away_avg_goals_scored_ft_at_away")]
+        public double AwayAverageGoalsScoredFTAtAway { get; set; }
+
+        [Column("away_avg_goals_conceded_ft_at_away")]
+        public double AwayAverageGoalsConcededFTAtAway { get; set; }
 
         #endregion
 
@@ -324,34 +611,80 @@ namespace BetPlacer.Fixtures.API.Models.Entities.Trade
 
         #region Scored
 
-        public int AwayGoalsScoredAt00To15AtAway { get; set; }
-        public double AwayGoalsScoredAt00To15PercentAtAway { get; set; }
+        [Column("away_goals_scored_at_0_to_15_at_away")]
+        public int AwayGoalsScoredAt0To15AtAway { get; set; }
+
+        [Column("away_goals_scored_at_0_to_15_percent_at_away")]
+        public double AwayGoalsScoredAt0To15PercentAtAway { get; set; }
+
+        [Column("away_goals_scored_at_15_to_30_at_away")]
         public int AwayGoalsScoredAt16To30AtAway { get; set; }
+
+        [Column("away_goals_scored_at_15_to_30_percent_at_away")]
         public double AwayGoalsScoredAt16To30PercentAtAway { get; set; }
+
+        [Column("away_goals_scored_at_31_to_45_at_away")]
         public int AwayGoalsScoredAt31To45AtAway { get; set; }
+
+        [Column("away_goals_scored_at_31_to_45_percent_at_away")]
         public double AwayGoalsScoredAt31To45PercentAtAway { get; set; }
+
+        [Column("away_goals_scored_at_46_to_60_at_away")]
         public int AwayGoalsScoredAt46To60AtAway { get; set; }
+
+        [Column("away_goals_scored_at_46_to_60_percent_at_away")]
         public double AwayGoalsScoredAt46To60PercentAtAway { get; set; }
+
+        [Column("away_goals_scored_at_61_to_75_at_away")]
         public int AwayGoalsScoredAt61To75AtAway { get; set; }
+
+        [Column("away_goals_scored_at_61_to_75_percent_at_away")]
         public double AwayGoalsScoredAt61To75PercentAtAway { get; set; }
+
+        [Column("away_goals_scored_at_76_to_90_at_away")]
         public int AwayGoalsScoredAt76To90AtAway { get; set; }
+
+        [Column("away_goals_scored_at_76_to_90_percent_at_away")]
         public double AwayGoalsScoredAt76To90PercentAtAway { get; set; }
 
         #endregion
 
         #region Conceded
 
-        public int AwayGoalsConcededAt00To15AtAway { get; set; }
-        public double AwayGoalsConcededAt00To15PercentAtAway { get; set; }
+        [Column("away_goals_conceded_at_0_to_15_at_away")]
+        public int AwayGoalsConcededAt0To15AtAway { get; set; }
+
+        [Column("away_goals_conceded_at_0_to_15_percent_at_away")]
+        public double AwayGoalsConcededAt0To15PercentAtAway { get; set; }
+
+        [Column("away_goals_conceded_at_15_to_30_at_away")]
         public int AwayGoalsConcededAt16To30AtAway { get; set; }
+
+        [Column("away_goals_conceded_at_15_to_30_percent_at_away")]
         public double AwayGoalsConcededAt16To30PercentAtAway { get; set; }
+
+        [Column("away_goals_conceded_at_31_to_45_at_away")]
         public int AwayGoalsConcededAt31To45AtAway { get; set; }
+
+        [Column("away_goals_conceded_at_31_to_45_percent_at_away")]
         public double AwayGoalsConcededAt31To45PercentAtAway { get; set; }
+
+        [Column("away_goals_conceded_at_46_to_60_at_away")]
         public int AwayGoalsConcededAt46To60AtAway { get; set; }
+
+        [Column("away_goals_conceded_at_46_to_60_percent_at_away")]
         public double AwayGoalsConcededAt46To60PercentAtAway { get; set; }
+
+        [Column("away_goals_conceded_at_61_to_75_at_away")]
         public int AwayGoalsConcededAt61To75AtAway { get; set; }
+
+        [Column("away_goals_conceded_at_61_to_75_percent_at_away")]
         public double AwayGoalsConcededAt61To75PercentAtAway { get; set; }
+
+        [Column("away_goals_conceded_at_76_to_90_at_away")]
         public int AwayGoalsConcededAt76To90AtAway { get; set; }
+
+        [Column("away_goals_conceded_at_76_to_90_percent_at_away")]
         public double AwayGoalsConcededAt76To90PercentAtAway { get; set; }
 
         #endregion

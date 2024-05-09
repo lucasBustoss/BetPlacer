@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BetPlacer.Fixtures.API.Migrations
 {
     [DbContext(typeof(FixturesDbContext))]
-    [Migration("20240503115338_AddFixtureStats")]
-    partial class AddFixtureStats
+    [Migration("20240508232232_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -144,857 +144,873 @@ namespace BetPlacer.Fixtures.API.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Code"));
 
+                    b.Property<double>("AwayAverageGoalsConcededAtAway")
+                        .HasColumnType("double precision")
+                        .HasColumnName("away_average_goals_conceded_at_away");
+
+                    b.Property<double>("AwayAverageGoalsConcededFTAtAway")
+                        .HasColumnType("double precision")
+                        .HasColumnName("away_avg_goals_conceded_ft_at_away");
+
                     b.Property<double>("AwayAverageGoalsConcededFTTotal")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_average_goals_conceded_f_t_total");
+                        .HasColumnName("away_average_goals_conceded_ft_total");
 
-                    b.Property<double>("AwayAverageGoalsConcededFTTotalAtAway")
+                    b.Property<double>("AwayAverageGoalsConcededHTAtAway")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_average_goals_conceded_f_t_total_at_away");
+                        .HasColumnName("away_avg_goals_conceded_ht_at_away");
 
                     b.Property<double>("AwayAverageGoalsConcededHTTotal")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_average_goals_conceded_h_t_total");
-
-                    b.Property<double>("AwayAverageGoalsConcededHTTotalAtAway")
-                        .HasColumnType("double precision")
-                        .HasColumnName("away_average_goals_conceded_h_t_total_at_away");
+                        .HasColumnName("away_average_goals_conceded_ht_total");
 
                     b.Property<double>("AwayAverageGoalsConcededTotal")
                         .HasColumnType("double precision")
                         .HasColumnName("away_average_goals_conceded_total");
 
-                    b.Property<double>("AwayAverageGoalsConcededTotalAtAway")
+                    b.Property<double>("AwayAverageGoalsScoredAtAway")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_average_goals_conceded_total_at_away");
+                        .HasColumnName("away_average_goals_scored_at_away");
+
+                    b.Property<double>("AwayAverageGoalsScoredFTAtAway")
+                        .HasColumnType("double precision")
+                        .HasColumnName("away_avg_goals_scored_ft_at_away");
 
                     b.Property<double>("AwayAverageGoalsScoredFTTotal")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_average_goals_scored_f_t_total");
+                        .HasColumnName("away_avg_goals_scored_ft_total");
 
-                    b.Property<double>("AwayAverageGoalsScoredFTTotalAtAway")
+                    b.Property<double>("AwayAverageGoalsScoredHTAtAway")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_average_goals_scored_f_t_total_at_away");
+                        .HasColumnName("away_avg_goals_scored_ht_at_away");
 
                     b.Property<double>("AwayAverageGoalsScoredHTTotal")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_average_goals_scored_h_t_total");
-
-                    b.Property<double>("AwayAverageGoalsScoredHTTotalAtAway")
-                        .HasColumnType("double precision")
-                        .HasColumnName("away_average_goals_scored_h_t_total_at_away");
+                        .HasColumnName("away_avg_goals_scored_ht_total");
 
                     b.Property<double>("AwayAverageGoalsScoredTotal")
                         .HasColumnType("double precision")
                         .HasColumnName("away_average_goals_scored_total");
 
-                    b.Property<double>("AwayAverageGoalsScoredTotalAtAway")
+                    b.Property<double>("AwayBothToScorePercentAtAway")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_average_goals_scored_total_at_away");
+                        .HasColumnName("away_both_to_score_percent_at_away");
 
                     b.Property<double>("AwayBothToScorePercentTotal")
                         .HasColumnType("double precision")
                         .HasColumnName("away_both_to_score_percent_total");
 
-                    b.Property<double>("AwayBothToScorePercentTotalAtAway")
+                    b.Property<double>("AwayCleanSheetsPercentAtAway")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_both_to_score_percent_total_at_away");
+                        .HasColumnName("away_clean_sheets_percent_at_away");
+
+                    b.Property<double>("AwayCleanSheetsPercentFTAtAway")
+                        .HasColumnType("double precision")
+                        .HasColumnName("away_clean_sheets_percent_ft_at_away");
+
+                    b.Property<double>("AwayCleanSheetsPercentFTTotal")
+                        .HasColumnType("double precision")
+                        .HasColumnName("away_clean_sheets_percent_ft_total");
+
+                    b.Property<double>("AwayCleanSheetsPercentHTAtAway")
+                        .HasColumnType("double precision")
+                        .HasColumnName("away_clean_sheets_percent_ht_at_away");
+
+                    b.Property<double>("AwayCleanSheetsPercentHTTotal")
+                        .HasColumnType("double precision")
+                        .HasColumnName("away_clean_sheets_percent_ht_total");
+
+                    b.Property<double>("AwayCleanSheetsPercentTotal")
+                        .HasColumnType("double precision")
+                        .HasColumnName("away_clean_sheets_percent_total");
+
+                    b.Property<double>("AwayDrawsPercentFTAtAway")
+                        .HasColumnType("double precision")
+                        .HasColumnName("away_draws_percent_ft_at_away");
 
                     b.Property<double>("AwayDrawsPercentFTTotal")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_draws_percent_f_t_total");
+                        .HasColumnName("away_draws_percent_ft_total");
 
-                    b.Property<double>("AwayDrawsPercentFTTotalAtAway")
+                    b.Property<double>("AwayDrawsPercentHTAtAway")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_draws_percent_f_t_total_at_away");
+                        .HasColumnName("away_draws_percent_ht_at_away");
 
                     b.Property<double>("AwayDrawsPercentHTTotal")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_draws_percent_h_t_total");
+                        .HasColumnName("away_draws_percent_ht_total");
 
-                    b.Property<double>("AwayDrawsPercentHTTotalAtAway")
+                    b.Property<double>("AwayFailedToScorePercentAtAway")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_draws_percent_h_t_total_at_away");
+                        .HasColumnName("away_failed_to_score_percent_at_away");
+
+                    b.Property<double>("AwayFailedToScorePercentFTAtAway")
+                        .HasColumnType("double precision")
+                        .HasColumnName("away_failed_to_score_percent_ft_at_away");
 
                     b.Property<double>("AwayFailedToScorePercentFTTotal")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_failed_to_score_percent_f_t_total");
+                        .HasColumnName("away_failed_to_score_percent_ft_total");
 
-                    b.Property<double>("AwayFailedToScorePercentFTTotalAtAway")
+                    b.Property<double>("AwayFailedToScorePercentHTAtAway")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_failed_to_score_percent_f_t_total_at_away");
+                        .HasColumnName("away_failed_to_score_percent_ht_at_away");
 
                     b.Property<double>("AwayFailedToScorePercentHTTotal")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_failed_to_score_percent_h_t_total");
-
-                    b.Property<double>("AwayFailedToScorePercentHTTotalAtAway")
-                        .HasColumnType("double precision")
-                        .HasColumnName("away_failed_to_score_percent_h_t_total_at_away");
+                        .HasColumnName("away_failed_to_score_percent_ht_total");
 
                     b.Property<double>("AwayFailedToScorePercentTotal")
                         .HasColumnType("double precision")
                         .HasColumnName("away_failed_to_score_percent_total");
 
-                    b.Property<double>("AwayFailedToScorePercentTotalAtAway")
+                    b.Property<double>("AwayFirstToScorePercentAtAway")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_failed_to_score_percent_total_at_away");
+                        .HasColumnName("away_first_to_score_percent_at_away");
 
                     b.Property<double>("AwayFirstToScorePercentTotal")
                         .HasColumnType("double precision")
                         .HasColumnName("away_first_to_score_percent_total");
 
-                    b.Property<double>("AwayFirstToScorePercentTotalAtAway")
-                        .HasColumnType("double precision")
-                        .HasColumnName("away_first_to_score_percent_total_at_away");
-
-                    b.Property<double>("AwayFixturesWithoutConcededGoalsPercentFTTotal")
-                        .HasColumnType("double precision")
-                        .HasColumnName("away_fixtures_without_conceded_goals_percent_f_t_total");
-
-                    b.Property<double>("AwayFixturesWithoutConcededGoalsPercentFTTotalAtAway")
-                        .HasColumnType("double precision")
-                        .HasColumnName("away_fixtures_without_conceded_goals_percent_f_t_total_at_away");
-
-                    b.Property<double>("AwayFixturesWithoutConcededGoalsPercentHTTotal")
-                        .HasColumnType("double precision")
-                        .HasColumnName("away_fixtures_without_conceded_goals_percent_h_t_total");
-
-                    b.Property<double>("AwayFixturesWithoutConcededGoalsPercentHTTotalAtAway")
-                        .HasColumnType("double precision")
-                        .HasColumnName("away_fixtures_without_conceded_goals_percent_h_t_total_at_away");
-
-                    b.Property<double>("AwayFixturesWithoutConcededGoalsPercentTotal")
-                        .HasColumnType("double precision")
-                        .HasColumnName("away_fixtures_without_conceded_goals_percent_total");
-
-                    b.Property<double>("AwayFixturesWithoutConcededGoalsPercentTotalAtAway")
-                        .HasColumnType("double precision")
-                        .HasColumnName("away_fixtures_without_conceded_goals_percent_total_at_away");
-
-                    b.Property<int>("AwayGoalsConcededAt00To15")
+                    b.Property<int>("AwayGoalsConcededAt0To15")
                         .HasColumnType("integer")
-                        .HasColumnName("away_goals_conceded_at00_to15");
+                        .HasColumnName("away_goals_conceded_at_0_to_15");
 
-                    b.Property<int>("AwayGoalsConcededAt00To15AtAway")
+                    b.Property<int>("AwayGoalsConcededAt0To15AtAway")
                         .HasColumnType("integer")
-                        .HasColumnName("away_goals_conceded_at00_to15_at_away");
+                        .HasColumnName("away_goals_conceded_at_0_to_15_at_away");
 
-                    b.Property<double>("AwayGoalsConcededAt00To15Percent")
+                    b.Property<double>("AwayGoalsConcededAt0To15Percent")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_goals_conceded_at00_to15_percent");
+                        .HasColumnName("away_goals_conceded_at_0_to_15_percent");
 
-                    b.Property<double>("AwayGoalsConcededAt00To15PercentAtAway")
+                    b.Property<double>("AwayGoalsConcededAt0To15PercentAtAway")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_goals_conceded_at00_to15_percent_at_away");
+                        .HasColumnName("away_goals_conceded_at_0_to_15_percent_at_away");
 
                     b.Property<int>("AwayGoalsConcededAt16To30")
                         .HasColumnType("integer")
-                        .HasColumnName("away_goals_conceded_at16_to30");
+                        .HasColumnName("away_goals_conceded_at_16_to_30");
 
                     b.Property<int>("AwayGoalsConcededAt16To30AtAway")
                         .HasColumnType("integer")
-                        .HasColumnName("away_goals_conceded_at16_to30_at_away");
+                        .HasColumnName("away_goals_conceded_at_15_to_30_at_away");
 
                     b.Property<double>("AwayGoalsConcededAt16To30Percent")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_goals_conceded_at16_to30_percent");
+                        .HasColumnName("away_goals_conceded_at_16_to_30_percent");
 
                     b.Property<double>("AwayGoalsConcededAt16To30PercentAtAway")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_goals_conceded_at16_to30_percent_at_away");
+                        .HasColumnName("away_goals_conceded_at_15_to_30_percent_at_away");
 
                     b.Property<int>("AwayGoalsConcededAt31To45")
                         .HasColumnType("integer")
-                        .HasColumnName("away_goals_conceded_at31_to45");
+                        .HasColumnName("away_goals_conceded_at_31_to_45");
 
                     b.Property<int>("AwayGoalsConcededAt31To45AtAway")
                         .HasColumnType("integer")
-                        .HasColumnName("away_goals_conceded_at31_to45_at_away");
+                        .HasColumnName("away_goals_conceded_at_31_to_45_at_away");
 
                     b.Property<double>("AwayGoalsConcededAt31To45Percent")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_goals_conceded_at31_to45_percent");
+                        .HasColumnName("away_goals_conceded_at_31_to_45_percent");
 
                     b.Property<double>("AwayGoalsConcededAt31To45PercentAtAway")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_goals_conceded_at31_to45_percent_at_away");
+                        .HasColumnName("away_goals_conceded_at_31_to_45_percent_at_away");
 
                     b.Property<int>("AwayGoalsConcededAt46To60")
                         .HasColumnType("integer")
-                        .HasColumnName("away_goals_conceded_at46_to60");
+                        .HasColumnName("away_goals_conceded_at_46_to_60");
 
                     b.Property<int>("AwayGoalsConcededAt46To60AtAway")
                         .HasColumnType("integer")
-                        .HasColumnName("away_goals_conceded_at46_to60_at_away");
+                        .HasColumnName("away_goals_conceded_at_46_to_60_at_away");
 
                     b.Property<double>("AwayGoalsConcededAt46To60Percent")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_goals_conceded_at46_to60_percent");
+                        .HasColumnName("away_goals_conceded_at_46_to_60_percent");
 
                     b.Property<double>("AwayGoalsConcededAt46To60PercentAtAway")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_goals_conceded_at46_to60_percent_at_away");
+                        .HasColumnName("away_goals_conceded_at_46_to_60_percent_at_away");
 
                     b.Property<int>("AwayGoalsConcededAt61To75")
                         .HasColumnType("integer")
-                        .HasColumnName("away_goals_conceded_at61_to75");
+                        .HasColumnName("away_goals_conceded_at_61_to_75");
 
                     b.Property<int>("AwayGoalsConcededAt61To75AtAway")
                         .HasColumnType("integer")
-                        .HasColumnName("away_goals_conceded_at61_to75_at_away");
+                        .HasColumnName("away_goals_conceded_at_61_to_75_at_away");
 
                     b.Property<double>("AwayGoalsConcededAt61To75Percent")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_goals_conceded_at61_to75_percent");
+                        .HasColumnName("away_goals_conceded_at_61_to_75_percent");
 
                     b.Property<double>("AwayGoalsConcededAt61To75PercentAtAway")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_goals_conceded_at61_to75_percent_at_away");
+                        .HasColumnName("away_goals_conceded_at_61_to_75_percent_at_away");
 
                     b.Property<int>("AwayGoalsConcededAt76To90")
                         .HasColumnType("integer")
-                        .HasColumnName("away_goals_conceded_at76_to90");
+                        .HasColumnName("away_goals_conceded_at_75_to_90");
 
                     b.Property<int>("AwayGoalsConcededAt76To90AtAway")
                         .HasColumnType("integer")
-                        .HasColumnName("away_goals_conceded_at76_to90_at_away");
+                        .HasColumnName("away_goals_conceded_at_76_to_90_at_away");
 
                     b.Property<double>("AwayGoalsConcededAt76To90Percent")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_goals_conceded_at76_to90_percent");
+                        .HasColumnName("away_goals_conceded_at_75_to_90_percent");
 
                     b.Property<double>("AwayGoalsConcededAt76To90PercentAtAway")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_goals_conceded_at76_to90_percent_at_away");
+                        .HasColumnName("away_goals_conceded_at_76_to_90_percent_at_away");
+
+                    b.Property<int>("AwayGoalsConcededAtAway")
+                        .HasColumnType("integer")
+                        .HasColumnName("away_goals_conceded_at_away");
+
+                    b.Property<int>("AwayGoalsConcededFTAtAway")
+                        .HasColumnType("integer")
+                        .HasColumnName("away_goals_conceded_ft_at_away");
 
                     b.Property<int>("AwayGoalsConcededFTTotal")
                         .HasColumnType("integer")
-                        .HasColumnName("away_goals_conceded_f_t_total");
+                        .HasColumnName("away_goals_conceded_ft_total");
 
-                    b.Property<int>("AwayGoalsConcededFTTotalAtAway")
+                    b.Property<int>("AwayGoalsConcededHTAtAway")
                         .HasColumnType("integer")
-                        .HasColumnName("away_goals_conceded_f_t_total_at_away");
+                        .HasColumnName("away_goals_conceded_ht_at_away");
 
                     b.Property<int>("AwayGoalsConcededHTTotal")
                         .HasColumnType("integer")
-                        .HasColumnName("away_goals_conceded_h_t_total");
-
-                    b.Property<int>("AwayGoalsConcededHTTotalAtAway")
-                        .HasColumnType("integer")
-                        .HasColumnName("away_goals_conceded_h_t_total_at_away");
+                        .HasColumnName("away_goals_conceded_ht_total");
 
                     b.Property<int>("AwayGoalsConcededTotal")
                         .HasColumnType("integer")
                         .HasColumnName("away_goals_conceded_total");
 
-                    b.Property<int>("AwayGoalsConcededTotalAtAway")
+                    b.Property<int>("AwayGoalsScoredAt0To15")
                         .HasColumnType("integer")
-                        .HasColumnName("away_goals_conceded_total_at_away");
+                        .HasColumnName("away_goals_scored_at_0_to_15");
 
-                    b.Property<int>("AwayGoalsScoredAt00To15")
+                    b.Property<int>("AwayGoalsScoredAt0To15AtAway")
                         .HasColumnType("integer")
-                        .HasColumnName("away_goals_scored_at00_to15");
+                        .HasColumnName("away_goals_scored_at_0_to_15_at_away");
 
-                    b.Property<int>("AwayGoalsScoredAt00To15AtAway")
-                        .HasColumnType("integer")
-                        .HasColumnName("away_goals_scored_at00_to15_at_away");
-
-                    b.Property<double>("AwayGoalsScoredAt00To15Percent")
+                    b.Property<double>("AwayGoalsScoredAt0To15Percent")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_goals_scored_at00_to15_percent");
+                        .HasColumnName("away_goals_scored_at_0_to_15_percent");
 
-                    b.Property<double>("AwayGoalsScoredAt00To15PercentAtAway")
+                    b.Property<double>("AwayGoalsScoredAt0To15PercentAtAway")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_goals_scored_at00_to15_percent_at_away");
+                        .HasColumnName("away_goals_scored_at_0_to_15_percent_at_away");
 
                     b.Property<int>("AwayGoalsScoredAt16To30")
                         .HasColumnType("integer")
-                        .HasColumnName("away_goals_scored_at16_to30");
+                        .HasColumnName("away_goals_scored_at_16_to_30");
 
                     b.Property<int>("AwayGoalsScoredAt16To30AtAway")
                         .HasColumnType("integer")
-                        .HasColumnName("away_goals_scored_at16_to30_at_away");
+                        .HasColumnName("away_goals_scored_at_15_to_30_at_away");
 
                     b.Property<double>("AwayGoalsScoredAt16To30Percent")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_goals_scored_at16_to30_percent");
+                        .HasColumnName("away_goals_scored_at_16_to_30_percent");
 
                     b.Property<double>("AwayGoalsScoredAt16To30PercentAtAway")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_goals_scored_at16_to30_percent_at_away");
+                        .HasColumnName("away_goals_scored_at_15_to_30_percent_at_away");
 
                     b.Property<int>("AwayGoalsScoredAt31To45")
                         .HasColumnType("integer")
-                        .HasColumnName("away_goals_scored_at31_to45");
+                        .HasColumnName("away_goals_scored_at_31_to_45");
 
                     b.Property<int>("AwayGoalsScoredAt31To45AtAway")
                         .HasColumnType("integer")
-                        .HasColumnName("away_goals_scored_at31_to45_at_away");
+                        .HasColumnName("away_goals_scored_at_31_to_45_at_away");
 
                     b.Property<double>("AwayGoalsScoredAt31To45Percent")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_goals_scored_at31_to45_percent");
+                        .HasColumnName("away_goals_scored_at_31_to_45_percent");
 
                     b.Property<double>("AwayGoalsScoredAt31To45PercentAtAway")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_goals_scored_at31_to45_percent_at_away");
+                        .HasColumnName("away_goals_scored_at_31_to_45_percent_at_away");
 
                     b.Property<int>("AwayGoalsScoredAt46To60")
                         .HasColumnType("integer")
-                        .HasColumnName("away_goals_scored_at46_to60");
+                        .HasColumnName("away_goals_scored_at_46_to_60");
 
                     b.Property<int>("AwayGoalsScoredAt46To60AtAway")
                         .HasColumnType("integer")
-                        .HasColumnName("away_goals_scored_at46_to60_at_away");
+                        .HasColumnName("away_goals_scored_at_46_to_60_at_away");
 
                     b.Property<double>("AwayGoalsScoredAt46To60Percent")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_goals_scored_at46_to60_percent");
+                        .HasColumnName("away_goals_scored_at_46_to_60_percent");
 
                     b.Property<double>("AwayGoalsScoredAt46To60PercentAtAway")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_goals_scored_at46_to60_percent_at_away");
+                        .HasColumnName("away_goals_scored_at_46_to_60_percent_at_away");
 
                     b.Property<int>("AwayGoalsScoredAt61To75")
                         .HasColumnType("integer")
-                        .HasColumnName("away_goals_scored_at61_to75");
+                        .HasColumnName("away_goals_scored_at_61_to_75");
 
                     b.Property<int>("AwayGoalsScoredAt61To75AtAway")
                         .HasColumnType("integer")
-                        .HasColumnName("away_goals_scored_at61_to75_at_away");
+                        .HasColumnName("away_goals_scored_at_61_to_75_at_away");
 
                     b.Property<double>("AwayGoalsScoredAt61To75Percent")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_goals_scored_at61_to75_percent");
+                        .HasColumnName("away_goals_scored_at_61_to_75_percent");
 
                     b.Property<double>("AwayGoalsScoredAt61To75PercentAtAway")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_goals_scored_at61_to75_percent_at_away");
+                        .HasColumnName("away_goals_scored_at_61_to_75_percent_at_away");
 
                     b.Property<int>("AwayGoalsScoredAt76To90")
                         .HasColumnType("integer")
-                        .HasColumnName("away_goals_scored_at76_to90");
+                        .HasColumnName("away_goals_scored_at_75_to_90");
 
                     b.Property<int>("AwayGoalsScoredAt76To90AtAway")
                         .HasColumnType("integer")
-                        .HasColumnName("away_goals_scored_at76_to90_at_away");
+                        .HasColumnName("away_goals_scored_at_76_to_90_at_away");
 
                     b.Property<double>("AwayGoalsScoredAt76To90Percent")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_goals_scored_at76_to90_percent");
+                        .HasColumnName("away_goals_scored_at_75_to_90_percent");
 
                     b.Property<double>("AwayGoalsScoredAt76To90PercentAtAway")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_goals_scored_at76_to90_percent_at_away");
+                        .HasColumnName("away_goals_scored_at_76_to_90_percent_at_away");
+
+                    b.Property<int>("AwayGoalsScoredAtAway")
+                        .HasColumnType("integer")
+                        .HasColumnName("away_goals_scored_at_away");
+
+                    b.Property<int>("AwayGoalsScoredFTAtAway")
+                        .HasColumnType("integer")
+                        .HasColumnName("away_goals_scored_ft_at_away");
 
                     b.Property<int>("AwayGoalsScoredFTTotal")
                         .HasColumnType("integer")
-                        .HasColumnName("away_goals_scored_f_t_total");
+                        .HasColumnName("away_goals_scored_ft_total");
 
-                    b.Property<int>("AwayGoalsScoredFTTotalAtAway")
+                    b.Property<int>("AwayGoalsScoredHTAtAway")
                         .HasColumnType("integer")
-                        .HasColumnName("away_goals_scored_f_t_total_at_away");
+                        .HasColumnName("away_goals_scored_ht_at_away");
 
                     b.Property<int>("AwayGoalsScoredHTTotal")
                         .HasColumnType("integer")
-                        .HasColumnName("away_goals_scored_h_t_total");
-
-                    b.Property<int>("AwayGoalsScoredHTTotalAtAway")
-                        .HasColumnType("integer")
-                        .HasColumnName("away_goals_scored_h_t_total_at_away");
+                        .HasColumnName("away_goals_scored_ht_total");
 
                     b.Property<int>("AwayGoalsScoredTotal")
                         .HasColumnType("integer")
                         .HasColumnName("away_goals_scored_total");
 
-                    b.Property<int>("AwayGoalsScoredTotalAtAway")
-                        .HasColumnType("integer")
-                        .HasColumnName("away_goals_scored_total_at_away");
+                    b.Property<double>("AwayLossesPercentFTAtAway")
+                        .HasColumnType("double precision")
+                        .HasColumnName("away_losses_percent_ft_at_away");
 
                     b.Property<double>("AwayLossesPercentFTTotal")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_losses_percent_f_t_total");
+                        .HasColumnName("away_losses_percent_ft_total");
 
-                    b.Property<double>("AwayLossesPercentFTTotalAtAway")
+                    b.Property<double>("AwayLossesPercentHTAtAway")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_losses_percent_f_t_total_at_away");
+                        .HasColumnName("away_losses_percent_ht_at_away");
 
                     b.Property<double>("AwayLossesPercentHTTotal")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_losses_percent_h_t_total");
+                        .HasColumnName("away_losses_percent_ht_total");
 
-                    b.Property<double>("AwayLossesPercentHTTotalAtAway")
+                    b.Property<double>("AwayPPGAtAway")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_losses_percent_h_t_total_at_away");
+                        .HasColumnName("away_ppg_at_away");
 
                     b.Property<double>("AwayPPGTotal")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_p_p_g_total");
+                        .HasColumnName("away_ppg_total");
 
-                    b.Property<double>("AwayPPGTotalAtAway")
+                    b.Property<double>("AwayToScoreTwoZeroPercentAtAway")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_p_p_g_total_at_away");
+                        .HasColumnName("away_to_score_two_zero_percent_at_away");
+
+                    b.Property<double>("AwayToScoreTwoZeroPercentTotal")
+                        .HasColumnType("double precision")
+                        .HasColumnName("away_to_score_two_zero_percent_total");
+
+                    b.Property<int>("AwayWinsAtAway")
+                        .HasColumnType("integer")
+                        .HasColumnName("away_wins_at_away");
+
+                    b.Property<double>("AwayWinsPercentAtAway")
+                        .HasColumnType("double precision")
+                        .HasColumnName("away_wins_percent_at_away");
+
+                    b.Property<double>("AwayWinsPercentFTAtAway")
+                        .HasColumnType("double precision")
+                        .HasColumnName("away_wins_percent_ft_at_away");
 
                     b.Property<double>("AwayWinsPercentFTTotal")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_wins_percent_f_t_total");
+                        .HasColumnName("away_wins_percent_ft_total");
 
-                    b.Property<double>("AwayWinsPercentFTTotalAtAway")
+                    b.Property<double>("AwayWinsPercentHTAtAway")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_wins_percent_f_t_total_at_away");
+                        .HasColumnName("away_wins_percent_ht_at_away");
 
                     b.Property<double>("AwayWinsPercentHTTotal")
                         .HasColumnType("double precision")
-                        .HasColumnName("away_wins_percent_h_t_total");
-
-                    b.Property<double>("AwayWinsPercentHTTotalAtAway")
-                        .HasColumnType("double precision")
-                        .HasColumnName("away_wins_percent_h_t_total_at_away");
+                        .HasColumnName("away_wins_percent_ht_total");
 
                     b.Property<double>("AwayWinsPercentTotal")
                         .HasColumnType("double precision")
                         .HasColumnName("away_wins_percent_total");
 
-                    b.Property<double>("AwayWinsPercentTotalAtAway")
-                        .HasColumnType("double precision")
-                        .HasColumnName("away_wins_percent_total_at_away");
-
                     b.Property<int>("AwayWinsTotal")
                         .HasColumnType("integer")
                         .HasColumnName("away_wins_total");
-
-                    b.Property<int>("AwayWinsTotalAtAway")
-                        .HasColumnType("integer")
-                        .HasColumnName("away_wins_total_at_away");
 
                     b.Property<int>("FixtureCode")
                         .HasColumnType("integer")
                         .HasColumnName("fixture_code");
 
+                    b.Property<double>("HomeAverageGoalsConcededAtHome")
+                        .HasColumnType("double precision")
+                        .HasColumnName("home_average_goals_conceded_at_home");
+
+                    b.Property<double>("HomeAverageGoalsConcededFTAtHome")
+                        .HasColumnType("double precision")
+                        .HasColumnName("home_avg_goals_conceded_ft_at_home");
+
                     b.Property<double>("HomeAverageGoalsConcededFTTotal")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_average_goals_conceded_f_t_total");
+                        .HasColumnName("home_average_goals_conceded_ft_total");
 
-                    b.Property<double>("HomeAverageGoalsConcededFTTotalAtHome")
+                    b.Property<double>("HomeAverageGoalsConcededHTAtHome")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_average_goals_conceded_f_t_total_at_home");
+                        .HasColumnName("home_avg_goals_conceded_ht_at_home");
 
                     b.Property<double>("HomeAverageGoalsConcededHTTotal")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_average_goals_conceded_h_t_total");
-
-                    b.Property<double>("HomeAverageGoalsConcededHTTotalAtHome")
-                        .HasColumnType("double precision")
-                        .HasColumnName("home_average_goals_conceded_h_t_total_at_home");
+                        .HasColumnName("home_average_goals_conceded_ht_total");
 
                     b.Property<double>("HomeAverageGoalsConcededTotal")
                         .HasColumnType("double precision")
                         .HasColumnName("home_average_goals_conceded_total");
 
-                    b.Property<double>("HomeAverageGoalsConcededTotalAtHome")
+                    b.Property<double>("HomeAverageGoalsScoredAtHome")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_average_goals_conceded_total_at_home");
+                        .HasColumnName("home_average_goals_scored_at_home");
+
+                    b.Property<double>("HomeAverageGoalsScoredFTAtHome")
+                        .HasColumnType("double precision")
+                        .HasColumnName("home_avg_goals_scored_ft_at_home");
 
                     b.Property<double>("HomeAverageGoalsScoredFTTotal")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_average_goals_scored_f_t_total");
+                        .HasColumnName("home_avg_goals_scored_ft_total");
 
-                    b.Property<double>("HomeAverageGoalsScoredFTTotalAtHome")
+                    b.Property<double>("HomeAverageGoalsScoredHTAtHome")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_average_goals_scored_f_t_total_at_home");
+                        .HasColumnName("home_avg_goals_scored_ht_at_home");
 
                     b.Property<double>("HomeAverageGoalsScoredHTTotal")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_average_goals_scored_h_t_total");
-
-                    b.Property<double>("HomeAverageGoalsScoredHTTotalAtHome")
-                        .HasColumnType("double precision")
-                        .HasColumnName("home_average_goals_scored_h_t_total_at_home");
+                        .HasColumnName("home_avg_goals_scored_ht_total");
 
                     b.Property<double>("HomeAverageGoalsScoredTotal")
                         .HasColumnType("double precision")
                         .HasColumnName("home_average_goals_scored_total");
 
-                    b.Property<double>("HomeAverageGoalsScoredTotalAtHome")
+                    b.Property<double>("HomeBothToScorePercentAtHome")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_average_goals_scored_total_at_home");
+                        .HasColumnName("home_both_to_score_percent_at_home");
 
                     b.Property<double>("HomeBothToScorePercentTotal")
                         .HasColumnType("double precision")
                         .HasColumnName("home_both_to_score_percent_total");
 
-                    b.Property<double>("HomeBothToScorePercentTotalAtHome")
+                    b.Property<double>("HomeCleanSheetsPercentAtHome")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_both_to_score_percent_total_at_home");
+                        .HasColumnName("home_clean_sheets_percent_at_home");
+
+                    b.Property<double>("HomeCleanSheetsPercentFTAtHome")
+                        .HasColumnType("double precision")
+                        .HasColumnName("home_clean_sheets_percent_ft_at_home");
+
+                    b.Property<double>("HomeCleanSheetsPercentFTTotal")
+                        .HasColumnType("double precision")
+                        .HasColumnName("home_clean_sheets_percent_ft_total");
+
+                    b.Property<double>("HomeCleanSheetsPercentHTAtHome")
+                        .HasColumnType("double precision")
+                        .HasColumnName("home_clean_sheets_percent_ht_at_home");
+
+                    b.Property<double>("HomeCleanSheetsPercentHTTotal")
+                        .HasColumnType("double precision")
+                        .HasColumnName("home_clean_sheets_percent_ht_total");
+
+                    b.Property<double>("HomeCleanSheetsPercentTotal")
+                        .HasColumnType("double precision")
+                        .HasColumnName("home_clean_sheets_percent_total");
+
+                    b.Property<double>("HomeDrawsPercentFTAtHome")
+                        .HasColumnType("double precision")
+                        .HasColumnName("home_draws_percent_ft_at_home");
 
                     b.Property<double>("HomeDrawsPercentFTTotal")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_draws_percent_f_t_total");
+                        .HasColumnName("home_draws_percent_ft_total");
 
-                    b.Property<double>("HomeDrawsPercentFTTotalAtHome")
+                    b.Property<double>("HomeDrawsPercentHTAtHome")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_draws_percent_f_t_total_at_home");
+                        .HasColumnName("home_draws_percent_ht_at_home");
 
                     b.Property<double>("HomeDrawsPercentHTTotal")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_draws_percent_h_t_total");
+                        .HasColumnName("home_draws_percent_ht_total");
 
-                    b.Property<double>("HomeDrawsPercentHTTotalAtHome")
+                    b.Property<double>("HomeFailedToScorePercentAtHome")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_draws_percent_h_t_total_at_home");
+                        .HasColumnName("home_failed_to_score_percent_at_home");
+
+                    b.Property<double>("HomeFailedToScorePercentFTAtHome")
+                        .HasColumnType("double precision")
+                        .HasColumnName("home_failed_to_score_percent_ft_at_home");
 
                     b.Property<double>("HomeFailedToScorePercentFTTotal")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_failed_to_score_percent_f_t_total");
+                        .HasColumnName("home_failed_to_score_percent_ft_total");
 
-                    b.Property<double>("HomeFailedToScorePercentFTTotalAtHome")
+                    b.Property<double>("HomeFailedToScorePercentHTAtHome")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_failed_to_score_percent_f_t_total_at_home");
+                        .HasColumnName("home_failed_to_score_percent_ht_at_home");
 
                     b.Property<double>("HomeFailedToScorePercentHTTotal")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_failed_to_score_percent_h_t_total");
-
-                    b.Property<double>("HomeFailedToScorePercentHTTotalAtHome")
-                        .HasColumnType("double precision")
-                        .HasColumnName("home_failed_to_score_percent_h_t_total_at_home");
+                        .HasColumnName("home_failed_to_score_percent_ht_total");
 
                     b.Property<double>("HomeFailedToScorePercentTotal")
                         .HasColumnType("double precision")
                         .HasColumnName("home_failed_to_score_percent_total");
 
-                    b.Property<double>("HomeFailedToScorePercentTotalAtHome")
+                    b.Property<double>("HomeFirstToScorePercentAtHome")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_failed_to_score_percent_total_at_home");
+                        .HasColumnName("home_first_to_score_percent_at_home");
 
                     b.Property<double>("HomeFirstToScorePercentTotal")
                         .HasColumnType("double precision")
                         .HasColumnName("home_first_to_score_percent_total");
 
-                    b.Property<double>("HomeFirstToScorePercentTotalAtHome")
-                        .HasColumnType("double precision")
-                        .HasColumnName("home_first_to_score_percent_total_at_home");
-
-                    b.Property<double>("HomeFixturesWithoutConcededGoalsPercentFTTotal")
-                        .HasColumnType("double precision")
-                        .HasColumnName("home_fixtures_without_conceded_goals_percent_f_t_total");
-
-                    b.Property<double>("HomeFixturesWithoutConcededGoalsPercentFTTotalAtHome")
-                        .HasColumnType("double precision")
-                        .HasColumnName("home_fixtures_without_conceded_goals_percent_f_t_total_at_home");
-
-                    b.Property<double>("HomeFixturesWithoutConcededGoalsPercentHTTotal")
-                        .HasColumnType("double precision")
-                        .HasColumnName("home_fixtures_without_conceded_goals_percent_h_t_total");
-
-                    b.Property<double>("HomeFixturesWithoutConcededGoalsPercentHTTotalAtHome")
-                        .HasColumnType("double precision")
-                        .HasColumnName("home_fixtures_without_conceded_goals_percent_h_t_total_at_home");
-
-                    b.Property<double>("HomeFixturesWithoutConcededGoalsPercentTotal")
-                        .HasColumnType("double precision")
-                        .HasColumnName("home_fixtures_without_conceded_goals_percent_total");
-
-                    b.Property<double>("HomeFixturesWithoutConcededGoalsPercentTotalAtHome")
-                        .HasColumnType("double precision")
-                        .HasColumnName("home_fixtures_without_conceded_goals_percent_total_at_home");
-
-                    b.Property<int>("HomeGoalsConcededAt00To15")
+                    b.Property<int>("HomeGoalsConcededAt0To15")
                         .HasColumnType("integer")
-                        .HasColumnName("home_goals_conceded_at00_to15");
+                        .HasColumnName("home_goals_conceded_at_0_to_15");
 
-                    b.Property<int>("HomeGoalsConcededAt00To15AtHome")
+                    b.Property<int>("HomeGoalsConcededAt0To15AtHome")
                         .HasColumnType("integer")
-                        .HasColumnName("home_goals_conceded_at00_to15_at_home");
+                        .HasColumnName("home_goals_conceded_at_0_to_15_at_home");
 
-                    b.Property<double>("HomeGoalsConcededAt00To15Percent")
+                    b.Property<double>("HomeGoalsConcededAt0To15Percent")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_goals_conceded_at00_to15_percent");
+                        .HasColumnName("home_goals_conceded_at_0_to_15_percent");
 
-                    b.Property<double>("HomeGoalsConcededAt00To15PercentAtHome")
+                    b.Property<double>("HomeGoalsConcededAt0To15PercentAtHome")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_goals_conceded_at00_to15_percent_at_home");
+                        .HasColumnName("home_goals_conceded_at_0_to_15_percent_at_home");
 
                     b.Property<int>("HomeGoalsConcededAt16To30")
                         .HasColumnType("integer")
-                        .HasColumnName("home_goals_conceded_at16_to30");
+                        .HasColumnName("home_goals_conceded_at_16_to_30");
 
                     b.Property<int>("HomeGoalsConcededAt16To30AtHome")
                         .HasColumnType("integer")
-                        .HasColumnName("home_goals_conceded_at16_to30_at_home");
+                        .HasColumnName("home_goals_conceded_at_15_to_30_at_home");
 
                     b.Property<double>("HomeGoalsConcededAt16To30Percent")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_goals_conceded_at16_to30_percent");
+                        .HasColumnName("home_goals_conceded_at_16_to_30_percent");
 
                     b.Property<double>("HomeGoalsConcededAt16To30PercentAtHome")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_goals_conceded_at16_to30_percent_at_home");
+                        .HasColumnName("home_goals_conceded_at_15_to_30_percent_at_home");
 
                     b.Property<int>("HomeGoalsConcededAt31To45")
                         .HasColumnType("integer")
-                        .HasColumnName("home_goals_conceded_at31_to45");
+                        .HasColumnName("home_goals_conceded_at_31_to_45");
 
                     b.Property<int>("HomeGoalsConcededAt31To45AtHome")
                         .HasColumnType("integer")
-                        .HasColumnName("home_goals_conceded_at31_to45_at_home");
+                        .HasColumnName("home_goals_conceded_at_31_to_45_at_home");
 
                     b.Property<double>("HomeGoalsConcededAt31To45Percent")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_goals_conceded_at31_to45_percent");
+                        .HasColumnName("home_goals_conceded_at_31_to_45_percent");
 
                     b.Property<double>("HomeGoalsConcededAt31To45PercentAtHome")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_goals_conceded_at31_to45_percent_at_home");
+                        .HasColumnName("home_goals_conceded_at_31_to_45_percent_at_home");
 
                     b.Property<int>("HomeGoalsConcededAt46To60")
                         .HasColumnType("integer")
-                        .HasColumnName("home_goals_conceded_at46_to60");
+                        .HasColumnName("home_goals_conceded_at_46_to_60");
 
                     b.Property<int>("HomeGoalsConcededAt46To60AtHome")
                         .HasColumnType("integer")
-                        .HasColumnName("home_goals_conceded_at46_to60_at_home");
+                        .HasColumnName("home_goals_conceded_at_46_to_60_at_home");
 
                     b.Property<double>("HomeGoalsConcededAt46To60Percent")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_goals_conceded_at46_to60_percent");
+                        .HasColumnName("home_goals_conceded_at_46_to_60_percent");
 
                     b.Property<double>("HomeGoalsConcededAt46To60PercentAtHome")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_goals_conceded_at46_to60_percent_at_home");
+                        .HasColumnName("home_goals_conceded_at_46_to_60_percent_at_home");
 
                     b.Property<int>("HomeGoalsConcededAt61To75")
                         .HasColumnType("integer")
-                        .HasColumnName("home_goals_conceded_at61_to75");
+                        .HasColumnName("home_goals_conceded_at_61_to_75");
 
                     b.Property<int>("HomeGoalsConcededAt61To75AtHome")
                         .HasColumnType("integer")
-                        .HasColumnName("home_goals_conceded_at61_to75_at_home");
+                        .HasColumnName("home_goals_conceded_at_61_to_75_at_home");
 
                     b.Property<double>("HomeGoalsConcededAt61To75Percent")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_goals_conceded_at61_to75_percent");
+                        .HasColumnName("home_goals_conceded_at_61_to_75_percent");
 
                     b.Property<double>("HomeGoalsConcededAt61To75PercentAtHome")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_goals_conceded_at61_to75_percent_at_home");
+                        .HasColumnName("home_goals_conceded_at_61_to_75_percent_at_home");
 
                     b.Property<int>("HomeGoalsConcededAt76To90")
                         .HasColumnType("integer")
-                        .HasColumnName("home_goals_conceded_at76_to90");
+                        .HasColumnName("home_goals_conceded_at_75_to_90");
 
                     b.Property<int>("HomeGoalsConcededAt76To90AtHome")
                         .HasColumnType("integer")
-                        .HasColumnName("home_goals_conceded_at76_to90_at_home");
+                        .HasColumnName("home_goals_conceded_at_76_to_90_at_home");
 
                     b.Property<double>("HomeGoalsConcededAt76To90Percent")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_goals_conceded_at76_to90_percent");
+                        .HasColumnName("home_goals_conceded_at_75_to_90_percent");
 
                     b.Property<double>("HomeGoalsConcededAt76To90PercentAtHome")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_goals_conceded_at76_to90_percent_at_home");
+                        .HasColumnName("home_goals_conceded_at_76_to_90_percent_at_home");
+
+                    b.Property<int>("HomeGoalsConcededAtHome")
+                        .HasColumnType("integer")
+                        .HasColumnName("home_goals_conceded_at_home");
+
+                    b.Property<int>("HomeGoalsConcededFTAtHome")
+                        .HasColumnType("integer")
+                        .HasColumnName("home_goals_conceded_ft_at_home");
 
                     b.Property<int>("HomeGoalsConcededFTTotal")
                         .HasColumnType("integer")
-                        .HasColumnName("home_goals_conceded_f_t_total");
+                        .HasColumnName("home_goals_conceded_ft_total");
 
-                    b.Property<int>("HomeGoalsConcededFTTotalAtHome")
+                    b.Property<int>("HomeGoalsConcededHTAtHome")
                         .HasColumnType("integer")
-                        .HasColumnName("home_goals_conceded_f_t_total_at_home");
+                        .HasColumnName("home_goals_conceded_ht_at_home");
 
                     b.Property<int>("HomeGoalsConcededHTTotal")
                         .HasColumnType("integer")
-                        .HasColumnName("home_goals_conceded_h_t_total");
-
-                    b.Property<int>("HomeGoalsConcededHTTotalAtHome")
-                        .HasColumnType("integer")
-                        .HasColumnName("home_goals_conceded_h_t_total_at_home");
+                        .HasColumnName("home_goals_conceded_ht_total");
 
                     b.Property<int>("HomeGoalsConcededTotal")
                         .HasColumnType("integer")
                         .HasColumnName("home_goals_conceded_total");
 
-                    b.Property<int>("HomeGoalsConcededTotalAtHome")
+                    b.Property<int>("HomeGoalsScoredAt0To15")
                         .HasColumnType("integer")
-                        .HasColumnName("home_goals_conceded_total_at_home");
+                        .HasColumnName("home_goals_scored_at_0_to_15");
 
-                    b.Property<int>("HomeGoalsScoredAt00To15")
+                    b.Property<int>("HomeGoalsScoredAt0To15AtHome")
                         .HasColumnType("integer")
-                        .HasColumnName("home_goals_scored_at00_to15");
+                        .HasColumnName("home_goals_scored_at_0_to_15_at_home");
 
-                    b.Property<int>("HomeGoalsScoredAt00To15AtHome")
-                        .HasColumnType("integer")
-                        .HasColumnName("home_goals_scored_at00_to15_at_home");
-
-                    b.Property<double>("HomeGoalsScoredAt00To15Percent")
+                    b.Property<double>("HomeGoalsScoredAt0To15Percent")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_goals_scored_at00_to15_percent");
+                        .HasColumnName("home_goals_scored_at_0_to_15_percent");
 
-                    b.Property<double>("HomeGoalsScoredAt00To15PercentAtHome")
+                    b.Property<double>("HomeGoalsScoredAt0To15PercentAtHome")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_goals_scored_at00_to15_percent_at_home");
+                        .HasColumnName("home_goals_scored_at_0_to_15_percent_at_home");
 
                     b.Property<int>("HomeGoalsScoredAt16To30")
                         .HasColumnType("integer")
-                        .HasColumnName("home_goals_scored_at16_to30");
+                        .HasColumnName("home_goals_scored_at_16_to_30");
 
                     b.Property<int>("HomeGoalsScoredAt16To30AtHome")
                         .HasColumnType("integer")
-                        .HasColumnName("home_goals_scored_at16_to30_at_home");
+                        .HasColumnName("home_goals_scored_at_15_to_30_at_home");
 
                     b.Property<double>("HomeGoalsScoredAt16To30Percent")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_goals_scored_at16_to30_percent");
+                        .HasColumnName("home_goals_scored_at_16_to_30_percent");
 
                     b.Property<double>("HomeGoalsScoredAt16To30PercentAtHome")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_goals_scored_at16_to30_percent_at_home");
+                        .HasColumnName("home_goals_scored_at_15_to_30_percent_at_home");
 
                     b.Property<int>("HomeGoalsScoredAt31To45")
                         .HasColumnType("integer")
-                        .HasColumnName("home_goals_scored_at31_to45");
+                        .HasColumnName("home_goals_scored_at_31_to_45");
 
                     b.Property<int>("HomeGoalsScoredAt31To45AtHome")
                         .HasColumnType("integer")
-                        .HasColumnName("home_goals_scored_at31_to45_at_home");
+                        .HasColumnName("home_goals_scored_at_31_to_45_at_home");
 
                     b.Property<double>("HomeGoalsScoredAt31To45Percent")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_goals_scored_at31_to45_percent");
+                        .HasColumnName("home_goals_scored_at_31_to_45_percent");
 
                     b.Property<double>("HomeGoalsScoredAt31To45PercentAtHome")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_goals_scored_at31_to45_percent_at_home");
+                        .HasColumnName("home_goals_scored_at_31_to_45_percent_at_home");
 
                     b.Property<int>("HomeGoalsScoredAt46To60")
                         .HasColumnType("integer")
-                        .HasColumnName("home_goals_scored_at46_to60");
+                        .HasColumnName("home_goals_scored_at_46_to_60");
 
                     b.Property<int>("HomeGoalsScoredAt46To60AtHome")
                         .HasColumnType("integer")
-                        .HasColumnName("home_goals_scored_at46_to60_at_home");
+                        .HasColumnName("home_goals_scored_at_46_to_60_at_home");
 
                     b.Property<double>("HomeGoalsScoredAt46To60Percent")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_goals_scored_at46_to60_percent");
+                        .HasColumnName("home_goals_scored_at_46_to_60_percent");
 
                     b.Property<double>("HomeGoalsScoredAt46To60PercentAtHome")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_goals_scored_at46_to60_percent_at_home");
+                        .HasColumnName("home_goals_scored_at_46_to_60_percent_at_home");
 
                     b.Property<int>("HomeGoalsScoredAt61To75")
                         .HasColumnType("integer")
-                        .HasColumnName("home_goals_scored_at61_to75");
+                        .HasColumnName("home_goals_scored_at_61_to_75");
 
                     b.Property<int>("HomeGoalsScoredAt61To75AtHome")
                         .HasColumnType("integer")
-                        .HasColumnName("home_goals_scored_at61_to75_at_home");
+                        .HasColumnName("home_goals_scored_at_61_to_75_at_home");
 
                     b.Property<double>("HomeGoalsScoredAt61To75Percent")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_goals_scored_at61_to75_percent");
+                        .HasColumnName("home_goals_scored_at_61_to_75_percent");
 
                     b.Property<double>("HomeGoalsScoredAt61To75PercentAtHome")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_goals_scored_at61_to75_percent_at_home");
+                        .HasColumnName("home_goals_scored_at_61_to_75_percent_at_home");
 
                     b.Property<int>("HomeGoalsScoredAt76To90")
                         .HasColumnType("integer")
-                        .HasColumnName("home_goals_scored_at76_to90");
+                        .HasColumnName("home_goals_scored_at_75_to_90");
 
                     b.Property<int>("HomeGoalsScoredAt76To90AtHome")
                         .HasColumnType("integer")
-                        .HasColumnName("home_goals_scored_at76_to90_at_home");
+                        .HasColumnName("home_goals_scored_at_76_to_90_at_home");
 
                     b.Property<double>("HomeGoalsScoredAt76To90Percent")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_goals_scored_at76_to90_percent");
+                        .HasColumnName("home_goals_scored_at_75_to_90_percent");
 
                     b.Property<double>("HomeGoalsScoredAt76To90PercentAtHome")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_goals_scored_at76_to90_percent_at_home");
+                        .HasColumnName("home_goals_scored_at_76_to_90_percent_at_home");
+
+                    b.Property<int>("HomeGoalsScoredAtHome")
+                        .HasColumnType("integer")
+                        .HasColumnName("home_goals_scored_at_home");
+
+                    b.Property<int>("HomeGoalsScoredFTAtHome")
+                        .HasColumnType("integer")
+                        .HasColumnName("home_goals_scored_ft_at_home");
 
                     b.Property<int>("HomeGoalsScoredFTTotal")
                         .HasColumnType("integer")
-                        .HasColumnName("home_goals_scored_f_t_total");
+                        .HasColumnName("home_goals_scored_ft_total");
 
-                    b.Property<int>("HomeGoalsScoredFTTotalAtHome")
+                    b.Property<int>("HomeGoalsScoredHTAtHome")
                         .HasColumnType("integer")
-                        .HasColumnName("home_goals_scored_f_t_total_at_home");
+                        .HasColumnName("home_goals_scored_ht_at_home");
 
                     b.Property<int>("HomeGoalsScoredHTTotal")
                         .HasColumnType("integer")
-                        .HasColumnName("home_goals_scored_h_t_total");
-
-                    b.Property<int>("HomeGoalsScoredHTTotalAtHome")
-                        .HasColumnType("integer")
-                        .HasColumnName("home_goals_scored_h_t_total_at_home");
+                        .HasColumnName("home_goals_scored_ht_total");
 
                     b.Property<int>("HomeGoalsScoredTotal")
                         .HasColumnType("integer")
                         .HasColumnName("home_goals_scored_total");
 
-                    b.Property<int>("HomeGoalsScoredTotalAtHome")
-                        .HasColumnType("integer")
-                        .HasColumnName("home_goals_scored_total_at_home");
+                    b.Property<double>("HomeLossesPercentFTAtHome")
+                        .HasColumnType("double precision")
+                        .HasColumnName("home_losses_percent_ft_at_home");
 
                     b.Property<double>("HomeLossesPercentFTTotal")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_losses_percent_f_t_total");
+                        .HasColumnName("home_losses_percent_ft_total");
 
-                    b.Property<double>("HomeLossesPercentFTTotalAtHome")
+                    b.Property<double>("HomeLossesPercentHTAtHome")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_losses_percent_f_t_total_at_home");
+                        .HasColumnName("home_losses_percent_ht_at_home");
 
                     b.Property<double>("HomeLossesPercentHTTotal")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_losses_percent_h_t_total");
+                        .HasColumnName("home_losses_percent_ht_total");
 
-                    b.Property<double>("HomeLossesPercentHTTotalAtHome")
+                    b.Property<double>("HomePPGAtHome")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_losses_percent_h_t_total_at_home");
+                        .HasColumnName("home_ppg_at_home");
 
                     b.Property<double>("HomePPGTotal")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_p_p_g_total");
+                        .HasColumnName("home_ppg_total");
 
-                    b.Property<double>("HomePPGTotalAtHome")
+                    b.Property<double>("HomeToScorePercentAtHome")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_p_p_g_total_at_home");
+                        .HasColumnName("home_to_score_percent_at_home");
+
+                    b.Property<double>("HomeToScoreTwoZeroPercentTotal")
+                        .HasColumnType("double precision")
+                        .HasColumnName("home_to_score_two_zero_percent_total");
+
+                    b.Property<int>("HomeWinsAtHome")
+                        .HasColumnType("integer")
+                        .HasColumnName("home_wins_at_home");
+
+                    b.Property<double>("HomeWinsPercentAtHome")
+                        .HasColumnType("double precision")
+                        .HasColumnName("home_wins_percent_at_home");
+
+                    b.Property<double>("HomeWinsPercentFTAtHome")
+                        .HasColumnType("double precision")
+                        .HasColumnName("home_wins_percent_ft_at_home");
 
                     b.Property<double>("HomeWinsPercentFTTotal")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_wins_percent_f_t_total");
+                        .HasColumnName("home_wins_percent_ft_total");
 
-                    b.Property<double>("HomeWinsPercentFTTotalAtHome")
+                    b.Property<double>("HomeWinsPercentHTAtHome")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_wins_percent_f_t_total_at_home");
+                        .HasColumnName("home_wins_percent_ht_at_home");
 
                     b.Property<double>("HomeWinsPercentHTTotal")
                         .HasColumnType("double precision")
-                        .HasColumnName("home_wins_percent_h_t_total");
-
-                    b.Property<double>("HomeWinsPercentHTTotalAtHome")
-                        .HasColumnType("double precision")
-                        .HasColumnName("home_wins_percent_h_t_total_at_home");
+                        .HasColumnName("home_wins_percent_ht_total");
 
                     b.Property<double>("HomeWinsPercentTotal")
                         .HasColumnType("double precision")
                         .HasColumnName("home_wins_percent_total");
 
-                    b.Property<double>("HomeWinsPercentTotalAtHome")
-                        .HasColumnType("double precision")
-                        .HasColumnName("home_wins_percent_total_at_home");
-
                     b.Property<int>("HomeWinsTotal")
                         .HasColumnType("integer")
                         .HasColumnName("home_wins_total");
-
-                    b.Property<int>("HomeWinsTotalAtHome")
-                        .HasColumnType("integer")
-                        .HasColumnName("home_wins_total_at_home");
 
                     b.HasKey("Code")
                         .HasName("p_k_fixture_stats_trade");
