@@ -3,6 +3,7 @@ using BetPlacer.Fixtures.API.Models.Entities.Trade;
 using BetPlacer.Fixtures.API.Models.Enums;
 using BetPlacer.Fixtures.API.Models.ValueObjects;
 using BetPlacer.Fixtures.API.Services.Models;
+using Microsoft.AspNetCore.Routing.Constraints;
 using System.Collections.Generic;
 using System.Globalization;
 
@@ -46,6 +47,8 @@ namespace BetPlacer.Fixtures.API.Services
                 GetPPG(stats, fixture, homePastFixturesAtHome, homePastFixturesAtAway, awayPastFixturesAtHome, awayPastFixturesAtAway);
                 GetTotalWins(stats, fixture, homePastFixturesAtHome, homePastFixturesAtAway, awayPastFixturesAtHome, awayPastFixturesAtAway);
                 GetGoalsStats(stats, fixture, homePastFixturesAtHome, homePastFixturesAtAway, awayPastFixturesAtHome, awayPastFixturesAtAway, fixtureGoals.ToList());
+                GetHTStats(stats, fixture, homePastFixturesAtHome, homePastFixturesAtAway, awayPastFixturesAtHome, awayPastFixturesAtAway, fixtureGoals.ToList());
+                GetFTStats(stats, fixture, homePastFixturesAtHome, homePastFixturesAtAway, awayPastFixturesAtHome, awayPastFixturesAtAway, fixtureGoals.ToList());
 
                 statsList.Add(stats);
             }
@@ -270,6 +273,152 @@ namespace BetPlacer.Fixtures.API.Services
             stats.AwayGoalsConcededAt76To90PercentAtAway = awayGoalsAtAway.GoalsConcededIn76To90MinPercent;
 
             #endregion
+
+            #endregion
+        }
+
+        private void GetHTStats(FixtureStatsTradeModel stats, FixtureModel fixture, List<FixtureModel> homePastFixturesAtHome, List<FixtureModel> homePastFixturesAtAway, List<FixtureModel> awayPastFixturesAtHome, List<FixtureModel> awayPastFixturesAtAway, List<FixtureGoalsModel> fixtureGoalsModel)
+        {
+            #region Home total
+
+            List<FixtureModel> homeFixturesTotal = homePastFixturesAtHome.Concat(homePastFixturesAtAway).ToList();
+            List<FixtureGoalsModel> homeFixtureGoalsTotal = fixtureGoalsModel.Where(hfg => homeFixturesTotal.Any(hf => hf.Code == hfg.FixtureCode)).ToList();
+            HTFTCalculate homeHTTotal = CalculateHTFTStats(homeFixturesTotal, homeFixtureGoalsTotal, fixture.HomeTeamId, false);
+
+            stats.HomeWinsPercentHTTotal = homeHTTotal.WinsPercent;
+            stats.HomeDrawsPercentHTTotal = homeHTTotal.DrawsPercent;
+            stats.HomeLossesPercentHTTotal = homeHTTotal.LossesPercent;
+            stats.HomeFailedToScorePercentHTTotal = homeHTTotal.FailedToScorePercent;
+            stats.HomeCleanSheetsPercentHTTotal = homeHTTotal.CleanSheetsPercent;
+            stats.HomeGoalsScoredHTTotal = homeHTTotal.GoalsScored;
+            stats.HomeGoalsConcededHTTotal = homeHTTotal.GoalsConceded;
+            stats.HomeAverageGoalsScoredHTTotal = homeHTTotal.AverageGoalsScored;
+            stats.HomeAverageGoalsConcededHTTotal = homeHTTotal.AverageGoalsConceded;
+
+            #endregion
+
+            #region Home at home
+
+            List<FixtureGoalsModel> homeFixtureGoalsAtHome = fixtureGoalsModel.Where(hfg => homePastFixturesAtHome.Any(hf => hf.Code == hfg.FixtureCode)).ToList();
+            HTFTCalculate homeHTAtHome = CalculateHTFTStats(homePastFixturesAtHome, homeFixtureGoalsAtHome, fixture.HomeTeamId, false);
+
+            stats.HomeWinsPercentHTAtHome = homeHTAtHome.WinsPercent;
+            stats.HomeDrawsPercentHTAtHome = homeHTAtHome.DrawsPercent;
+            stats.HomeLossesPercentHTAtHome = homeHTAtHome.LossesPercent;
+            stats.HomeFailedToScorePercentHTAtHome = homeHTAtHome.FailedToScorePercent;
+            stats.HomeCleanSheetsPercentHTAtHome = homeHTAtHome.CleanSheetsPercent;
+            stats.HomeGoalsScoredHTAtHome = homeHTAtHome.GoalsScored;
+            stats.HomeGoalsConcededHTAtHome = homeHTAtHome.GoalsConceded;
+            stats.HomeAverageGoalsScoredHTAtHome = homeHTAtHome.AverageGoalsScored;
+            stats.HomeAverageGoalsConcededHTAtHome = homeHTAtHome.AverageGoalsConceded;
+
+            #endregion
+
+            #region Away total
+
+            List<FixtureModel> awayFixturesTotal = awayPastFixturesAtAway.Concat(awayPastFixturesAtHome).ToList();
+            List<FixtureGoalsModel> awayFixtureGoalsTotal = fixtureGoalsModel.Where(hfg => awayFixturesTotal.Any(hf => hf.Code == hfg.FixtureCode)).ToList();
+            HTFTCalculate awayHTTotal = CalculateHTFTStats(awayFixturesTotal, awayFixtureGoalsTotal, fixture.AwayTeamId, false);
+
+            stats.AwayWinsPercentHTTotal = awayHTTotal.WinsPercent;
+            stats.AwayDrawsPercentHTTotal = awayHTTotal.DrawsPercent;
+            stats.AwayLossesPercentHTTotal = awayHTTotal.LossesPercent;
+            stats.AwayFailedToScorePercentHTTotal = awayHTTotal.FailedToScorePercent;
+            stats.AwayCleanSheetsPercentHTTotal = awayHTTotal.CleanSheetsPercent;
+            stats.AwayGoalsScoredHTTotal = awayHTTotal.GoalsScored;
+            stats.AwayGoalsConcededHTTotal = awayHTTotal.GoalsConceded;
+            stats.AwayAverageGoalsScoredHTTotal = awayHTTotal.AverageGoalsScored;
+            stats.AwayAverageGoalsConcededHTTotal = awayHTTotal.AverageGoalsConceded;
+
+            #endregion
+
+            #region Away at away
+
+            List<FixtureGoalsModel> awayFixtureGoalsAtAway = fixtureGoalsModel.Where(hfg => awayPastFixturesAtAway.Any(hf => hf.Code == hfg.FixtureCode)).ToList();
+            HTFTCalculate awayHTAtAway = CalculateHTFTStats(awayPastFixturesAtAway, awayFixtureGoalsAtAway, fixture.AwayTeamId, false);
+
+            stats.AwayWinsPercentHTAtAway = awayHTAtAway.WinsPercent;
+            stats.AwayDrawsPercentHTAtAway = awayHTAtAway.DrawsPercent;
+            stats.AwayLossesPercentHTAtAway = awayHTAtAway.LossesPercent;
+            stats.AwayFailedToScorePercentHTAtAway = awayHTAtAway.FailedToScorePercent;
+            stats.AwayCleanSheetsPercentHTAtAway = awayHTAtAway.CleanSheetsPercent;
+            stats.AwayGoalsScoredHTAtAway = awayHTAtAway.GoalsScored;
+            stats.AwayGoalsConcededHTAtAway = awayHTAtAway.GoalsConceded;
+            stats.AwayAverageGoalsScoredHTAtAway = awayHTAtAway.AverageGoalsScored;
+            stats.AwayAverageGoalsConcededHTAtAway = awayHTAtAway.AverageGoalsConceded;
+
+            #endregion
+        }
+
+        private void GetFTStats(FixtureStatsTradeModel stats, FixtureModel fixture, List<FixtureModel> homePastFixturesAtHome, List<FixtureModel> homePastFixturesAtAway, List<FixtureModel> awayPastFixturesAtHome, List<FixtureModel> awayPastFixturesAtAway, List<FixtureGoalsModel> fixtureGoalsModel)
+        {
+            #region Home total
+
+            List<FixtureModel> homeFixturesTotal = homePastFixturesAtHome.Concat(homePastFixturesAtAway).ToList();
+            List<FixtureGoalsModel> homeFixtureGoalsTotal = fixtureGoalsModel.Where(hfg => homeFixturesTotal.Any(hf => hf.Code == hfg.FixtureCode)).ToList();
+            HTFTCalculate homeFTTotal = CalculateHTFTStats(homeFixturesTotal, homeFixtureGoalsTotal, fixture.HomeTeamId, true);
+
+            stats.HomeWinsPercentFTTotal = homeFTTotal.WinsPercent;
+            stats.HomeDrawsPercentFTTotal = homeFTTotal.DrawsPercent;
+            stats.HomeLossesPercentFTTotal = homeFTTotal.LossesPercent;
+            stats.HomeFailedToScorePercentFTTotal = homeFTTotal.FailedToScorePercent;
+            stats.HomeCleanSheetsPercentFTTotal = homeFTTotal.CleanSheetsPercent;
+            stats.HomeGoalsScoredFTTotal = homeFTTotal.GoalsScored;
+            stats.HomeGoalsConcededFTTotal = homeFTTotal.GoalsConceded;
+            stats.HomeAverageGoalsScoredFTTotal = homeFTTotal.AverageGoalsScored;
+            stats.HomeAverageGoalsConcededFTTotal = homeFTTotal.AverageGoalsConceded;
+
+            #endregion
+
+            #region Home at home
+
+            List<FixtureGoalsModel> homeFixtureGoalsAtHome = fixtureGoalsModel.Where(hfg => homePastFixturesAtHome.Any(hf => hf.Code == hfg.FixtureCode)).ToList();
+            HTFTCalculate homeFTAtHome = CalculateHTFTStats(homePastFixturesAtHome, homeFixtureGoalsAtHome, fixture.HomeTeamId, true);
+
+            stats.HomeWinsPercentFTAtHome = homeFTAtHome.WinsPercent;
+            stats.HomeDrawsPercentFTAtHome = homeFTAtHome.DrawsPercent;
+            stats.HomeLossesPercentFTAtHome = homeFTAtHome.LossesPercent;
+            stats.HomeFailedToScorePercentFTAtHome = homeFTAtHome.FailedToScorePercent;
+            stats.HomeCleanSheetsPercentFTAtHome = homeFTAtHome.CleanSheetsPercent;
+            stats.HomeGoalsScoredFTAtHome = homeFTAtHome.GoalsScored;
+            stats.HomeGoalsConcededFTAtHome = homeFTAtHome.GoalsConceded;
+            stats.HomeAverageGoalsScoredFTAtHome = homeFTAtHome.AverageGoalsScored;
+            stats.HomeAverageGoalsConcededFTAtHome = homeFTAtHome.AverageGoalsConceded;
+
+            #endregion
+
+            #region Away total
+
+            List<FixtureModel> awayFixturesTotal = awayPastFixturesAtAway.Concat(awayPastFixturesAtHome).ToList();
+            List<FixtureGoalsModel> awayFixtureGoalsTotal = fixtureGoalsModel.Where(hfg => awayFixturesTotal.Any(hf => hf.Code == hfg.FixtureCode)).ToList();
+            HTFTCalculate awayFTTotal = CalculateHTFTStats(awayFixturesTotal, awayFixtureGoalsTotal, fixture.AwayTeamId, true);
+
+            stats.AwayWinsPercentFTTotal = awayFTTotal.WinsPercent;
+            stats.AwayDrawsPercentFTTotal = awayFTTotal.DrawsPercent;
+            stats.AwayLossesPercentFTTotal = awayFTTotal.LossesPercent;
+            stats.AwayFailedToScorePercentFTTotal = awayFTTotal.FailedToScorePercent;
+            stats.AwayCleanSheetsPercentFTTotal = awayFTTotal.CleanSheetsPercent;
+            stats.AwayGoalsScoredFTTotal = awayFTTotal.GoalsScored;
+            stats.AwayGoalsConcededFTTotal = awayFTTotal.GoalsConceded;
+            stats.AwayAverageGoalsScoredFTTotal = awayFTTotal.AverageGoalsScored;
+            stats.AwayAverageGoalsConcededFTTotal = awayFTTotal.AverageGoalsConceded;
+
+            #endregion
+
+            #region Away at away
+
+            List<FixtureGoalsModel> awayFixtureGoalsAtAway = fixtureGoalsModel.Where(hfg => awayPastFixturesAtAway.Any(hf => hf.Code == hfg.FixtureCode)).ToList();
+            HTFTCalculate awayFTAtAway = CalculateHTFTStats(awayPastFixturesAtAway, awayFixtureGoalsAtAway, fixture.AwayTeamId, true);
+
+            stats.AwayWinsPercentFTAtAway = awayFTAtAway.WinsPercent;
+            stats.AwayDrawsPercentFTAtAway = awayFTAtAway.DrawsPercent;
+            stats.AwayLossesPercentFTAtAway = awayFTAtAway.LossesPercent;
+            stats.AwayFailedToScorePercentFTAtAway = awayFTAtAway.FailedToScorePercent;
+            stats.AwayCleanSheetsPercentFTAtAway = awayFTAtAway.CleanSheetsPercent;
+            stats.AwayGoalsScoredFTAtAway = awayFTAtAway.GoalsScored;
+            stats.AwayGoalsConcededFTAtAway = awayFTAtAway.GoalsConceded;
+            stats.AwayAverageGoalsScoredFTAtAway = awayFTAtAway.AverageGoalsScored;
+            stats.AwayAverageGoalsConcededFTAtAway = awayFTAtAway.AverageGoalsConceded;
 
             #endregion
         }
@@ -530,6 +679,109 @@ namespace BetPlacer.Fixtures.API.Services
                     goalsConcededIn76To90MinPercent);
 
             return goalsCalculate;
+        }
+
+        private HTFTCalculate CalculateHTFTStats(List<FixtureModel> fixtures, List<FixtureGoalsModel> fixtureGoals, int teamId, bool isFT)
+        {
+            double winsPercent = 0;
+            double drawsPercent = 0;
+            double lossesPercent = 0;
+            double failedToScorePercent = 0;
+            double cleanSheetsPercent = 0;
+            int goalsScoredTotal = 0;
+            int goalsConcededTotal = 0;
+            double averageGoalsScored = 0;
+            double averageGoalsConceded = 0;
+
+            int countFixtures = 0;
+            int wins = 0;
+            int draws = 0;
+            int losses = 0;
+            int fts = 0;
+            int cs = 0;
+
+            foreach (FixtureModel fixture in fixtures)
+            {
+                Func<FixtureGoalsModel, bool> referenceCondition;
+                Func<FixtureGoalsModel, bool> otherCondition;
+
+                if (!isFT)
+                {
+                    referenceCondition = g => g.FixtureCode == fixture.Code
+                            && g.TeamId == teamId
+                            && Convert.ToDouble(g.Minute, CultureInfo.InvariantCulture) >= 0
+                            && Convert.ToDouble(g.Minute, CultureInfo.InvariantCulture) < 46;
+
+                    otherCondition = g => g.FixtureCode == fixture.Code
+                                && g.TeamId != teamId
+                                && Convert.ToDouble(g.Minute, CultureInfo.InvariantCulture) >= 0
+                                && Convert.ToDouble(g.Minute, CultureInfo.InvariantCulture) < 46;
+                } else
+                {
+                    referenceCondition = g => g.FixtureCode == fixture.Code
+                            && g.TeamId == teamId
+                            && Convert.ToDouble(g.Minute, CultureInfo.InvariantCulture) >= 46
+                            && Convert.ToDouble(g.Minute, CultureInfo.InvariantCulture) < 91;
+
+                    otherCondition = g => g.FixtureCode == fixture.Code
+                                && g.TeamId != teamId
+                                && Convert.ToDouble(g.Minute, CultureInfo.InvariantCulture) >= 46
+                                && Convert.ToDouble(g.Minute, CultureInfo.InvariantCulture) < 91;
+                }
+
+
+                List<FixtureGoalsModel> referenceTeamGoals = fixtureGoals
+                    .Where(referenceCondition)
+                    .OrderBy(g => Convert.ToDouble(g.Minute, CultureInfo.InvariantCulture))
+                    .ToList();
+
+                List<FixtureGoalsModel> otherTeamGoals = fixtureGoals
+                    .Where(otherCondition)
+                    .OrderBy(g => Convert.ToDouble(g.Minute, CultureInfo.InvariantCulture))
+                    .ToList();
+
+                countFixtures++;
+
+                int goalsScored = referenceTeamGoals.Count;
+                int goalsConceded = otherTeamGoals.Count;
+
+                goalsScoredTotal += goalsScored;
+                goalsConcededTotal += goalsConceded;
+
+                if (goalsScored > goalsConceded)
+                    wins++;
+                else if (goalsScored == goalsConceded)
+                    draws++;
+                else
+                    losses++;
+
+                if (goalsScored == 0)
+                    fts++;
+
+                if (goalsConceded == 0)
+                    cs++;
+            }
+
+            winsPercent = countFixtures > 0 ? Math.Round((double)wins / countFixtures, 2) : 0;
+            drawsPercent = countFixtures > 0 ? Math.Round((double)draws / countFixtures, 2) : 0;
+            lossesPercent = countFixtures > 0 ? Math.Round((double)losses / countFixtures, 2) : 0;
+            failedToScorePercent = countFixtures > 0 ? Math.Round((double)fts / countFixtures, 2) : 0;
+            cleanSheetsPercent = countFixtures > 0 ? Math.Round((double)cs / countFixtures, 2) : 0;
+            averageGoalsScored = countFixtures > 0 ? Math.Round((double)goalsScoredTotal / countFixtures, 2) : 0;
+            averageGoalsConceded = countFixtures > 0 ? Math.Round((double)goalsConcededTotal / countFixtures, 2) : 0;
+
+            HTFTCalculate htftCalculate = new HTFTCalculate(
+                winsPercent,
+                drawsPercent,
+                lossesPercent,
+                failedToScorePercent,
+                cleanSheetsPercent,
+                goalsScoredTotal,
+                goalsConcededTotal,
+                averageGoalsScored,
+                averageGoalsConceded);
+
+            return htftCalculate;
         }
 
         #endregion
