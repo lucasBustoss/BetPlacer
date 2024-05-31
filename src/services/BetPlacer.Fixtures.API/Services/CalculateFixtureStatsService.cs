@@ -629,18 +629,18 @@ namespace BetPlacer.Fixtures.API.Services
             double averageGoalsScored = countFixtures > 0 ? Math.Round((double)goalsScored / countFixtures, 2) : 0;
             double averageGoalsConceded = countFixtures > 0 ? Math.Round((double)goalsConceded / countFixtures, 2) : 0;
 
-            goalsScoredIn0To15MinPercent = countFixtures > 0 ? Math.Round((double)goalsScoredIn0To15Min / goalsScored, 2) : 0;
-            goalsConcededIn0To15MinPercent = countFixtures > 0 ? Math.Round((double)goalsConcededIn0To15Min / goalsConceded, 2) : 0;
-            goalsScoredIn16To30MinPercent = countFixtures > 0 ? Math.Round((double)goalsScoredIn16To30Min / goalsScored, 2) : 0;
-            goalsConcededIn16To30MinPercent = countFixtures > 0 ? Math.Round((double)goalsConcededIn16To30Min / goalsConceded, 2) : 0;
-            goalsScoredIn31To45MinPercent = countFixtures > 0 ? Math.Round((double)goalsScoredIn31To45Min / goalsScored, 2) : 0;
-            goalsConcededIn31To45MinPercent = countFixtures > 0 ? Math.Round((double)goalsConcededIn31To45Min / goalsConceded, 2) : 0;
-            goalsScoredIn46To60MinPercent = countFixtures > 0 ? Math.Round((double)goalsScoredIn46To60Min / goalsScored, 2) : 0;
-            goalsConcededIn46To60MinPercent = countFixtures > 0 ? Math.Round((double)goalsConcededIn46To60Min / goalsConceded, 2) : 0;
-            goalsScoredIn61To75MinPercent = countFixtures > 0 ? Math.Round((double)goalsScoredIn61To75Min / goalsScored, 2) : 0;
-            goalsConcededIn61To75MinPercent = countFixtures > 0 ? Math.Round((double)goalsConcededIn61To75Min / goalsConceded, 2) : 0;
-            goalsScoredIn76To90MinPercent = countFixtures > 0 ? Math.Round((double)goalsScoredIn76To90Min / goalsScored, 2) : 0;
-            goalsConcededIn76To90MinPercent = countFixtures > 0 ? Math.Round((double)goalsConcededIn76To90Min / goalsConceded, 2) : 0;
+            goalsScoredIn0To15MinPercent = goalsScored > 0 ? Math.Round((double)goalsScoredIn0To15Min / goalsScored, 2) : 0;
+            goalsConcededIn0To15MinPercent = goalsConceded > 0 ? Math.Round((double)goalsConcededIn0To15Min / goalsConceded, 2) : 0;
+            goalsScoredIn16To30MinPercent = goalsScored > 0 ? Math.Round((double)goalsScoredIn16To30Min / goalsScored, 2) : 0;
+            goalsConcededIn16To30MinPercent = goalsConceded > 0 ? Math.Round((double)goalsConcededIn16To30Min / goalsConceded, 2) : 0;
+            goalsScoredIn31To45MinPercent = goalsScored > 0 ? Math.Round((double)goalsScoredIn31To45Min / goalsScored, 2) : 0;
+            goalsConcededIn31To45MinPercent = goalsConceded > 0 ? Math.Round((double)goalsConcededIn31To45Min / goalsConceded, 2) : 0;
+            goalsScoredIn46To60MinPercent = goalsScored > 0 ? Math.Round((double)goalsScoredIn46To60Min / goalsScored, 2) : 0;
+            goalsConcededIn46To60MinPercent = goalsConceded > 0 ? Math.Round((double)goalsConcededIn46To60Min / goalsConceded, 2) : 0;
+            goalsScoredIn61To75MinPercent = goalsScored > 0 ? Math.Round((double)goalsScoredIn61To75Min / goalsScored, 2) : 0;
+            goalsConcededIn61To75MinPercent = goalsConceded > 0 ? Math.Round((double)goalsConcededIn61To75Min / goalsConceded, 2) : 0;
+            goalsScoredIn76To90MinPercent = goalsScored > 0 ? Math.Round((double)goalsScoredIn76To90Min / goalsScored, 2) : 0;
+            goalsConcededIn76To90MinPercent = goalsConceded > 0 ? Math.Round((double)goalsConcededIn76To90Min / goalsConceded, 2) : 0;
 
             GoalsCalculate goalsCalculate =
                 new GoalsCalculate(

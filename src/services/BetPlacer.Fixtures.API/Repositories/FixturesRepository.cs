@@ -7,6 +7,7 @@ using BetPlacer.Fixtures.API.Models.ValueObjects;
 using BetPlacer.Core.Models.Response.Microservice.Teams;
 using BetPlacer.Core.Models.Response.Microservice.Leagues;
 using BetPlacer.Fixtures.API.Services;
+using BetPlacer.Fixtures.API.Models.Entities.Trade;
 
 namespace BetPlacer.Fixtures.API.Repositories
 {
@@ -162,7 +163,6 @@ namespace BetPlacer.Fixtures.API.Repositories
                 }
             }
 
-            var teste = fixturesToCalculate.Where(f => f.Status == "incomplete").Select(f => new { f.Code, f.StartDate, f.HomeTeamName, f.AwayTeamName }).ToList();
             var fixtureCodes = fixturesToCalculate.Select(f => f.Code).ToList();
 
             IEnumerable<FixtureGoalsModel> fixturesGoals =
@@ -171,6 +171,17 @@ namespace BetPlacer.Fixtures.API.Repositories
                 .ToListAsync();
 
             var stats = _calculateService.Calculate(fixturesToCalculate, fixturesGoals);
+            var existentStats = _context.FixtureStatsTrade.Where(fst => fixtureCodes.Contains(fst.FixtureCode));
+
+            foreach (var stat in stats)
+            {
+                var existentStat = existentStats.FirstOrDefault(es => es.FixtureCode == stat.FixtureCode);
+
+                if (existentStat == null)
+                    _context.FixtureStatsTrade.Add(stat);
+            }
+
+            await _context.SaveChangesAsync();
         }
 
         #region Private methods

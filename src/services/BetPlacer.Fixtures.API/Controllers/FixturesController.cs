@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using System.Net.Http;
 using System.Text.Json;
 using BetPlacer.Fixtures.API.Models.ValueObjects;
+using BetPlacer.Fixtures.API.Models.Entities.Trade;
 
 namespace BetPlacer.Fixtures.API.Controllers
 {
