@@ -1,25 +1,48 @@
 ﻿using BetPlacer.Backtest.API.Models;
+using BetPlacer.Backtest.API.Models.Entities;
 using BetPlacer.Backtest.API.Models.Enums;
 using BetPlacer.Backtest.API.Models.Filters;
 using BetPlacer.Core.Models.Response.MicroserviceAPI.Fixtures;
-using System.Linq;
 
 namespace BetPlacer.Backtest.API.Services
 {
     public class CalculateBacktest
     {
-        public void Calculate(BacktestParameters parameters, List<FixturesApiResponseModel> fixtures)
+        public BacktestModel Calculate(BacktestParameters parameters, List<FixturesApiResponseModel> fixtures)
         {
             List<FixturesApiResponseModel> filteredFixtures = ApplyFixtureFilters(fixtures, parameters.Filters);
-            
-            int countFixtures = filteredFixtures.Count;
+
             int countMatchedFixtures = 0;
+
+            int goodRun = 0;
+            int badRun = 0;
+            int maxGoodRun = 0;
+            int maxBadRun = 0;
 
             foreach (FixturesApiResponseModel fixture in filteredFixtures)
             {
                 if (GetResult(fixture.Goals, fixture.HomeTeamCode, fixture.AwayTeamCode, parameters.ResultTeamType, parameters.ResultType))
+                {
                     countMatchedFixtures++;
+                    goodRun++;
+
+                    if (badRun > maxBadRun)
+                        maxBadRun = badRun;
+
+                    badRun = 0;
+                }
+
+                badRun++;
+
+                if (goodRun > maxGoodRun)
+                    maxGoodRun = goodRun;
+
+                goodRun = 0;
             }
+
+            BacktestModel backtest = GenerateBacktestResult(filteredFixtures, countMatchedFixtures, maxGoodRun, maxBadRun);
+
+            return backtest;
         }
 
         #region Private methods
@@ -27,17 +50,22 @@ namespace BetPlacer.Backtest.API.Services
         private List<FixturesApiResponseModel> ApplyFixtureFilters(List<FixturesApiResponseModel> fixtures, BacktestFilters filters)
         {
             List<FixturesApiResponseModel> filteredFixtures = new List<FixturesApiResponseModel>();
-            
+
             #region FTS
 
-            Func<FixturesApiResponseModel, bool> ftsPredicate;
+            if (filters != null && filters.ftsFilter != null)
+            {
+                Func<FixturesApiResponseModel, bool> ftsPredicate;
+                FirstToScorePercentageFilter ftsFilter = filters.ftsFilter;
 
-            if (filters.FirstToScorePercentType == FirstToScorePercent.Greater)
-                ftsPredicate = n => n.Stats.HomeFirstToScorePercentTotal > filters.FirstToScorePercentInitial && n.Stats.HomeFirstToScorePercentTotal < filters.FirstToScorePercentFinal;
-            else
-                ftsPredicate = n => n.Stats.HomeFirstToScorePercentTotal >= filters.FirstToScorePercentInitial && n.Stats.HomeFirstToScorePercentTotal <= filters.FirstToScorePercentFinal;
 
-            filteredFixtures = fixtures.Where(ftsPredicate).ToList();
+            if (ftsFilter.Type == FirstToScorePercent.Greater)
+                    ftsPredicate = n => n.Stats.HomeFirstToScorePercentTotal > ftsFilter.InitialValue && n.Stats.HomeFirstToScorePercentTotal < ftsFilter.FinalValue;
+                else
+                    ftsPredicate = n => n.Stats.HomeFirstToScorePercentTotal >= ftsFilter.InitialValue && n.Stats.HomeFirstToScorePercentTotal <= ftsFilter.FinalValue;
+
+                filteredFixtures = fixtures.Where(ftsPredicate).ToList();
+            }
 
             #endregion
 
@@ -99,6 +127,13 @@ namespace BetPlacer.Backtest.API.Services
             }
 
             return false;
+        }
+
+        private BacktestModel GenerateBacktestResult(List<FixturesApiResponseModel> fixtures, int countMatchedFixtures, int maxGoodRun, int maxBadRun)
+        {
+            BacktestModel backtest = new BacktestModel();
+
+            return backtest;
         }
 
         #endregion

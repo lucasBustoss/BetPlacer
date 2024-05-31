@@ -7,13 +7,10 @@ namespace BetPlacer.Backtest.API.Models.Filters
     {
         public BacktestFilters(BacktestFilterRequestModel backtestFilters)
         {
-            FirstToScorePercentType = (FirstToScorePercent)backtestFilters.FirstToScorePercentFilterModel.Type;
-            FirstToScorePercentInitial = backtestFilters.FirstToScorePercentFilterModel.InitialValue;
-            FirstToScorePercentFinal = backtestFilters.FirstToScorePercentFilterModel.FinalValue;
+            if (backtestFilters != null && backtestFilters.FirstToScorePercentFilterModel != null)
+                ftsFilter = new FirstToScorePercentageFilter(backtestFilters.FirstToScorePercentFilterModel);
         }
 
-        public FirstToScorePercent FirstToScorePercentType { get; set; }
-        public double FirstToScorePercentInitial { get; set; }
-        public double FirstToScorePercentFinal { get; set; }
+        public FirstToScorePercentageFilter ftsFilter { get; set; }
     }
 }

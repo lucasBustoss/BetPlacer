@@ -33,10 +33,10 @@ namespace BetPlacer.Backtest.API.Controllers
             try
             {
                 IEnumerable<FixturesApiResponseModel> fixtures = await this.GetFixtures();
-                BacktestParameters backtest = new BacktestParameters(backtestRequestModel);
+                BacktestParameters parameters = new BacktestParameters(backtestRequestModel);
 
                 CalculateBacktest calculateBacktest = new CalculateBacktest();
-                calculateBacktest.Calculate(backtest, fixtures.ToList());
+                calculateBacktest.Calculate(parameters, fixtures.ToList());
 
                 return OkResponse("backtest generated");
             }
