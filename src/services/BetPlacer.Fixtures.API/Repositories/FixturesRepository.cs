@@ -22,10 +22,12 @@ namespace BetPlacer.Fixtures.API.Repositories
             _calculateService = new CalculateFixtureStatsService();
         }
 
-        public IEnumerable<Fixture> List(FixtureListSearchType searchType, IEnumerable<LeaguesApiResponseModel> leagues, IEnumerable<TeamsApiResponseModel> teams)
+        public IEnumerable<Fixture> List(FixtureListSearchType searchType, IEnumerable<LeaguesApiResponseModel> leagues, IEnumerable<TeamsApiResponseModel> teams, bool withGoals, bool withStats)
         {
             List<Fixture> fixturesVO = new List<Fixture>();
-
+            List<FixtureStatsTradeModel> stats = new List<FixtureStatsTradeModel>();
+            List<FixtureGoalsModel> goals = new List<FixtureGoalsModel>();
+            
             var query = _context.Fixtures.AsQueryable();
 
             switch (searchType)
@@ -46,16 +48,34 @@ namespace BetPlacer.Fixtures.API.Repositories
             }
 
             var fixtures = query.ToList();
+            var fixtureCodes = fixtures.Select(f => f.Code).ToList();
+
+            if (withGoals)
+                goals = _context.FixtureGoals.Where(fg => fixtureCodes.Contains(fg.FixtureCode)).ToList();
+
+            if (withStats)
+                stats = _context.FixtureStatsTrade.Where(fst => fixtureCodes.Contains(fst.FixtureCode)).ToList();
 
             foreach (FixtureModel fixture in fixtures)
             {
                 LeaguesApiResponseModel league = leagues.FirstOrDefault(l => l.Season.Any(s => s.Id == fixture.SeasonCode));
                 TeamsApiResponseModel homeTeam = teams.FirstOrDefault(t => t.Code == fixture.HomeTeamId);
                 TeamsApiResponseModel awayTeam = teams.FirstOrDefault(t => t.Code == fixture.AwayTeamId);
+                List<FixtureGoalsModel> goalsFixture = goals.Where(g => g.FixtureCode == fixture.Code).ToList();
+                FixtureStatsTradeModel statFixture = stats.Where(s => s.FixtureCode == fixture.Code).FirstOrDefault();
+
+                if (goalsFixture != null && goalsFixture.Count > 0)
+                {
+                    foreach (var goal in goalsFixture)
+                        goal.Fixture = null;
+                }
+
+                if (statFixture != null)
+                    statFixture.Fixture = null;
 
                 if (league != null && homeTeam != null && awayTeam != null)
                 {
-                    Fixture fixtureVO = new Fixture(fixture, league, homeTeam, awayTeam);
+                    Fixture fixtureVO = new Fixture(fixture, league, homeTeam, awayTeam, goalsFixture, statFixture);
                     fixturesVO.Add(fixtureVO);
                 }
             }

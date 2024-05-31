@@ -61,7 +61,7 @@ namespace BetPlacer.Fixtures.API.Controllers
         }
 
         [HttpGet("")]
-        public async Task<ActionResult> GetFixtures([FromQuery] string searchType)
+        public async Task<ActionResult> GetFixtures([FromQuery] string searchType, [FromQuery] bool withGoals = false, [FromQuery] bool withStats = false)
         {
             FixtureListSearchType type = FixtureListSearchType.All;
 
@@ -79,7 +79,7 @@ namespace BetPlacer.Fixtures.API.Controllers
             IEnumerable<LeaguesApiResponseModel> leagues = taskLeagues.Result;
             IEnumerable<TeamsApiResponseModel> teams = taskTeams.Result;
 
-            List<Fixture> fixtures = _fixturesRepository.List(type, leagues, teams).ToList();
+            List<Fixture> fixtures = _fixturesRepository.List(type, leagues, teams, withGoals, withStats).ToList();
 
             return OkResponse(fixtures);
         }

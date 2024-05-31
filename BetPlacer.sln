@@ -25,7 +25,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BetPlacer.Sync.API", "src\s
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Fixtures", "Fixtures", "{89BA1D96-7AFF-42D2-99AB-1039ED3CD330}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetPlacer.Fixtures.API", "src\services\BetPlacer.Fixtures.API\BetPlacer.Fixtures.API.csproj", "{1E04DEA6-E2CE-4832-8EAA-58AC874CF4B2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BetPlacer.Fixtures.API", "src\services\BetPlacer.Fixtures.API\BetPlacer.Fixtures.API.csproj", "{1E04DEA6-E2CE-4832-8EAA-58AC874CF4B2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Backtest", "Backtest", "{001521B9-5580-4A57-B09E-474D9C01A652}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetPlacer.Backtest.API", "src\services\BetPlacer.Backtest.API\BetPlacer.Backtest.API.csproj", "{9265D9A0-F568-4A95-B4B1-7A4BF5341505}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +61,10 @@ Global
 		{1E04DEA6-E2CE-4832-8EAA-58AC874CF4B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E04DEA6-E2CE-4832-8EAA-58AC874CF4B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1E04DEA6-E2CE-4832-8EAA-58AC874CF4B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9265D9A0-F568-4A95-B4B1-7A4BF5341505}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9265D9A0-F568-4A95-B4B1-7A4BF5341505}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9265D9A0-F568-4A95-B4B1-7A4BF5341505}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9265D9A0-F568-4A95-B4B1-7A4BF5341505}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -72,6 +80,8 @@ Global
 		{BB3014EB-AD56-48F3-8618-620A7FCF3D1B} = {D5F0D7C2-BF69-4143-81B9-C60BDAD7F086}
 		{89BA1D96-7AFF-42D2-99AB-1039ED3CD330} = {7923EB71-2A62-4C17-96FF-D53EA50F4EB3}
 		{1E04DEA6-E2CE-4832-8EAA-58AC874CF4B2} = {89BA1D96-7AFF-42D2-99AB-1039ED3CD330}
+		{001521B9-5580-4A57-B09E-474D9C01A652} = {7923EB71-2A62-4C17-96FF-D53EA50F4EB3}
+		{9265D9A0-F568-4A95-B4B1-7A4BF5341505} = {001521B9-5580-4A57-B09E-474D9C01A652}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6CD21AEF-04AF-438C-9F63-71F6131D5CED}
