@@ -5,7 +5,9 @@
         FirstScore = 1,
         FirstToScoreTwoGoals = 2,
         ToWinHT = 3,
-        ToWinFT = 4
+        ToWinFT = 4,
+        FirstScoreHT = 5,
+        FirstToScoreTwoGoalsHT = 6,
     }
 
     public enum ResultTeamType 

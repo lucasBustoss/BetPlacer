@@ -58,7 +58,7 @@ namespace BetPlacer.Fixtures.API.Repositories
 
             foreach (FixtureModel fixture in fixtures)
             {
-                LeaguesApiResponseModel league = leagues.FirstOrDefault(l => l.Season.Any(s => s.Id == fixture.SeasonCode));
+                LeaguesApiResponseModel league = leagues.FirstOrDefault(l => l.Season.Any(s => s.Code == fixture.SeasonCode));
                 TeamsApiResponseModel homeTeam = teams.FirstOrDefault(t => t.Code == fixture.HomeTeamId);
                 TeamsApiResponseModel awayTeam = teams.FirstOrDefault(t => t.Code == fixture.AwayTeamId);
                 List<FixtureGoalsModel> goalsFixture = goals.Where(g => g.FixtureCode == fixture.Code).ToList();

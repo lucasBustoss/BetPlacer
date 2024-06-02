@@ -7,11 +7,23 @@ namespace BetPlacer.Core.Models.Response.MicroserviceAPI.Fixtures
         [JsonPropertyName("code")]
         public int Code { get; set; }
 
+        [JsonPropertyName("date")]
+        public DateTime Date { get; set; }
+
         [JsonPropertyName("status")]
         public string Status { get; set; }
-        
+
         [JsonPropertyName("leagueName")]
         public string LeagueName { get; set; }
+
+        [JsonPropertyName("leagueSeasonCode")]
+        public int LeagueSeasonCode { get; set; }
+
+        [JsonPropertyName("leagueSeasonYear")]
+        public string LeagueSeasonYear { get; set; }
+
+        [JsonPropertyName("leagueCode")]
+        public int LeagueCode { get; set; }
 
         [JsonPropertyName("homeTeamName")]
         public string HomeTeamName { get; set; }
