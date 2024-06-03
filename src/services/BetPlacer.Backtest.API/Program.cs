@@ -1,3 +1,5 @@
+using BetPlacer.Backtest.API.Config;
+using BetPlacer.Backtest.API.Repositories;
 using BetPlacer.Core.Config;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,17 +9,17 @@ builder.Services.AddApiConfiguration();
 
 #region DbContextConfig
 
-//var connection = builder.Configuration.GetConnectionString("Postgres");
-//builder.Services.AddDbContext<FixturesDbContext>(options => options.UseNpgsql(connection));
+var connection = builder.Configuration.GetConnectionString("Postgres");
+builder.Services.AddDbContext<BacktestDbContext>(options => options.UseNpgsql(connection));
 
-//var dbContextBuilder = new DbContextOptionsBuilder<FixturesDbContext>();
-//dbContextBuilder.UseNpgsql(connection);
+var dbContextBuilder = new DbContextOptionsBuilder<BacktestDbContext>();
+dbContextBuilder.UseNpgsql(connection);
 
 #endregion
 
 #region RepositoriesConfig
 
-//builder.Services.AddSingleton(new FixturesRepository(dbContextBuilder.Options));
+builder.Services.AddSingleton(new BacktestRepository(dbContextBuilder.Options));
 
 #endregion
 

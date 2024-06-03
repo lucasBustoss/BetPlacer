@@ -1,5 +1,6 @@
 using BetPlacer.Backtest.API.Models;
 using BetPlacer.Backtest.API.Models.Request;
+using BetPlacer.Backtest.API.Repositories;
 using BetPlacer.Backtest.API.Services;
 using BetPlacer.Core.Controllers;
 using BetPlacer.Core.Models.Response.Core;
@@ -14,6 +15,8 @@ namespace BetPlacer.Backtest.API.Controllers
     [Route("api/backtest")]
     public class BacktestController : BaseController
     {
+        private readonly BacktestRepository _backtestRepository;
+
         HttpClient _fixturesClient = new HttpClient();
         private readonly string _fixturesApiUrl;
 
@@ -23,8 +26,10 @@ namespace BetPlacer.Backtest.API.Controllers
         HttpClient _leaguesClient = new HttpClient();
         private readonly string _leaguesApiUrl;
 
-        public BacktestController(IConfiguration configuration)
+        public BacktestController(BacktestRepository backtestRepository, IConfiguration configuration)
         {
+            _backtestRepository = backtestRepository;
+
             #region FixturesApi
 
             _fixturesApiUrl = configuration.GetValue<string>("FixturesApi:AppUrl");
@@ -47,6 +52,12 @@ namespace BetPlacer.Backtest.API.Controllers
             #endregion
         }
 
+        [HttpGet]
+        public async Task<ActionResult> GetBacktests()
+        {
+            return OkResponse("Deu certo");
+        }
+
         [HttpPost]
         public async Task<ActionResult> CalculateBacktest([FromBody] BacktestRequestModel backtestRequestModel)
         {
@@ -67,7 +78,9 @@ namespace BetPlacer.Backtest.API.Controllers
                 CalculateBacktest calculateBacktest = new CalculateBacktest();
                 var backtest = calculateBacktest.Calculate(parameters, fixtures.ToList(), leagues.ToList(), teams.ToList());
 
-                return OkResponse(backtest);
+                await _backtestRepository.CreateBacktest(backtest);
+
+                return OkResponse("Backtest created");
             }
             catch (Exception ex)
             {

@@ -4,6 +4,9 @@ namespace BetPlacer.Backtest.API.Models.Request
 {
     public class BacktestRequestModel
     {
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
+
         [JsonPropertyName("resultType")]
         public int ResultType { get; set; }
         

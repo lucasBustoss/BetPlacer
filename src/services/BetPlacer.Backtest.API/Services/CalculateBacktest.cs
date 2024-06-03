@@ -1,12 +1,13 @@
 ﻿using BetPlacer.Backtest.API.Models;
 using BetPlacer.Backtest.API.Models.Entities;
-using BetPlacer.Backtest.API.Models.Entities.Leagues;
+using BetPlacer.Backtest.API.Models.Entities.Odds;
 using BetPlacer.Backtest.API.Models.Enums;
 using BetPlacer.Backtest.API.Models.Filters;
 using BetPlacer.Backtest.API.Utils;
 using BetPlacer.Core.Models.Response.Microservice.Leagues;
 using BetPlacer.Core.Models.Response.Microservice.Teams;
 using BetPlacer.Core.Models.Response.MicroserviceAPI.Fixtures;
+using System.Reflection;
 
 namespace BetPlacer.Backtest.API.Services
 {
@@ -323,13 +324,60 @@ namespace BetPlacer.Backtest.API.Services
         private BacktestModel GenerateBacktestResult(BacktestParameters parameters,
             List<FixturesApiResponseModel> fixtures, List<FixturesApiResponseModel> matchedFixtures, List<LeaguesApiResponseModel> leagues, List<TeamsApiResponseModel> teams, int countFilteredFixtures, int maxGoodRun, int maxBadRun)
         {
-            BacktestModel backtest = new BacktestModel();
+            BacktestModel backtest = new BacktestModel(true);
+            backtest.Name = parameters.Name;
             backtest.FilteredFixtures = Math.Round((double)countFilteredFixtures / fixtures.Count, 4);
             backtest.MatchedFixtures = Math.Round((double)matchedFixtures.Count / countFilteredFixtures, 4);
             backtest.TeamType = (int)parameters.ResultTeamType;
             backtest.Type = (int)parameters.ResultType;
             backtest.MaxGoodRun = maxGoodRun;
             backtest.MaxBadRun = maxBadRun;
+
+            #region Filters
+
+            Type type = parameters.Filters.GetType();
+            PropertyInfo[] properties = type.GetProperties();
+
+            foreach (PropertyInfo property in properties)
+            {
+                string propertyName = property.Name;
+                object propertyValue = property.GetValue(parameters.Filters);
+
+                PropertyInfo[] subProperties = propertyValue.GetType().GetProperties();
+                BacktestFilterModel backtestFilter = new BacktestFilterModel
+                {
+                    Name = GetPropertyName(propertyName)
+                };
+
+                foreach (PropertyInfo subProperty in subProperties)
+                {
+                    string subPropertyName = subProperty.Name;
+                    object subPropertyValue = subProperty.GetValue(propertyValue);
+
+                    switch (subPropertyName)
+                    {
+                        case "CompareType":
+                            backtestFilter.CompareType = (int)subPropertyValue;
+                            break;
+                        case "TeamType":
+                            backtestFilter.TeamType = (int)subPropertyValue;
+                            break;
+                        case "PropType":
+                            backtestFilter.PropType = (int)subPropertyValue;
+                            break;
+                        case "InitialValue":
+                            backtestFilter.InitialValue = (double)subPropertyValue;
+                            break;
+                        case "FinalValue":
+                            backtestFilter.FinalValue = (double)subPropertyValue;
+                            break;
+                    }
+                }
+
+                backtest.Filters.Add(backtestFilter);
+            }
+
+            #endregion
 
             #region Leagues
 
@@ -413,6 +461,41 @@ namespace BetPlacer.Backtest.API.Services
             #endregion
 
             return backtest;
+        }
+
+        private string GetPropertyName(string property)
+        {
+            string name;
+
+            switch (property)
+            {
+                case "FtsFilter":
+                    name = "% de jogos sendo primeiro a marcar";
+                    break;
+                case "TwoZeroFilter":
+                    name = "% de jogos sendo primeiro a marcar 2x0";
+                    break;
+                case "CleanSheetsFilter":
+                    name = "% de jogos sem sofrer gols";
+                    break;
+                case "FailedToScoreFilter":
+                    name = "% de jogos em que não marcou gols";
+                    break;
+                case "BothToScoreFilter":
+                    name = "% de jogos em que os dois times marcaram";
+                    break;
+                case "AverageGoalsScoredFilter":
+                    name = "Média de gols marcados";
+                    break;
+                case "AverageGoalsConcededFilter":
+                    name = "Média de gols sofridos";
+                    break;
+                default:
+                    name = "";
+                    break;
+            }
+
+            return name;
         }
 
         #endregion

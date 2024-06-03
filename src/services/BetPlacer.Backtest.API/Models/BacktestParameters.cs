@@ -8,11 +8,13 @@ namespace BetPlacer.Backtest.API.Models
     {
         public BacktestParameters(BacktestRequestModel backtestRequest)
         {
+            Name = backtestRequest.Name;
             ResultType = (ResultType)backtestRequest.ResultType;
             ResultTeamType = (ResultTeamType)backtestRequest.ResultTeamType;
             Filters = new BacktestFilters(backtestRequest.Filters);
         }
 
+        public string Name { get; set; }
         public ResultType ResultType { get; set; }
         public ResultTeamType ResultTeamType { get; set; }
         public BacktestFilters Filters { get; set; }

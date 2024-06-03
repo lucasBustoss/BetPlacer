@@ -49,7 +49,7 @@ namespace BetPlacer.Leagues.API.Migrations
                     b.HasKey("Code")
                         .HasName("p_k_leagues");
 
-                    b.ToTable("leagues");
+                    b.ToTable("leagues", (string)null);
                 });
 
             modelBuilder.Entity("BetPlacer.Leagues.API.Models.LeagueSeasonModel", b =>
@@ -75,7 +75,7 @@ namespace BetPlacer.Leagues.API.Migrations
 
                     b.HasIndex("LeagueCode");
 
-                    b.ToTable("league_seasons");
+                    b.ToTable("league_seasons", (string)null);
                 });
 
             modelBuilder.Entity("BetPlacer.Leagues.API.Models.LeagueSeasonModel", b =>

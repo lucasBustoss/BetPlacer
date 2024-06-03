@@ -4,6 +4,7 @@
     {
         Greater = 1,
         EqualOrGreater = 2,
+
     }
 
     public enum FilterTeamType

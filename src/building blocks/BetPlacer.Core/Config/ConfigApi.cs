@@ -16,6 +16,16 @@ namespace BetPlacer.Core.Config
                 options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
             }); ;
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll",
+                    builder => builder
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
+            });
+
+
             return services;
         }
 
@@ -28,6 +38,7 @@ namespace BetPlacer.Core.Config
             }
 
             app.UseMiddleware<InternalErrorHandlingMiddleware>();
+            app.UseCors("AllowAll");
 
             app.UseAuthConfiguration();
             // Temporariamente desabilitado
