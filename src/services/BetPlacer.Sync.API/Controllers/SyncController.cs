@@ -42,6 +42,8 @@ namespace BetPlacer.Sync.API.Controllers
                             Task.Run(() => SyncTeams(league.Seasons)),
                             Task.Run(() => SyncFixtures(league.Seasons))
                         );
+
+                        await CalculateStats(league.Seasons);
                     }
                 }
 
@@ -103,7 +105,23 @@ namespace BetPlacer.Sync.API.Controllers
                 var requestTeams = await _httpClient.PostAsJsonAsync(_fixturesApiUrl, body);
 
                 if (!requestTeams.IsSuccessStatusCode)
-                    throw new Exception("error synchronizing complete fixtures.");
+                    throw new Exception("error synchronizing fixtures.");
+            }
+        }
+
+        private async Task CalculateStats(List<LeagueSeasonSyncModel> leagueSeasons)
+        {
+            foreach (var leagueSeason in leagueSeasons)
+            {
+                // Verificação dos leagueSeasonCode que não estão presentes na key de teste
+                if (leagueSeason.Code != 1625 && leagueSeason.Code != 2012 && leagueSeason.Code != 4759 && leagueSeason.Code != 9660)
+                    continue;
+
+                var body = new Dictionary<string, object> { { "leagueSeasonCode", leagueSeason.Code } };
+                var requestTeams = await _httpClient.PostAsJsonAsync($"{_fixturesApiUrl}/stats", body);
+
+                if (!requestTeams.IsSuccessStatusCode)
+                    throw new Exception("error calculate fixtures stats.");
             }
         }
 
