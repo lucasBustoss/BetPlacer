@@ -53,9 +53,21 @@ namespace BetPlacer.Backtest.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> GetBacktests()
+        public ActionResult GetBacktests()
         {
-            return OkResponse("Deu certo");
+            var backtests = _backtestRepository.GetBacktests();
+            return OkResponse(backtests);
+        }
+
+        [HttpGet("{id}")]
+        public ActionResult GetBacktestById(int id)
+        {
+            var backtests = _backtestRepository.GetBacktests(id);
+
+            if (backtests.Count > 0)
+                return OkResponse(backtests[0]);
+
+            return OkResponse(null);
         }
 
         [HttpPost]

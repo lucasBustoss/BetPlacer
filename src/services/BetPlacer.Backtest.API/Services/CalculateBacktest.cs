@@ -326,8 +326,8 @@ namespace BetPlacer.Backtest.API.Services
         {
             BacktestModel backtest = new BacktestModel(true);
             backtest.Name = parameters.Name;
-            backtest.FilteredFixtures = Math.Round((double)countFilteredFixtures / fixtures.Count, 4);
-            backtest.MatchedFixtures = Math.Round((double)matchedFixtures.Count / countFilteredFixtures, 4);
+            backtest.FilteredFixtures = fixtures.Count > 0 ? Math.Round((double)countFilteredFixtures / fixtures.Count, 4) : 0;
+            backtest.MatchedFixtures = countFilteredFixtures > 0 ? Math.Round((double)matchedFixtures.Count / countFilteredFixtures, 4) : 0;
             backtest.TeamType = (int)parameters.ResultTeamType;
             backtest.Type = (int)parameters.ResultType;
             backtest.MaxGoodRun = maxGoodRun;
@@ -342,6 +342,9 @@ namespace BetPlacer.Backtest.API.Services
             {
                 string propertyName = property.Name;
                 object propertyValue = property.GetValue(parameters.Filters);
+
+                if (propertyValue == null)
+                    continue;
 
                 PropertyInfo[] subProperties = propertyValue.GetType().GetProperties();
                 BacktestFilterModel backtestFilter = new BacktestFilterModel
