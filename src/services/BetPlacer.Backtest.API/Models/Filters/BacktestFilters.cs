@@ -27,6 +27,27 @@ namespace BetPlacer.Backtest.API.Models.Filters
 
             if (backtestFilters != null && backtestFilters.AvgGoalsConcededFilterModel != null)
                 AverageGoalsConcededFilter = new FilterValue(backtestFilters.AvgGoalsConcededFilterModel);
+
+            if (backtestFilters != null && backtestFilters.FtsHTFilterModel != null)
+                FtsHTFilter = new FilterValue(backtestFilters.FtsHTFilterModel);
+
+            if (backtestFilters != null && backtestFilters.ToScoreTwoZeroHTFilterModel != null)
+                TwoZeroHTFilter = new FilterValue(backtestFilters.ToScoreTwoZeroHTFilterModel);
+
+            if (backtestFilters != null && backtestFilters.CleanSheetsHTFilterModel != null)
+                CleanSheetsHTFilter = new FilterValue(backtestFilters.AvgGoalsConcededFilterModel);
+
+            if (backtestFilters != null && backtestFilters.FailedToScoreHTFilterModel != null)
+                FailedToScoreHTFilter = new FilterValue(backtestFilters.FailedToScoreHTFilterModel);
+
+            if (backtestFilters != null && backtestFilters.BothToScoreHTFilterModel != null)
+                BothToScoreHTFilter = new FilterValue(backtestFilters.BothToScoreHTFilterModel);
+
+            if (backtestFilters != null && backtestFilters.AverageGoalsScoredHTFilterModel != null)
+                AverageGoalsScoredHTFilter = new FilterValue(backtestFilters.AverageGoalsScoredHTFilterModel);
+
+            if (backtestFilters != null && backtestFilters.AverageGoalsConcededHTFilterModel != null)
+                AverageGoalsConcededHTFilter = new FilterValue(backtestFilters.AverageGoalsConcededHTFilterModel);
         }
 
         public FilterValue FtsFilter { get; set; }
@@ -36,5 +57,12 @@ namespace BetPlacer.Backtest.API.Models.Filters
         public FilterValue BothToScoreFilter { get; set; }
         public FilterValue AverageGoalsScoredFilter { get; set; }
         public FilterValue AverageGoalsConcededFilter { get; set; }
+        public FilterValue FtsHTFilter { get; set; }
+        public FilterValue TwoZeroHTFilter { get; set; }
+        public FilterValue CleanSheetsHTFilter { get; set; }
+        public FilterValue FailedToScoreHTFilter { get; set; }
+        public FilterValue BothToScoreHTFilter { get; set; }
+        public FilterValue AverageGoalsScoredHTFilter { get; set; }
+        public FilterValue AverageGoalsConcededHTFilter { get; set; }
     }
 }

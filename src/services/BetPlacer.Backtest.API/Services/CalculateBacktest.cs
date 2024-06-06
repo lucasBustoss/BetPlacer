@@ -15,7 +15,6 @@ namespace BetPlacer.Backtest.API.Services
     {
         public BacktestModel Calculate(BacktestParameters parameters, List<FixturesApiResponseModel> fixtures, List<LeaguesApiResponseModel> leagues, List<TeamsApiResponseModel> teams)
         {
-            List<FixturesApiResponseModel> filteredFixtures = ApplyFixtureFilters(fixtures, parameters.Filters);
             List<FixturesApiResponseModel> matchedFixtures = new List<FixturesApiResponseModel>();
 
             int goodRun = 0;
@@ -23,11 +22,14 @@ namespace BetPlacer.Backtest.API.Services
             int maxGoodRun = 0;
             int maxBadRun = 0;
 
+            matchedFixtures = fixtures.Where(f => GetResult(f.Goals, f.HomeTeamCode, f.AwayTeamCode, parameters.ResultTeamType, parameters.ResultType)).ToList();
+
+            List<FixturesApiResponseModel> filteredFixtures = ApplyFixtureFilters(matchedFixtures, parameters.Filters);
+
             foreach (FixturesApiResponseModel fixture in filteredFixtures)
             {
                 if (GetResult(fixture.Goals, fixture.HomeTeamCode, fixture.AwayTeamCode, parameters.ResultTeamType, parameters.ResultType))
                 {
-                    matchedFixtures.Add(fixture);
                     goodRun++;
 
                     if (badRun > maxBadRun)
@@ -46,7 +48,7 @@ namespace BetPlacer.Backtest.API.Services
                 }
             }
 
-            BacktestModel backtest = GenerateBacktestResult(parameters, fixtures, matchedFixtures, leagues, teams, filteredFixtures.Count, maxGoodRun, maxBadRun);
+            BacktestModel backtest = GenerateBacktestResult(parameters, fixtures, filteredFixtures, leagues, teams, matchedFixtures.Count, maxGoodRun, maxBadRun);
 
             return backtest;
         }
@@ -203,6 +205,154 @@ namespace BetPlacer.Backtest.API.Services
 
                     var averageGoalsConcededPredicate = FilterPredicateBuilding.BuildPredicate(averageGoalsConcededPath, averageGoalsConcededFilter.InitialValue, averageGoalsConcededFilter.FinalValue, averageGoalsConcededFilter.CompareType);
                     filteredFixtures = filteredFixtures.Where(averageGoalsConcededPredicate).ToList();
+                }
+
+                #endregion
+
+                #region FTSHT
+
+                if (filters.FtsHTFilter != null)
+                {
+                    FilterValue ftsHTFilter = filters.FtsHTFilter;
+                    var ftsHTPropertyMapping = new Dictionary<(FilterTeamType, FilterPropType), string>
+                {
+                    {(FilterTeamType.HomeTeam, FilterPropType.Overall), "Stats.HomeFirstToScorePercentHTTotal"},
+                    {(FilterTeamType.HomeTeam, FilterPropType.HomeAway), "Stats.HomeFirstToScorePercentHTAtHome"},
+                    {(FilterTeamType.AwayTeam, FilterPropType.Overall), "Stats.AwayFirstToScorePercentHTTotal"},
+                    {(FilterTeamType.AwayTeam, FilterPropType.HomeAway), "Stats.AwayFirstToScorePercentHTAtAway"}
+                };
+
+                    string ftsHTPath = ftsHTPropertyMapping[(ftsHTFilter.TeamType, ftsHTFilter.PropType)];
+
+                    var ftsPredicate = FilterPredicateBuilding.BuildPredicate(ftsHTPath, ftsHTFilter.InitialValue, ftsHTFilter.FinalValue, ftsHTFilter.CompareType);
+                    filteredFixtures = filteredFixtures.Where(ftsPredicate).ToList();
+                }
+
+                #endregion
+
+                #region ToScoreTwoZeroHT
+
+                if (filters.TwoZeroHTFilter != null)
+                {
+                    FilterValue twoZeroHTFilter = filters.TwoZeroHTFilter;
+                    var twoZeroHTPropertyMapping = new Dictionary<(FilterTeamType, FilterPropType), string>
+                    {
+                        {(FilterTeamType.HomeTeam, FilterPropType.Overall), "Stats.HomeToScoreTwoZeroPercentHTTotal"},
+                        {(FilterTeamType.HomeTeam, FilterPropType.HomeAway), "Stats.HomeToScoreTwoZeroPercentHTAtHome"},
+                        {(FilterTeamType.AwayTeam, FilterPropType.Overall), "Stats.AwayToScoreTwoZeroPercentHTTotal"},
+                        {(FilterTeamType.AwayTeam, FilterPropType.HomeAway), "Stats.AwayToScoreTwoZeroPercentHTAtAway"}
+                    };
+
+                    string twoZeroHTPath = twoZeroHTPropertyMapping[(twoZeroHTFilter.TeamType, twoZeroHTFilter.PropType)];
+
+                    var twoZeroHTPredicate = FilterPredicateBuilding.BuildPredicate(twoZeroHTPath, twoZeroHTFilter.InitialValue, twoZeroHTFilter.FinalValue, twoZeroHTFilter.CompareType);
+                    filteredFixtures = filteredFixtures.Where(twoZeroHTPredicate).ToList();
+                }
+
+                #endregion
+
+                #region CleanSheetsHT
+
+                if (filters.CleanSheetsHTFilter != null)
+                {
+                    FilterValue cleanSheetHTFilter = filters.CleanSheetsHTFilter;
+                    var cleanSheetHTPropertyMapping = new Dictionary<(FilterTeamType, FilterPropType), string>
+                    {
+                        {(FilterTeamType.HomeTeam, FilterPropType.Overall), "Stats.HomeCleanSheetsPercentHTTotal"},
+                        {(FilterTeamType.HomeTeam, FilterPropType.HomeAway), "Stats.HomeCleanSheetsPercentAtHTHome"},
+                        {(FilterTeamType.AwayTeam, FilterPropType.Overall), "Stats.AwayCleanSheetsPercentHTTotal"},
+                        {(FilterTeamType.AwayTeam, FilterPropType.HomeAway), "Stats.AwayCleanSheetsPercentHTAtAway"}
+                    };
+
+                    string cleanSheetHTPath = cleanSheetHTPropertyMapping[(cleanSheetHTFilter.TeamType, cleanSheetHTFilter.PropType)];
+
+                    var cleanSheetHTPredicate = FilterPredicateBuilding.BuildPredicate(cleanSheetHTPath, cleanSheetHTFilter.InitialValue, cleanSheetHTFilter.FinalValue, cleanSheetHTFilter.CompareType);
+                    filteredFixtures = filteredFixtures.Where(cleanSheetHTPredicate).ToList();
+                }
+
+                #endregion
+
+                #region FailedToScore
+
+                if (filters.FailedToScoreHTFilter != null)
+                {
+                    FilterValue failedToScoreHTFilter = filters.FailedToScoreHTFilter;
+                    var failedToScoreHTPropertyMapping = new Dictionary<(FilterTeamType, FilterPropType), string>
+                    {
+                        {(FilterTeamType.HomeTeam, FilterPropType.Overall), "Stats.HomeFailedToScorePercentHTTotal"},
+                        {(FilterTeamType.HomeTeam, FilterPropType.HomeAway), "Stats.HomeFailedToScorePercentHTAtHome"},
+                        {(FilterTeamType.AwayTeam, FilterPropType.Overall), "Stats.AwayFailedToScorePercentHTTotal"},
+                        {(FilterTeamType.AwayTeam, FilterPropType.HomeAway), "Stats.AwayFailedToScorePercentHTAtAway"}
+                    };
+
+                    string failedToScoreHTPath = failedToScoreHTPropertyMapping[(failedToScoreHTFilter.TeamType, failedToScoreHTFilter.PropType)];
+
+                    var failedToScoreHTPredicate = FilterPredicateBuilding.BuildPredicate(failedToScoreHTPath, failedToScoreHTFilter.InitialValue, failedToScoreHTFilter.FinalValue, failedToScoreHTFilter.CompareType);
+                    filteredFixtures = filteredFixtures.Where(failedToScoreHTPredicate).ToList();
+                }
+
+                #endregion
+
+                #region BothToScoreHT
+
+                if (filters.BothToScoreHTFilter != null)
+                {
+                    FilterValue bothToScoreHTFilter = filters.BothToScoreHTFilter;
+                    var bothToScoreHTPropertyMapping = new Dictionary<(FilterTeamType, FilterPropType), string>
+                    {
+                        {(FilterTeamType.HomeTeam, FilterPropType.Overall), "Stats.HomeBothToScorePercentHTTotal"},
+                        {(FilterTeamType.HomeTeam, FilterPropType.HomeAway), "Stats.HomeBothToScorePercentHTAtHome"},
+                        {(FilterTeamType.AwayTeam, FilterPropType.Overall), "Stats.AwayBothToScorePercentHTTotal"},
+                        {(FilterTeamType.AwayTeam, FilterPropType.HomeAway), "Stats.AwayBothToScorePercentHTAtAway"}
+                    };
+
+                    string bothToScoreHTPath = bothToScoreHTPropertyMapping[(bothToScoreHTFilter.TeamType, bothToScoreHTFilter.PropType)];
+
+                    var bothToScoreHTPredicate = FilterPredicateBuilding.BuildPredicate(bothToScoreHTPath, bothToScoreHTFilter.InitialValue, bothToScoreHTFilter.FinalValue, bothToScoreHTFilter.CompareType);
+                    filteredFixtures = filteredFixtures.Where(bothToScoreHTPredicate).ToList();
+                }
+
+
+                #endregion
+
+                #region AverageGoalsScoredHT
+
+                if (filters.AverageGoalsScoredFilter != null)
+                {
+                    FilterValue averageGoalsScoredHTFilter = filters.AverageGoalsScoredHTFilter;
+                    var averageGoalsScoredHTPropertyMapping = new Dictionary<(FilterTeamType, FilterPropType), string>
+                    {
+                        {(FilterTeamType.HomeTeam, FilterPropType.Overall), "Stats.HomeAverageGoalsScoredHTTotal"},
+                        {(FilterTeamType.HomeTeam, FilterPropType.HomeAway), "Stats.HomeAverageGoalsScoredHTAtHome"},
+                        {(FilterTeamType.AwayTeam, FilterPropType.Overall), "Stats.AwayAverageGoalsScoredHTTotal"},
+                        {(FilterTeamType.AwayTeam, FilterPropType.HomeAway), "Stats.AwayAverageGoalsScoredHTAtAway"}
+                    };
+
+                    string averageGoalsScoredHTPath = averageGoalsScoredHTPropertyMapping[(averageGoalsScoredHTFilter.TeamType, averageGoalsScoredHTFilter.PropType)];
+
+                    var averageGoalsScoredHTPredicate = FilterPredicateBuilding.BuildPredicate(averageGoalsScoredHTPath, averageGoalsScoredHTFilter.InitialValue, averageGoalsScoredHTFilter.FinalValue, averageGoalsScoredHTFilter.CompareType);
+                    filteredFixtures = filteredFixtures.Where(averageGoalsScoredHTPredicate).ToList();
+                }
+
+                #endregion
+
+                #region AverageGoalsConcededHT
+
+                if (filters.AverageGoalsConcededHTFilter != null)
+                {
+                    FilterValue averageGoalsConcededHTFilter = filters.AverageGoalsConcededHTFilter;
+                    var averageGoalsConcededHTPropertyMapping = new Dictionary<(FilterTeamType, FilterPropType), string>
+                    {
+                        {(FilterTeamType.HomeTeam, FilterPropType.Overall), "Stats.HomeAverageGoalsConcededHTTotal"},
+                        {(FilterTeamType.HomeTeam, FilterPropType.HomeAway), "Stats.HomeAverageGoalsConcededHTAtHome"},
+                        {(FilterTeamType.AwayTeam, FilterPropType.Overall), "Stats.AwayAverageGoalsConcededHTTotal"},
+                        {(FilterTeamType.AwayTeam, FilterPropType.HomeAway), "Stats.AwayAverageGoalsConcededHTAtAway"}
+                    };
+
+                    string averageGoalsConcededHTPath = averageGoalsConcededHTPropertyMapping[(averageGoalsConcededHTFilter.TeamType, averageGoalsConcededHTFilter.PropType)];
+
+                    var averageGoalsConcededHTPredicate = FilterPredicateBuilding.BuildPredicate(averageGoalsConcededHTPath, averageGoalsConcededHTFilter.InitialValue, averageGoalsConcededHTFilter.FinalValue, averageGoalsConcededHTFilter.CompareType);
+                    filteredFixtures = filteredFixtures.Where(averageGoalsConcededHTPredicate).ToList();
                 }
 
                 #endregion

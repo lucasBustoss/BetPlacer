@@ -20,10 +20,10 @@ namespace BetPlacer.Core.Models.Response.API
     public class Metadata
     {
         [JsonPropertyName("request_limit")]
-        public int? RequestLimit { get; set; }
+        public string? RequestLimit { get; set; }
 
         [JsonPropertyName("request_remaining")]
-        public int? RequestRemaining { get; set; }
+        public string? RequestRemaining { get; set; }
 
         [JsonPropertyName("request_reset_message")]
         public string RequestResetMessage { get; set; }

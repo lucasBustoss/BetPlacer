@@ -22,9 +22,6 @@ namespace BetPlacer.Core.Models.Response.FootballAPI.Leagues
         [JsonPropertyName("country")]
         public string Country { get; set; }
 
-        [JsonPropertyName("league_name")]
-        public string LeagueName { get; set; }
-
         [JsonPropertyName("image")]
         public string Image { get; set; }
 

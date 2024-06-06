@@ -22,8 +22,29 @@ namespace BetPlacer.Backtest.API.Models.Request
 
         [JsonPropertyName("avgGoalsScored")]
         public BacktestFilterValuesRequestModel AvgGoalsScoredFilterModel { get; set; }
-        
+
         [JsonPropertyName("avgGoalsConceded")]
         public BacktestFilterValuesRequestModel AvgGoalsConcededFilterModel { get; set; }
+
+        [JsonPropertyName("firstToScoreHTPercent")]
+        public BacktestFilterValuesRequestModel FtsHTFilterModel { get; set; }
+
+        [JsonPropertyName("twoZeroHTPercent")]
+        public BacktestFilterValuesRequestModel ToScoreTwoZeroHTFilterModel { get; set; }
+
+        [JsonPropertyName("cleanSheetHTPercent")]
+        public BacktestFilterValuesRequestModel CleanSheetsHTFilterModel { get; set; }
+
+        [JsonPropertyName("failedToScoreHTPercent")]
+        public BacktestFilterValuesRequestModel FailedToScoreHTFilterModel { get; set; }
+
+        [JsonPropertyName("bothToScoreHTPercent")]
+        public BacktestFilterValuesRequestModel BothToScoreHTFilterModel { get; set; }
+
+        [JsonPropertyName("avgGoalsHTScored")]
+        public BacktestFilterValuesRequestModel AverageGoalsScoredHTFilterModel { get; set; }
+
+        [JsonPropertyName("avgGoalsHTConceded")]
+        public BacktestFilterValuesRequestModel AverageGoalsConcededHTFilterModel { get; set; }
     }
 }

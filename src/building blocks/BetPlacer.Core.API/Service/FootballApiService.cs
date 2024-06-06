@@ -24,7 +24,7 @@ namespace BetPlacer.Core.API.Service
 
         public async Task<IEnumerable<LeaguesFootballResponseModel>> GetLeagues()
         {
-            var request = await _httpClient.GetAsync($"league-list?key={_apiKey}");
+            var request = await _httpClient.GetAsync($"league-list?key={_apiKey}&chosen_leagues_only=true");
             return await TreatApiRequest<LeaguesFootballResponseModel>(request);
         }
 

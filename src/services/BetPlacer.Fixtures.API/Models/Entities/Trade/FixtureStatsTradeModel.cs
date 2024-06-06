@@ -44,10 +44,19 @@ namespace BetPlacer.Fixtures.API.Models.Entities.Trade
         
         [Column("home_losses_percent_ht_total")]
         public double HomeLossesPercentHTTotal { get; set; }
-        
+
+        [Column("home_first_to_score_percent_ht_total")]
+        public double HomeFirstToScorePercentHTTotal { get; set; }
+
+        [Column("home_to_score_two_zero_percent_ht_total")]
+        public double HomeToScoreTwoZeroPercentHTTotal { get; set; }
+
         [Column("home_failed_to_score_percent_ht_total")]
         public double HomeFailedToScorePercentHTTotal { get; set; }
-        
+
+        [Column("home_both_to_score_percent_ht_total")]
+        public double HomeBothToScorePercentHTTotal { get; set; }
+
         [Column("home_clean_sheets_percent_ht_total")]
         public double HomeCleanSheetsPercentHTTotal { get; set; }
         
@@ -76,8 +85,17 @@ namespace BetPlacer.Fixtures.API.Models.Entities.Trade
         [Column("home_losses_percent_ft_total")]
         public double HomeLossesPercentFTTotal { get; set; }
 
+        [Column("home_first_to_score_percent_ft_total")]
+        public double HomeFirstToScorePercentFTTotal { get; set; }
+
+        [Column("home_to_score_two_zero_percent_ft_total")]
+        public double HomeToScoreTwoZeroPercentFTTotal { get; set; }
+
         [Column("home_failed_to_score_percent_ft_total")]
         public double HomeFailedToScorePercentFTTotal { get; set; }
+
+        [Column("home_both_to_score_percent_ft_total")]
+        public double HomeBothToScorePercentFTTotal { get; set; }
 
         [Column("home_clean_sheets_percent_ft_total")]
         public double HomeCleanSheetsPercentFTTotal { get; set; }
@@ -213,10 +231,19 @@ namespace BetPlacer.Fixtures.API.Models.Entities.Trade
         
         [Column("home_losses_percent_ht_at_home")]
         public double HomeLossesPercentHTAtHome { get; set; }
-        
+
+        [Column("home_first_to_score_percent_ht_at_home")]
+        public double HomeFirstToScorePercentHTAtHome { get; set; }
+
+        [Column("home_to_score_two_zero_percent_ht_at_home")]
+        public double HomeToScoreTwoZeroPercentHTAtHome { get; set; }
+
         [Column("home_failed_to_score_percent_ht_at_home")]
         public double HomeFailedToScorePercentHTAtHome { get; set; }
-        
+
+        [Column("home_both_to_score_percent_ht_at_home")]
+        public double HomeBothToScorePercentHTAtHome { get; set; }
+
         [Column("home_clean_sheets_percent_ht_at_home")]
         public double HomeCleanSheetsPercentHTAtHome { get; set; }
         
@@ -245,8 +272,17 @@ namespace BetPlacer.Fixtures.API.Models.Entities.Trade
         [Column("home_losses_percent_ft_at_home")]
         public double HomeLossesPercentFTAtHome { get; set; }
 
+        [Column("home_first_to_score_percent_ft_at_home")]
+        public double HomeFirstToScorePercentFTAtHome { get; set; }
+
+        [Column("home_to_score_two_zero_percent_ft_at_home")]
+        public double HomeToScoreTwoZeroPercentFTAtHome { get; set; }
+
         [Column("home_failed_to_score_percent_ft_at_home")]
         public double HomeFailedToScorePercentFTAtHome { get; set; }
+
+        [Column("home_both_to_score_percent_ft_at_home")]
+        public double HomeBothToScorePercentFTAtHome { get; set; }
 
         [Column("home_clean_sheets_percent_ft_at_home")]
         public double HomeCleanSheetsPercentFTAtHome { get; set; }
@@ -387,8 +423,17 @@ namespace BetPlacer.Fixtures.API.Models.Entities.Trade
         [Column("away_losses_percent_ht_total")]
         public double AwayLossesPercentHTTotal { get; set; }
 
+        [Column("away_first_to_score_percent_ht_total")]
+        public double AwayFirstToScorePercentHTTotal { get; set; }
+
+        [Column("away_to_score_two_zero_percent_ht_total")]
+        public double AwayToScoreTwoZeroPercentHTTotal { get; set; }
+
         [Column("away_failed_to_score_percent_ht_total")]
         public double AwayFailedToScorePercentHTTotal { get; set; }
+
+        [Column("away_both_to_score_percent_ht_total")]
+        public double AwayBothToScorePercentHTTotal { get; set; }
 
         [Column("away_clean_sheets_percent_ht_total")]
         public double AwayCleanSheetsPercentHTTotal { get; set; }
@@ -418,8 +463,17 @@ namespace BetPlacer.Fixtures.API.Models.Entities.Trade
         [Column("away_losses_percent_ft_total")]
         public double AwayLossesPercentFTTotal { get; set; }
 
+        [Column("away_first_to_score_percent_ft_total")]
+        public double AwayFirstToScorePercentFTTotal { get; set; }
+
+        [Column("away_to_score_two_zero_percent_ft_total")]
+        public double AwayToScoreTwoZeroPercentFTTotal { get; set; }
+
         [Column("away_failed_to_score_percent_ft_total")]
         public double AwayFailedToScorePercentFTTotal { get; set; }
+
+        [Column("away_both_to_score_percent_ft_total")]
+        public double AwayBothToScorePercentFTTotal { get; set; }
 
         [Column("away_clean_sheets_percent_ft_total")]
         public double AwayCleanSheetsPercentFTTotal { get; set; }
@@ -556,8 +610,17 @@ namespace BetPlacer.Fixtures.API.Models.Entities.Trade
         [Column("away_losses_percent_ht_at_away")]
         public double AwayLossesPercentHTAtAway { get; set; }
 
+        [Column("away_first_to_score_percent_ht_at_away")]
+        public double AwayFirstToScorePercentHTAtAway { get; set; }
+
+        [Column("away_to_score_two_zero_percent_ht_at_away")]
+        public double AwayToScoreTwoZeroPercentHTAtAway { get; set; }
+
         [Column("away_failed_to_score_percent_ht_at_away")]
         public double AwayFailedToScorePercentHTAtAway { get; set; }
+
+        [Column("away_both_to_score_percent_ht_at_away")]
+        public double AwayBothToScorePercentHTAtAway { get; set; }
 
         [Column("away_clean_sheets_percent_ht_at_away")]
         public double AwayCleanSheetsPercentHTAtAway { get; set; }
@@ -587,8 +650,17 @@ namespace BetPlacer.Fixtures.API.Models.Entities.Trade
         [Column("away_losses_percent_ft_at_away")]
         public double AwayLossesPercentFTAtAway { get; set; }
 
+        [Column("away_first_to_score_percent_ft_at_away")]
+        public double AwayFirstToScorePercentFTAtAway { get; set; }
+
+        [Column("away_to_score_two_zero_percent_ft_at_away")]
+        public double AwayToScoreTwoZeroPercentFTAtAway { get; set; }
+
         [Column("away_failed_to_score_percent_ft_at_away")]
         public double AwayFailedToScorePercentFTAtAway { get; set; }
+
+        [Column("away_both_to_score_percent_ft_at_away")]
+        public double AwayBothToScorePercentFTAtAway { get; set; }
 
         [Column("away_clean_sheets_percent_ft_at_away")]
         public double AwayCleanSheetsPercentFTAtAway { get; set; }

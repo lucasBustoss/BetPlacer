@@ -288,7 +288,10 @@ namespace BetPlacer.Fixtures.API.Services
             stats.HomeWinsPercentHTTotal = homeHTTotal.WinsPercent;
             stats.HomeDrawsPercentHTTotal = homeHTTotal.DrawsPercent;
             stats.HomeLossesPercentHTTotal = homeHTTotal.LossesPercent;
+            stats.HomeFirstToScorePercentHTTotal = homeHTTotal.FTSPercent;
+            stats.HomeToScoreTwoZeroPercentHTTotal = homeHTTotal.TwoZeroPercent;
             stats.HomeFailedToScorePercentHTTotal = homeHTTotal.FailedToScorePercent;
+            stats.HomeBothToScorePercentHTTotal = homeHTTotal.BothToScorePercent;
             stats.HomeCleanSheetsPercentHTTotal = homeHTTotal.CleanSheetsPercent;
             stats.HomeGoalsScoredHTTotal = homeHTTotal.GoalsScored;
             stats.HomeGoalsConcededHTTotal = homeHTTotal.GoalsConceded;
@@ -305,7 +308,10 @@ namespace BetPlacer.Fixtures.API.Services
             stats.HomeWinsPercentHTAtHome = homeHTAtHome.WinsPercent;
             stats.HomeDrawsPercentHTAtHome = homeHTAtHome.DrawsPercent;
             stats.HomeLossesPercentHTAtHome = homeHTAtHome.LossesPercent;
+            stats.HomeFirstToScorePercentHTAtHome = homeHTAtHome.FTSPercent;
+            stats.HomeToScoreTwoZeroPercentHTAtHome = homeHTAtHome.TwoZeroPercent;
             stats.HomeFailedToScorePercentHTAtHome = homeHTAtHome.FailedToScorePercent;
+            stats.HomeBothToScorePercentHTAtHome = homeHTAtHome.BothToScorePercent;
             stats.HomeCleanSheetsPercentHTAtHome = homeHTAtHome.CleanSheetsPercent;
             stats.HomeGoalsScoredHTAtHome = homeHTAtHome.GoalsScored;
             stats.HomeGoalsConcededHTAtHome = homeHTAtHome.GoalsConceded;
@@ -323,7 +329,10 @@ namespace BetPlacer.Fixtures.API.Services
             stats.AwayWinsPercentHTTotal = awayHTTotal.WinsPercent;
             stats.AwayDrawsPercentHTTotal = awayHTTotal.DrawsPercent;
             stats.AwayLossesPercentHTTotal = awayHTTotal.LossesPercent;
+            stats.AwayFirstToScorePercentHTTotal = awayHTTotal.FTSPercent;
+            stats.AwayToScoreTwoZeroPercentHTTotal = awayHTTotal.TwoZeroPercent;
             stats.AwayFailedToScorePercentHTTotal = awayHTTotal.FailedToScorePercent;
+            stats.AwayBothToScorePercentHTTotal = awayHTTotal.BothToScorePercent;
             stats.AwayCleanSheetsPercentHTTotal = awayHTTotal.CleanSheetsPercent;
             stats.AwayGoalsScoredHTTotal = awayHTTotal.GoalsScored;
             stats.AwayGoalsConcededHTTotal = awayHTTotal.GoalsConceded;
@@ -340,7 +349,10 @@ namespace BetPlacer.Fixtures.API.Services
             stats.AwayWinsPercentHTAtAway = awayHTAtAway.WinsPercent;
             stats.AwayDrawsPercentHTAtAway = awayHTAtAway.DrawsPercent;
             stats.AwayLossesPercentHTAtAway = awayHTAtAway.LossesPercent;
+            stats.AwayFirstToScorePercentHTAtAway = awayHTAtAway.FTSPercent;
+            stats.AwayToScoreTwoZeroPercentHTAtAway = awayHTAtAway.TwoZeroPercent;
             stats.AwayFailedToScorePercentHTAtAway = awayHTAtAway.FailedToScorePercent;
+            stats.AwayBothToScorePercentHTAtAway = awayHTAtAway.BothToScorePercent;
             stats.AwayCleanSheetsPercentHTAtAway = awayHTAtAway.CleanSheetsPercent;
             stats.AwayGoalsScoredHTAtAway = awayHTAtAway.GoalsScored;
             stats.AwayGoalsConcededHTAtAway = awayHTAtAway.GoalsConceded;
@@ -361,7 +373,10 @@ namespace BetPlacer.Fixtures.API.Services
             stats.HomeWinsPercentFTTotal = homeFTTotal.WinsPercent;
             stats.HomeDrawsPercentFTTotal = homeFTTotal.DrawsPercent;
             stats.HomeLossesPercentFTTotal = homeFTTotal.LossesPercent;
+            stats.HomeFirstToScorePercentFTTotal = homeFTTotal.FTSPercent;
+            stats.HomeToScoreTwoZeroPercentFTTotal = homeFTTotal.TwoZeroPercent;
             stats.HomeFailedToScorePercentFTTotal = homeFTTotal.FailedToScorePercent;
+            stats.HomeBothToScorePercentFTTotal = homeFTTotal.BothToScorePercent;
             stats.HomeCleanSheetsPercentFTTotal = homeFTTotal.CleanSheetsPercent;
             stats.HomeGoalsScoredFTTotal = homeFTTotal.GoalsScored;
             stats.HomeGoalsConcededFTTotal = homeFTTotal.GoalsConceded;
@@ -378,7 +393,10 @@ namespace BetPlacer.Fixtures.API.Services
             stats.HomeWinsPercentFTAtHome = homeFTAtHome.WinsPercent;
             stats.HomeDrawsPercentFTAtHome = homeFTAtHome.DrawsPercent;
             stats.HomeLossesPercentFTAtHome = homeFTAtHome.LossesPercent;
+            stats.HomeFirstToScorePercentFTAtHome = homeFTAtHome.FTSPercent;
+            stats.HomeToScoreTwoZeroPercentFTAtHome = homeFTAtHome.TwoZeroPercent;
             stats.HomeFailedToScorePercentFTAtHome = homeFTAtHome.FailedToScorePercent;
+            stats.HomeBothToScorePercentFTAtHome = homeFTAtHome.BothToScorePercent;
             stats.HomeCleanSheetsPercentFTAtHome = homeFTAtHome.CleanSheetsPercent;
             stats.HomeGoalsScoredFTAtHome = homeFTAtHome.GoalsScored;
             stats.HomeGoalsConcededFTAtHome = homeFTAtHome.GoalsConceded;
@@ -396,7 +414,10 @@ namespace BetPlacer.Fixtures.API.Services
             stats.AwayWinsPercentFTTotal = awayFTTotal.WinsPercent;
             stats.AwayDrawsPercentFTTotal = awayFTTotal.DrawsPercent;
             stats.AwayLossesPercentFTTotal = awayFTTotal.LossesPercent;
+            stats.AwayFirstToScorePercentFTTotal = awayFTTotal.FTSPercent;
+            stats.AwayToScoreTwoZeroPercentFTTotal = awayFTTotal.TwoZeroPercent;
             stats.AwayFailedToScorePercentFTTotal = awayFTTotal.FailedToScorePercent;
+            stats.AwayBothToScorePercentFTTotal = awayFTTotal.BothToScorePercent;
             stats.AwayCleanSheetsPercentFTTotal = awayFTTotal.CleanSheetsPercent;
             stats.AwayGoalsScoredFTTotal = awayFTTotal.GoalsScored;
             stats.AwayGoalsConcededFTTotal = awayFTTotal.GoalsConceded;
@@ -413,7 +434,10 @@ namespace BetPlacer.Fixtures.API.Services
             stats.AwayWinsPercentFTAtAway = awayFTAtAway.WinsPercent;
             stats.AwayDrawsPercentFTAtAway = awayFTAtAway.DrawsPercent;
             stats.AwayLossesPercentFTAtAway = awayFTAtAway.LossesPercent;
+            stats.AwayFirstToScorePercentFTAtAway = awayFTAtAway.FTSPercent;
+            stats.AwayToScoreTwoZeroPercentFTAtAway = awayFTAtAway.TwoZeroPercent;
             stats.AwayFailedToScorePercentFTAtAway = awayFTAtAway.FailedToScorePercent;
+            stats.AwayBothToScorePercentFTAtAway = awayFTAtAway.BothToScorePercent;
             stats.AwayCleanSheetsPercentFTAtAway = awayFTAtAway.CleanSheetsPercent;
             stats.AwayGoalsScoredFTAtAway = awayFTAtAway.GoalsScored;
             stats.AwayGoalsConcededFTAtAway = awayFTAtAway.GoalsConceded;
@@ -686,7 +710,10 @@ namespace BetPlacer.Fixtures.API.Services
             double winsPercent = 0;
             double drawsPercent = 0;
             double lossesPercent = 0;
+            double ftsPercent = 0;
+            double twoZeroPercent = 0;
             double failedToScorePercent = 0;
+            double bothToScorePercent = 0;
             double cleanSheetsPercent = 0;
             int goalsScoredTotal = 0;
             int goalsConcededTotal = 0;
@@ -697,7 +724,10 @@ namespace BetPlacer.Fixtures.API.Services
             int wins = 0;
             int draws = 0;
             int losses = 0;
+            int firstToScore = 0;
+            int toScoreTwoZero = 0;
             int fts = 0;
+            int bothToScore = 0;
             int cs = 0;
 
             foreach (FixtureModel fixture in fixtures)
@@ -759,13 +789,51 @@ namespace BetPlacer.Fixtures.API.Services
                     fts++;
 
                 if (goalsConceded == 0)
-                    cs++;
+                    cs++; 
+                
+                if (otherTeamGoals.Count > 0 && referenceTeamGoals.Count > 0)
+                    bothToScore++;
+
+                FixtureGoalsModel referenceTeamFirstGoal = referenceTeamGoals.FirstOrDefault();
+                FixtureGoalsModel otherTeamFirstGoal = otherTeamGoals.FirstOrDefault();
+
+                #region FTS
+
+                if (referenceTeamFirstGoal != null &&
+                    (otherTeamFirstGoal == null || (Convert.ToDouble(referenceTeamFirstGoal.Minute, CultureInfo.InvariantCulture) < Convert.ToDouble(otherTeamFirstGoal.Minute, CultureInfo.InvariantCulture))))
+                {
+                    firstToScore++;
+                }
+
+                #endregion
+
+                #region TwoZero
+
+                if (referenceTeamGoals.Count > 1)
+                {
+                    double referenceSecondGoalMinute = Convert.ToDouble(referenceTeamGoals[1].Minute, CultureInfo.InvariantCulture);
+
+                    if (otherTeamGoals == null || otherTeamGoals.Count == 0)
+                        toScoreTwoZero++;
+                    else
+                    {
+                        double otherFirstGoalMinute = Convert.ToDouble(otherTeamGoals[0].Minute, CultureInfo.InvariantCulture);
+
+                        if (referenceSecondGoalMinute < otherFirstGoalMinute)
+                            toScoreTwoZero++;
+                    }
+                }
+
+                #endregion
             }
 
             winsPercent = countFixtures > 0 ? Math.Round((double)wins / countFixtures, 2) : 0;
             drawsPercent = countFixtures > 0 ? Math.Round((double)draws / countFixtures, 2) : 0;
             lossesPercent = countFixtures > 0 ? Math.Round((double)losses / countFixtures, 2) : 0;
+            ftsPercent = countFixtures > 0 ? Math.Round((double)firstToScore / countFixtures, 2) : 0;
+            twoZeroPercent = firstToScore > 0 ? Math.Round((double)toScoreTwoZero / firstToScore, 2) : 0;
             failedToScorePercent = countFixtures > 0 ? Math.Round((double)fts / countFixtures, 2) : 0;
+            bothToScorePercent = countFixtures > 0 ? Math.Round((double)bothToScore / countFixtures, 2) : 0; 
             cleanSheetsPercent = countFixtures > 0 ? Math.Round((double)cs / countFixtures, 2) : 0;
             averageGoalsScored = countFixtures > 0 ? Math.Round((double)goalsScoredTotal / countFixtures, 2) : 0;
             averageGoalsConceded = countFixtures > 0 ? Math.Round((double)goalsConcededTotal / countFixtures, 2) : 0;
@@ -774,7 +842,10 @@ namespace BetPlacer.Fixtures.API.Services
                 winsPercent,
                 drawsPercent,
                 lossesPercent,
+                ftsPercent,
+                twoZeroPercent,
                 failedToScorePercent,
+                bothToScorePercent,
                 cleanSheetsPercent,
                 goalsScoredTotal,
                 goalsConcededTotal,

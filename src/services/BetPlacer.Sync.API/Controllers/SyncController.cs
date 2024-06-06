@@ -2,6 +2,7 @@
 using BetPlacer.Core.Models.Response.Core;
 using BetPlacer.Sync.API.Models.Response.Leagues;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 using System.Text.Json;
 
 namespace BetPlacer.Sync.API.Controllers
@@ -17,6 +18,7 @@ namespace BetPlacer.Sync.API.Controllers
         public SyncController(IConfiguration configuration)
         {
             _httpClient = new HttpClient();
+            _httpClient.Timeout = TimeSpan.FromMinutes(30);
             _leaguesApiUrl = configuration.GetValue<string>("Apis:LeaguesApi");
             _teamsApiUrl = configuration.GetValue<string>("Apis:TeamsApi");
             _fixturesApiUrl = configuration.GetValue<string>("Apis:FixturesApi");
@@ -33,17 +35,30 @@ namespace BetPlacer.Sync.API.Controllers
                 {
                     foreach (var league in leagues)
                     {
-                        // O trecho abaixo verifica se o nome é Premier League
-                        // Porque é a unica liga que funciona com a chave de teste
-                        if (league.Name != "England Premier League")
-                            continue;
+                        Stopwatch st = new Stopwatch();
+                        
+                        Console.WriteLine($"Começando a sincronizar as infos da liga {league.Name}");
+                        st.Start();
 
-                        await Task.WhenAll(
-                            Task.Run(() => SyncTeams(league.Seasons)),
-                            Task.Run(() => SyncFixtures(league.Seasons))
-                        );
+                        await SyncTeams(league.Seasons, league.Name);
+                        await SyncFixtures(league.Seasons, league.Name);
+                        
+                        st.Stop();
+                        double elapsedSeconds = st.Elapsed.TotalSeconds;
+
+                        Console.WriteLine($"Fim do sync das infos da liga {league.Name}");
+                        Console.WriteLine($"Tempo decorrido: {elapsedSeconds} segundos");
+
+                        Console.WriteLine($"Começando a calcular stats da liga {league.Name}");
+                        st.Start();
 
                         await CalculateStats(league.Seasons);
+
+                        st.Stop();
+                        double elapsedSeconds2 = st.Elapsed.TotalSeconds;
+                        Console.WriteLine($"Fim do calculo de stats da liga {league.Name}");
+                        Console.WriteLine($"Tempo decorrido: {elapsedSeconds2} segundos");
+
                     }
                 }
 
@@ -77,13 +92,15 @@ namespace BetPlacer.Sync.API.Controllers
             }
         }
 
-        private async void SyncTeams(List<LeagueSeasonSyncModel> leagueSeasons)
+        private async Task SyncTeams(List<LeagueSeasonSyncModel> leagueSeasons, string name)
         {
+            int currentCount = 0;
+            int count = leagueSeasons.Count;
+
             foreach (var leagueSeason in leagueSeasons)
             {
-                // Verificação dos leagueSeasonCode que não estão presentes na key de teste
-                if (leagueSeason.Code != 1625 && leagueSeason.Code != 2012 && leagueSeason.Code != 4759 && leagueSeason.Code != 9660)
-                    continue;
+                currentCount++;
+                Console.WriteLine($"Sincronizando times da liga {name}, season: {leagueSeason.Year}. Faltam {count - currentCount} seasons");
 
                 var body = new Dictionary<string, object> { { "leagueSeasonCode", leagueSeason.Code } };
                 var requestTeams = await _httpClient.PostAsJsonAsync(_teamsApiUrl, body);
@@ -93,13 +110,15 @@ namespace BetPlacer.Sync.API.Controllers
             }
         }
 
-        private async Task SyncFixtures(List<LeagueSeasonSyncModel> leagueSeasons)
+        private async Task SyncFixtures(List<LeagueSeasonSyncModel> leagueSeasons, string name)
         {
+            int currentCount = 0;
+            int count = leagueSeasons.Count;
+
             foreach (var leagueSeason in leagueSeasons)
             {
-                // Verificação dos leagueSeasonCode que não estão presentes na key de teste
-                if (leagueSeason.Code != 1625 && leagueSeason.Code != 2012 && leagueSeason.Code != 4759 && leagueSeason.Code != 9660)
-                    continue;
+                currentCount++;
+                Console.WriteLine($"Sincronizando os jogos da liga {name}, season: {leagueSeason.Year}. Faltam {count - currentCount} seasons");
 
                 var body = new Dictionary<string, object> { { "leagueSeasonCode", leagueSeason.Code } };
                 var requestTeams = await _httpClient.PostAsJsonAsync(_fixturesApiUrl, body);
@@ -113,10 +132,6 @@ namespace BetPlacer.Sync.API.Controllers
         {
             foreach (var leagueSeason in leagueSeasons)
             {
-                // Verificação dos leagueSeasonCode que não estão presentes na key de teste
-                if (leagueSeason.Code != 1625 && leagueSeason.Code != 2012 && leagueSeason.Code != 4759 && leagueSeason.Code != 9660)
-                    continue;
-
                 var body = new Dictionary<string, object> { { "leagueSeasonCode", leagueSeason.Code } };
                 var requestTeams = await _httpClient.PostAsJsonAsync($"{_fixturesApiUrl}/stats", body);
 

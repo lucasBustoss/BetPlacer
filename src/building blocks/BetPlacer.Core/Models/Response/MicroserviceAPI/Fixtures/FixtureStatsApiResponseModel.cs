@@ -51,8 +51,17 @@ namespace BetPlacer.Core.Models.Response.MicroserviceAPI.Fixtures
         [JsonPropertyName("homeLossesPercentHTTotal")]
         public double HomeLossesPercentHTTotal { get; set; }
 
+        [JsonPropertyName("homeFirstToScorePercentHTTotal")]
+        public double HomeFirstToScorePercentHTTotal { get; set; }
+
+        [JsonPropertyName("homeToScoreTwoZeroPercentHTTotal")]
+        public double HomeToScoreTwoZeroPercentHTTotal { get; set; }
+
         [JsonPropertyName("homeFailedToScorePercentHTTotal")]
         public double HomeFailedToScorePercentHTTotal { get; set; }
+
+        [JsonPropertyName("homeBothToScorePercentHTTotal")]
+        public double HomeBothToScorePercentHTTotal { get; set; }
 
         [JsonPropertyName("homeCleanSheetsPercentHTTotal")]
         public double HomeCleanSheetsPercentHTTotal { get; set; }
@@ -78,8 +87,17 @@ namespace BetPlacer.Core.Models.Response.MicroserviceAPI.Fixtures
         [JsonPropertyName("homeLossesPercentFTTotal")]
         public double HomeLossesPercentFTTotal { get; set; }
 
+        [JsonPropertyName("homeFirstToScorePercentFTTotal")]
+        public double HomeFirstToScorePercentFTTotal { get; set; }
+
+        [JsonPropertyName("homeToScoreTwoZeroPercentFTTotal")]
+        public double HomeToScoreTwoZeroPercentFTTotal { get; set; }
+
         [JsonPropertyName("homeFailedToScorePercentFTTotal")]
         public double HomeFailedToScorePercentFTTotal { get; set; }
+
+        [JsonPropertyName("homeBothToScorePercentFTTotal")]
+        public double HomeBothToScorePercentFTTotal { get; set; }
 
         [JsonPropertyName("homeCleanSheetsPercentFTTotal")]
         public double HomeCleanSheetsPercentFTTotal { get; set; }
@@ -213,8 +231,17 @@ namespace BetPlacer.Core.Models.Response.MicroserviceAPI.Fixtures
         [JsonPropertyName("homeLossesPercentHTAtHome")]
         public double HomeLossesPercentHTAtHome { get; set; }
 
+        [JsonPropertyName("homeFirstToScorePercentHTAtHome")]
+        public double HomeFirstToScorePercentHTAtHome { get; set; }
+
+        [JsonPropertyName("homeToScoreTwoZeroPercentHTAtHome")]
+        public double HomeToScoreTwoZeroPercentHTAtHome { get; set; }
+
         [JsonPropertyName("homeFailedToScorePercentHTAtHome")]
         public double HomeFailedToScorePercentHTAtHome { get; set; }
+
+        [JsonPropertyName("homeBothToScorePercentHTAtHome")]
+        public double HomeBothToScorePercentHTAtHome { get; set; }
 
         [JsonPropertyName("homeCleanSheetsPercentHTAtHome")]
         public double HomeCleanSheetsPercentHTAtHome { get; set; }
@@ -240,8 +267,17 @@ namespace BetPlacer.Core.Models.Response.MicroserviceAPI.Fixtures
         [JsonPropertyName("homeLossesPercentFTAtHome")]
         public double HomeLossesPercentFTAtHome { get; set; }
 
+        [JsonPropertyName("homeFirstToScorePercentFTAtHome")]
+        public double HomeFirstToScorePercentFTAtHome { get; set; }
+
+        [JsonPropertyName("homeToScoreTwoZeroPercentFTAtHome")]
+        public double HomeToScoreTwoZeroPercentFTAtHome { get; set; }
+
         [JsonPropertyName("homeFailedToScorePercentFTAtHome")]
         public double HomeFailedToScorePercentFTAtHome { get; set; }
+
+        [JsonPropertyName("homeBothToScorePercentFTAtHome")]
+        public double HomeBothToScorePercentFTAtHome { get; set; }
 
         [JsonPropertyName("homeCleanSheetsPercentFTAtHome")]
         public double HomeCleanSheetsPercentFTAtHome { get; set; }
@@ -375,8 +411,17 @@ namespace BetPlacer.Core.Models.Response.MicroserviceAPI.Fixtures
         [JsonPropertyName("awayLossesPercentHTTotal")]
         public double AwayLossesPercentHTTotal { get; set; }
 
+        [JsonPropertyName("awayFirstToScorePercentHTTotal")]
+        public double AwayFirstToScorePercentHTTotal { get; set; }
+
+        [JsonPropertyName("awayToScoreTwoZeroPercentHTTotal")]
+        public double AwayToScoreTwoZeroPercentHTTotal { get; set; }
+
         [JsonPropertyName("awayFailedToScorePercentHTTotal")]
         public double AwayFailedToScorePercentHTTotal { get; set; }
+
+        [JsonPropertyName("awayBothToScorePercentHTTotal")]
+        public double AwayBothToScorePercentHTTotal { get; set; }
 
         [JsonPropertyName("awayCleanSheetsPercentHTTotal")]
         public double AwayCleanSheetsPercentHTTotal { get; set; }
@@ -402,8 +447,17 @@ namespace BetPlacer.Core.Models.Response.MicroserviceAPI.Fixtures
         [JsonPropertyName("awayLossesPercentFTTotal")]
         public double AwayLossesPercentFTTotal { get; set; }
 
+        [JsonPropertyName("awayFirstToScorePercentFTTotal")]
+        public double AwayFirstToScorePercentFTTotal { get; set; }
+
+        [JsonPropertyName("awayToScoreTwoZeroPercentFTTotal")]
+        public double AwayToScoreTwoZeroPercentFTTotal { get; set; }
+
         [JsonPropertyName("awayFailedToScorePercentFTTotal")]
         public double AwayFailedToScorePercentFTTotal { get; set; }
+
+        [JsonPropertyName("awayBothToScorePercentFTTotal")]
+        public double AwayBothToScorePercentFTTotal { get; set; }
 
         [JsonPropertyName("awayCleanSheetsPercentFTTotal")]
         public double AwayCleanSheetsPercentFTTotal { get; set; }
@@ -537,8 +591,17 @@ namespace BetPlacer.Core.Models.Response.MicroserviceAPI.Fixtures
         [JsonPropertyName("awayLossesPercentHTAtAway")]
         public double AwayLossesPercentHTAtAway { get; set; }
 
+        [JsonPropertyName("awayFirstToScorePercentHTAtAway")]
+        public double AwayFirstToScorePercentHTAtAway { get; set; }
+
+        [JsonPropertyName("awayToScoreTwoZeroPercentHTAtAway")]
+        public double AwayToScoreTwoZeroPercentHTAtAway { get; set; }
+
         [JsonPropertyName("awayFailedToScorePercentHTAtAway")]
         public double AwayFailedToScorePercentHTAtAway { get; set; }
+
+        [JsonPropertyName("awayBothToScorePercentHTAtAway")]
+        public double AwayBothToScorePercentHTAtAway { get; set; }
 
         [JsonPropertyName("awayCleanSheetsPercentHTAtAway")]
         public double AwayCleanSheetsPercentHTAtAway { get; set; }
@@ -564,8 +627,17 @@ namespace BetPlacer.Core.Models.Response.MicroserviceAPI.Fixtures
         [JsonPropertyName("awayLossesPercentFTAtAway")]
         public double AwayLossesPercentFTAtAway { get; set; }
 
+        [JsonPropertyName("awayFirstToScorePercentFTAtAway")]
+        public double AwayFirstToScorePercentFTAtAway { get; set; }
+
+        [JsonPropertyName("awayToScoreTwoZeroPercentFTAtAway")]
+        public double AwayToScoreTwoZeroPercentFTAtAway { get; set; }
+
         [JsonPropertyName("awayFailedToScorePercentFTAtAway")]
         public double AwayFailedToScorePercentFTAtAway { get; set; }
+
+        [JsonPropertyName("awayBothToScorePercentFTAtAway")]
+        public double AwayBothToScorePercentFTAtAway { get; set; }
 
         [JsonPropertyName("awayCleanSheetsPercentFTAtAway")]
         public double AwayCleanSheetsPercentFTAtAway { get; set; }
