@@ -36,12 +36,19 @@ namespace BetPlacer.Leagues.Controllers
             return OkResponse(leagues);
         }
 
+        [HttpGet("{id}")]
+        public ActionResult GetLeagues(int id)
+        {
+            var league = _leaguesRepository.GetLeagueById(id);
+            return OkResponse(league);
+        }
+
         [HttpPost]
         public async Task<ActionResult> SyncLeagues()
         {
             try
             {
-                var request = await _httpClient.GetAsync("leagues");
+                var request = await _httpClient.GetAsync("leagues?chosen_leagues_only=true");
 
                 if (request.IsSuccessStatusCode)
                 {

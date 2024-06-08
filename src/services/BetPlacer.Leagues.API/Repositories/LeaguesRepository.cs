@@ -37,6 +37,22 @@ namespace BetPlacer.Leagues.API.Repositories
             return leaguesVO;
         }
 
+
+        public IEnumerable<League> GetLeagueById(int leagueId)
+        {
+            List<League> leaguesVO = new List<League>();
+            var league = _context.Leagues.Where(l => l.Code == leagueId).FirstOrDefault();
+
+            var seasons = new List<LeagueSeasonModel>();
+
+            var seasonsBd = _context.LeagueSeasons.Where(ls => ls.LeagueCode == league.Code);
+            seasons = seasonsBd.ToList();
+
+            leaguesVO.Add(new League(league, seasons));
+
+            return leaguesVO;
+        }
+
         public async Task CreateOrUpdate(IEnumerable<LeaguesFootballResponseModel> leaguesResponse)
         {
             #region Leagues

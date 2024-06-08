@@ -1,4 +1,6 @@
+using BetPlacer.Backtest.API.Messages.Consumer;
 using BetPlacer.Backtest.API.Models;
+using BetPlacer.Backtest.API.Models.Entities;
 using BetPlacer.Backtest.API.Models.Request;
 using BetPlacer.Backtest.API.Repositories;
 using BetPlacer.Backtest.API.Services;
@@ -8,7 +10,9 @@ using BetPlacer.Core.Models.Response.Microservice.Leagues;
 using BetPlacer.Core.Models.Response.Microservice.Teams;
 using BetPlacer.Core.Models.Response.MicroserviceAPI.Fixtures;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
+using Newtonsoft.Json;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace BetPlacer.Backtest.API.Controllers
 {
@@ -16,24 +20,27 @@ namespace BetPlacer.Backtest.API.Controllers
     public class BacktestController : BaseController
     {
         private readonly BacktestRepository _backtestRepository;
+        private readonly IBacktestOrchestrator _backtestOrchestrator;
 
-        HttpClient _fixturesClient = new HttpClient();
+        HttpClient _fixturesClient;
         private readonly string _fixturesApiUrl;
 
-        HttpClient _teamsClient = new HttpClient();
+        HttpClient _teamsClient;
         private readonly string _teamsApiUrl;
 
-        HttpClient _leaguesClient = new HttpClient();
+        HttpClient _leaguesClient;
         private readonly string _leaguesApiUrl;
 
-        public BacktestController(BacktestRepository backtestRepository, IConfiguration configuration)
+        public BacktestController(BacktestRepository backtestRepository, IConfiguration configuration, IBacktestOrchestrator backtestOrchestrator)
         {
             _backtestRepository = backtestRepository;
+            _backtestOrchestrator = backtestOrchestrator ?? throw new ArgumentNullException(nameof(backtestOrchestrator));
 
             #region FixturesApi
 
             _fixturesApiUrl = configuration.GetValue<string>("FixturesApi:AppUrl");
             _fixturesClient = new HttpClient() { BaseAddress = new Uri(_fixturesApiUrl) };
+            _fixturesClient.Timeout = TimeSpan.FromMinutes(30);
 
             #endregion
 
@@ -50,6 +57,37 @@ namespace BetPlacer.Backtest.API.Controllers
             _leaguesClient = new HttpClient() { BaseAddress = new Uri(_leaguesApiUrl) };
 
             #endregion
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> CalculateBacktest([FromBody] BacktestRequestModel backtestRequestModel)
+        {
+            try
+            {
+                string backtestHash = CalculateSHA256Hash(GenerateRandomString());
+                
+                Task<IEnumerable<LeaguesApiResponseModel>> taskLeagues = GetLeagues();
+                Task<IEnumerable<TeamsApiResponseModel>> taskTeams = GetTeams();
+
+                await Task.WhenAll(taskLeagues, taskTeams);
+
+                IEnumerable<LeaguesApiResponseModel> leagues = taskLeagues.Result;
+                IEnumerable<TeamsApiResponseModel> teams = taskTeams.Result;
+
+                _ = GetFixtures(backtestHash);
+
+                BacktestParameters parameters = new BacktestParameters(backtestRequestModel);
+
+                var backtest = await _backtestOrchestrator.StartBacktestAsync(parameters, leagues.ToList(), teams.ToList(), backtestHash);
+                await _backtestRepository.CreateBacktest(backtest);
+
+                return OkResponse("Backtest created");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return BadRequestResponse(ex.Message);
+            }
         }
 
         [HttpGet]
@@ -70,55 +108,21 @@ namespace BetPlacer.Backtest.API.Controllers
             return OkResponse(null);
         }
 
-        [HttpPost]
-        public async Task<ActionResult> CalculateBacktest([FromBody] BacktestRequestModel backtestRequestModel)
-        {
-            try
-            {
-                IEnumerable<FixturesApiResponseModel> fixtures = await GetFixtures();
-                
-                Task<IEnumerable<LeaguesApiResponseModel>> taskLeagues = GetLeagues();
-                Task<IEnumerable<TeamsApiResponseModel>> taskTeams = GetTeams();
-
-                await Task.WhenAll(taskLeagues, taskTeams);
-
-                IEnumerable<LeaguesApiResponseModel> leagues = taskLeagues.Result;
-                IEnumerable<TeamsApiResponseModel> teams = taskTeams.Result;
-
-                BacktestParameters parameters = new BacktestParameters(backtestRequestModel);
-
-                CalculateBacktest calculateBacktest = new CalculateBacktest();
-                var backtest = calculateBacktest.Calculate(parameters, fixtures.ToList(), leagues.ToList(), teams.ToList());
-
-                await _backtestRepository.CreateBacktest(backtest);
-
-                return OkResponse("Backtest created");
-            }
-            catch (Exception ex)
-            {
-                return BadRequestResponse(ex.Message);
-            }
-        }
-
         #region Private methods
 
-        private async Task<IEnumerable<FixturesApiResponseModel>> GetFixtures()
+        public async Task GetFixtures(string backtestHash)
         {
-            var request = await _fixturesClient.GetAsync("?searchType=completed&withGoals=true&withStats=true");
+            var request = await _fixturesClient.GetAsync($"?searchType=completed&withGoals=true&withStats=true&saveAsMessage=true&backtestHash={backtestHash}");
 
             if (request.IsSuccessStatusCode)
             {
-                var responseLeaguesString = await request.Content.ReadAsStringAsync();
-                BaseCoreResponseModel<FixturesApiResponseModel> response = JsonSerializer.Deserialize<BaseCoreResponseModel<FixturesApiResponseModel>>(responseLeaguesString);
-
-                return response.Data;
+                
             }
             else
             {
-                var errorMessage = JsonSerializer.Deserialize<object>(await request.Content.ReadAsStringAsync());
+                var errorMessage = JsonConvert.DeserializeObject<object>(await request.Content.ReadAsStringAsync());
                 Console.WriteLine(errorMessage);
                 Console.WriteLine(request.StatusCode);
-                return null;
             }
         }
 
@@ -129,13 +133,13 @@ namespace BetPlacer.Backtest.API.Controllers
             if (request.IsSuccessStatusCode)
             {
                 var responseLeaguesString = await request.Content.ReadAsStringAsync();
-                BaseCoreResponseModel<TeamsApiResponseModel> response = JsonSerializer.Deserialize<BaseCoreResponseModel<TeamsApiResponseModel>>(responseLeaguesString);
+                BaseCoreResponseModel<TeamsApiResponseModel> response = System.Text.Json.JsonSerializer.Deserialize<BaseCoreResponseModel<TeamsApiResponseModel>>(responseLeaguesString);
 
                 return response.Data;
             }
             else
             {
-                var errorMessage = JsonSerializer.Deserialize<object>(await request.Content.ReadAsStringAsync());
+                var errorMessage = System.Text.Json.JsonSerializer.Deserialize<object>(await request.Content.ReadAsStringAsync());
                 Console.WriteLine(errorMessage);
                 Console.WriteLine(request.StatusCode);
                 return null;
@@ -149,16 +153,48 @@ namespace BetPlacer.Backtest.API.Controllers
             if (request.IsSuccessStatusCode)
             {
                 var responseLeaguesString = await request.Content.ReadAsStringAsync();
-                BaseCoreResponseModel<LeaguesApiResponseModel> response = JsonSerializer.Deserialize<BaseCoreResponseModel<LeaguesApiResponseModel>>(responseLeaguesString);
+                BaseCoreResponseModel<LeaguesApiResponseModel> response = System.Text.Json.JsonSerializer.Deserialize<BaseCoreResponseModel<LeaguesApiResponseModel>>(responseLeaguesString);
 
                 return response.Data;
             }
             else
             {
-                var errorMessage = JsonSerializer.Deserialize<object>(await request.Content.ReadAsStringAsync());
+                var errorMessage = System.Text.Json.JsonSerializer.Deserialize<object>(await request.Content.ReadAsStringAsync());
                 Console.WriteLine(errorMessage);
                 Console.WriteLine(request.StatusCode);
                 return null;
+            }
+        }
+
+        private string GenerateRandomString()
+        {
+            // Tamanho da string aleatória
+            int length = 10;
+
+            // Caracteres que podem estar na string
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+            // Gerar a string aleatória
+            var random = new Random();
+            return new string(Enumerable.Repeat(chars, length)
+              .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
+
+        private string CalculateSHA256Hash(string input)
+        {
+            // Criar uma instância do algoritmo de hash SHA256
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                // Calcular o hash dos bytes da string
+                byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(input));
+
+                // Converter o hash em uma string hexadecimal
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < bytes.Length; i++)
+                {
+                    builder.Append(bytes[i].ToString("x2"));
+                }
+                return builder.ToString();
             }
         }
 

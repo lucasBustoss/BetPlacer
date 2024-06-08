@@ -8,6 +8,10 @@ using BetPlacer.Core.Models.Response.Microservice.Teams;
 using BetPlacer.Core.Models.Response.Microservice.Leagues;
 using BetPlacer.Fixtures.API.Services;
 using BetPlacer.Fixtures.API.Models.Entities.Trade;
+using System.Diagnostics;
+using System.Collections.Concurrent;
+using BetPlacer.Fixtures.API.Messages;
+using BetPlacer.Fixtures.API.Messages.ModelToMessage;
 
 namespace BetPlacer.Fixtures.API.Repositories
 {
@@ -15,19 +19,20 @@ namespace BetPlacer.Fixtures.API.Repositories
     {
         private readonly FixturesDbContext _context;
         private readonly CalculateFixtureStatsService _calculateService;
+        private readonly MessageSender _messageSender;
 
-        public FixturesRepository(DbContextOptions<FixturesDbContext> db)
+        public FixturesRepository(DbContextOptions<FixturesDbContext> db, MessageSender messageSender)
         {
             _context = new FixturesDbContext(db);
             _calculateService = new CalculateFixtureStatsService();
+            _messageSender = messageSender ?? throw new ArgumentNullException(nameof(messageSender));
         }
 
-        public IEnumerable<Fixture> List(FixtureListSearchType searchType, IEnumerable<LeaguesApiResponseModel> leagues, IEnumerable<TeamsApiResponseModel> teams, bool withGoals, bool withStats)
+        public async Task<IEnumerable<Fixture>> List(FixtureListSearchType searchType, IEnumerable<LeaguesApiResponseModel> leagues, IEnumerable<TeamsApiResponseModel> teams, bool withGoals, bool withStats, bool saveAsMessage, string backtestHash)
         {
-            List<Fixture> fixturesVO = new List<Fixture>();
             List<FixtureStatsTradeModel> stats = new List<FixtureStatsTradeModel>();
             List<FixtureGoalsModel> goals = new List<FixtureGoalsModel>();
-            
+
             var query = _context.Fixtures.AsQueryable();
 
             switch (searchType)
@@ -56,31 +61,24 @@ namespace BetPlacer.Fixtures.API.Repositories
             if (withStats)
                 stats = _context.FixtureStatsTrade.Where(fst => fixtureCodes.Contains(fst.FixtureCode)).ToList();
 
-            foreach (FixtureModel fixture in fixtures)
-            {
-                LeaguesApiResponseModel league = leagues.FirstOrDefault(l => l.Season.Any(s => s.Code == fixture.SeasonCode));
-                TeamsApiResponseModel homeTeam = teams.FirstOrDefault(t => t.Code == fixture.HomeTeamId);
-                TeamsApiResponseModel awayTeam = teams.FirstOrDefault(t => t.Code == fixture.AwayTeamId);
-                List<FixtureGoalsModel> goalsFixture = goals.Where(g => g.FixtureCode == fixture.Code).ToList();
-                FixtureStatsTradeModel statFixture = stats.Where(s => s.FixtureCode == fixture.Code).FirstOrDefault();
+            var leaguesBySeasonCode = leagues.SelectMany(l => l.Season.Select(s => new { League = l, s.Code }))
+                                             .ToDictionary(x => x.Code, x => x.League);
 
-                if (goalsFixture != null && goalsFixture.Count > 0)
-                {
-                    foreach (var goal in goalsFixture)
-                        goal.Fixture = null;
-                }
+            var teamsByCode = teams.ToDictionary(t => t.Code, t => t);
 
-                if (statFixture != null)
-                    statFixture.Fixture = null;
+            var goalsByFixtureCode = goals.GroupBy(g => g.FixtureCode)
+                                          .ToDictionary(g => g.Key, g => g.ToList());
 
-                if (league != null && homeTeam != null && awayTeam != null)
-                {
-                    Fixture fixtureVO = new Fixture(fixture, league, homeTeam, awayTeam, goalsFixture, statFixture);
-                    fixturesVO.Add(fixtureVO);
-                }
-            }
+            var statsByFixtureCode = stats.ToDictionary(s => s.FixtureCode, s => s);
 
-            return fixturesVO;
+            var fixturesVO = new ConcurrentBag<Fixture>();
+
+            if (saveAsMessage)
+                _ = TreatFixtureObjects(fixtures, leaguesBySeasonCode, teamsByCode, goalsByFixtureCode, statsByFixtureCode, true, backtestHash);
+            else
+                fixturesVO = (await TreatFixtureObjects(fixtures, leaguesBySeasonCode, teamsByCode, goalsByFixtureCode, statsByFixtureCode, false, backtestHash));
+
+            return fixturesVO.ToList();
         }
 
         public async Task CreateOrUpdateCompleteFixtures(IEnumerable<FixturesFootballResponseModel> fixturesResponse)
@@ -90,7 +88,9 @@ namespace BetPlacer.Fixtures.API.Repositories
             var existingFixtures = _context.Fixtures.ToDictionary(fixture => fixture.Code);
 
             List<FixtureModel> fixturesSaved = new List<FixtureModel>();
+            Stopwatch st = new Stopwatch();
 
+            st.Start();
             foreach (var fixtureResponse in fixturesResponse)
             {
                 var fixtureModel = new FixtureModel(fixtureResponse);
@@ -113,6 +113,10 @@ namespace BetPlacer.Fixtures.API.Repositories
             }
 
             await _context.SaveChangesAsync();
+            st.Stop();
+            double elapsedSeconds = st.Elapsed.TotalSeconds;
+
+            Console.WriteLine($"Tempo pra gravar jogos: {elapsedSeconds} segundos");
 
             #endregion
 
@@ -147,7 +151,7 @@ namespace BetPlacer.Fixtures.API.Repositories
 
             #region FixtureGoals
 
-            await CreateFixtureGoals(fixturesResponse, fixturesSaved);
+            //await CreateFixtureGoals(fixturesResponse, fixturesSaved);
 
             #endregion
         }
@@ -208,6 +212,9 @@ namespace BetPlacer.Fixtures.API.Repositories
 
         private async Task CreateFixtureGoals(IEnumerable<FixturesFootballResponseModel> fixturesResponse, List<FixtureModel> fixturesSaved)
         {
+            Stopwatch st = new Stopwatch();
+            st.Start();
+
             #region HomeGoals
 
             var fixtureHomeGoals = fixturesSaved.SelectMany(fixtureBd =>
@@ -246,11 +253,83 @@ namespace BetPlacer.Fixtures.API.Repositories
                     fixtureGoal => fixtureGoal.FixtureCode == goal.FixtureCode && fixtureGoal.Minute == goal.Minute && fixtureGoal.TeamId == goal.TeamId);
 
                 if (fixtureGoalBd == null)
-                {
                     _context.FixtureGoals.Add(goal);
-                    await _context.SaveChangesAsync();
+            }
+
+            await _context.SaveChangesAsync();
+
+            st.Stop();
+            double elapsedSeconds = st.Elapsed.TotalSeconds;
+
+            Console.WriteLine($"Tempo pra gravar gols: {elapsedSeconds} segundos");
+        }
+
+        private async Task<ConcurrentBag<Fixture>> TreatFixtureObjects(List<FixtureModel> fixtures, Dictionary<int, LeaguesApiResponseModel> leaguesBySeasonCode, Dictionary<int, TeamsApiResponseModel> teamsByCode, Dictionary<int, List<FixtureGoalsModel>> goalsByFixtureCode, Dictionary<int, FixtureStatsTradeModel> statsByFixtureCode, bool saveAsMessage, string backtestHash)
+        {
+            var fixturesVO = new ConcurrentBag<Fixture>();
+
+            if (saveAsMessage)
+            {
+                var fixturesSorted = fixtures.OrderBy(f => f.StartDate).ToList();
+                await Task.Run(() =>
+                {
+                    foreach (var fixture in fixturesSorted)
+                    {
+                        leaguesBySeasonCode.TryGetValue(fixture.SeasonCode, out var league);
+                        teamsByCode.TryGetValue(fixture.HomeTeamId, out var homeTeam);
+                        teamsByCode.TryGetValue(fixture.AwayTeamId, out var awayTeam);
+                        goalsByFixtureCode.TryGetValue(fixture.Code, out var goalsFixture);
+                        statsByFixtureCode.TryGetValue(fixture.Code, out var statFixture);
+
+                        if (goalsFixture != null)
+                        {
+                            foreach (var goal in goalsFixture)
+                                goal.Fixture = null;
+                        }
+
+                        if (statFixture != null)
+                            statFixture.Fixture = null;
+
+                        if (league != null && homeTeam != null && awayTeam != null)
+                        {
+                            var fixtureVO = new Fixture(fixture, league, homeTeam, awayTeam, goalsFixture, statFixture);
+                            var message = new FixtureMessage { Fixture = fixtureVO };
+                            _messageSender.SendMessage<FixtureMessage>(message, $"backtest_{backtestHash}");
+                        }
+                    }
+
+                    // Send end of messages signal
+                    _messageSender.SendEndOfMessagesSignal($"backtest_{backtestHash}");
+                });
+            }
+            else
+            {
+                foreach (var fixture in fixtures)
+                {
+                    leaguesBySeasonCode.TryGetValue(fixture.SeasonCode, out var league);
+                    teamsByCode.TryGetValue(fixture.HomeTeamId, out var homeTeam);
+                    teamsByCode.TryGetValue(fixture.AwayTeamId, out var awayTeam);
+                    goalsByFixtureCode.TryGetValue(fixture.Code, out var goalsFixture);
+                    statsByFixtureCode.TryGetValue(fixture.Code, out var statFixture);
+
+                    if (goalsFixture != null)
+                    {
+                        foreach (var goal in goalsFixture)
+                            goal.Fixture = null;
+                    }
+
+                    if (statFixture != null)
+                        statFixture.Fixture = null;
+
+                    if (league != null && homeTeam != null && awayTeam != null)
+                    {
+                        var fixtureVO = new Fixture(fixture, league, homeTeam, awayTeam, goalsFixture, statFixture);
+                        fixturesVO.Add(fixtureVO);
+                    }
                 }
             }
+
+            return fixturesVO;
         }
 
         #endregion

@@ -1,5 +1,6 @@
 ﻿using BetPlacer.Core.Controllers;
 using BetPlacer.Core.Models.Response.Core;
+using BetPlacer.Sync.API.Models.Request;
 using BetPlacer.Sync.API.Models.Response.Leagues;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -36,32 +37,56 @@ namespace BetPlacer.Sync.API.Controllers
                     foreach (var league in leagues)
                     {
                         Stopwatch st = new Stopwatch();
-                        
+
                         Console.WriteLine($"Começando a sincronizar as infos da liga {league.Name}");
                         st.Start();
 
                         await SyncTeams(league.Seasons, league.Name);
                         await SyncFixtures(league.Seasons, league.Name);
-                        
+
                         st.Stop();
                         double elapsedSeconds = st.Elapsed.TotalSeconds;
 
                         Console.WriteLine($"Fim do sync das infos da liga {league.Name}");
                         Console.WriteLine($"Tempo decorrido: {elapsedSeconds} segundos");
 
-                        Console.WriteLine($"Começando a calcular stats da liga {league.Name}");
-                        st.Start();
-
-                        await CalculateStats(league.Seasons);
-
-                        st.Stop();
-                        double elapsedSeconds2 = st.Elapsed.TotalSeconds;
-                        Console.WriteLine($"Fim do calculo de stats da liga {league.Name}");
-                        Console.WriteLine($"Tempo decorrido: {elapsedSeconds2} segundos");
 
                     }
                 }
 
+                return OkResponse("data synchronized.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequestResponse(ex.Message);
+            }
+        }
+
+        [HttpPost("league")]
+        public async Task<ActionResult> SyncLeagueInfo([FromBody] SyncLeagueInfoRequestModel leagueInfoRequestModel)
+        {
+            try
+            {
+                var league = await GetLeague(leagueInfoRequestModel.LeagueId);
+
+                if (league != null)
+                {
+                    Stopwatch st = new Stopwatch();
+
+                    Console.WriteLine($"Começando a sincronizar as infos da liga {league.Name}");
+                    st.Start();
+
+                    await SyncTeams(league.Seasons, league.Name);
+                    await SyncFixtures(league.Seasons, league.Name);
+
+                    st.Stop();
+                    double elapsedSeconds = st.Elapsed.TotalSeconds;
+
+                    Console.WriteLine($"Fim do sync das infos da liga {league.Name}");
+                    Console.WriteLine($"Tempo decorrido: {elapsedSeconds} segundos");
+                }
+
+                Console.WriteLine("FIM DE SYNC");
                 return OkResponse("data synchronized.");
             }
             catch (Exception ex)
@@ -82,6 +107,26 @@ namespace BetPlacer.Sync.API.Controllers
                 BaseCoreResponseModel<LeagueSyncResponseModel> response = JsonSerializer.Deserialize<BaseCoreResponseModel<LeagueSyncResponseModel>>(responseLeaguesString);
 
                 return response.Data.ToList();
+            }
+            else
+            {
+                var errorMessage = JsonSerializer.Deserialize<object>(await requestLeagues.Content.ReadAsStringAsync());
+                Console.WriteLine(errorMessage);
+                Console.WriteLine(requestLeagues.StatusCode);
+                return null;
+            }
+        }
+
+        private async Task<LeagueSyncResponseModel> GetLeague(int leagueId)
+        {
+            var requestLeagues = await _httpClient.GetAsync($"{_leaguesApiUrl}/{leagueId}");
+
+            if (requestLeagues.IsSuccessStatusCode)
+            {
+                var responseLeaguesString = await requestLeagues.Content.ReadAsStringAsync();
+                BaseCoreResponseModel<LeagueSyncResponseModel> response = JsonSerializer.Deserialize<BaseCoreResponseModel<LeagueSyncResponseModel>>(responseLeaguesString);
+
+                return response.Data.FirstOrDefault();
             }
             else
             {
@@ -125,19 +170,27 @@ namespace BetPlacer.Sync.API.Controllers
 
                 if (!requestTeams.IsSuccessStatusCode)
                     throw new Exception("error synchronizing fixtures.");
+
+                Stopwatch st = new Stopwatch();
+                Console.WriteLine($"Começando a calcular stats da liga {name} - Season {leagueSeason.Year}");
+                st.Start();
+
+                await CalculateStats(leagueSeason);
+
+                st.Stop();
+                double elapsedSeconds2 = st.Elapsed.TotalSeconds;
+                Console.WriteLine($"Fim do calculo de stats da liga {name}");
+                Console.WriteLine($"Tempo decorrido: {elapsedSeconds2} segundos");
             }
         }
 
-        private async Task CalculateStats(List<LeagueSeasonSyncModel> leagueSeasons)
+        private async Task CalculateStats(LeagueSeasonSyncModel leagueSeason)
         {
-            foreach (var leagueSeason in leagueSeasons)
-            {
-                var body = new Dictionary<string, object> { { "leagueSeasonCode", leagueSeason.Code } };
-                var requestTeams = await _httpClient.PostAsJsonAsync($"{_fixturesApiUrl}/stats", body);
+            var body = new Dictionary<string, object> { { "leagueSeasonCode", leagueSeason.Code } };
+            var requestTeams = await _httpClient.PostAsJsonAsync($"{_fixturesApiUrl}/stats", body);
 
-                if (!requestTeams.IsSuccessStatusCode)
-                    throw new Exception("error calculate fixtures stats.");
-            }
+            if (!requestTeams.IsSuccessStatusCode)
+                throw new Exception("error calculate fixtures stats.");
         }
 
         #endregion

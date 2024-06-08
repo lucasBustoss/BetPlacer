@@ -61,7 +61,7 @@ namespace BetPlacer.Fixtures.API.Controllers
         }
 
         [HttpGet("")]
-        public async Task<ActionResult> GetFixtures([FromQuery] string searchType, [FromQuery] bool withGoals = false, [FromQuery] bool withStats = false)
+        public async Task<ActionResult> GetFixtures([FromQuery] string searchType, [FromQuery] bool withGoals = false, [FromQuery] bool withStats = false, [FromQuery] bool saveAsMessage = false, [FromQuery] string backtestHash = "")
         {
             FixtureListSearchType type = FixtureListSearchType.All;
 
@@ -79,9 +79,16 @@ namespace BetPlacer.Fixtures.API.Controllers
             IEnumerable<LeaguesApiResponseModel> leagues = taskLeagues.Result;
             IEnumerable<TeamsApiResponseModel> teams = taskTeams.Result;
 
-            List<Fixture> fixtures = _fixturesRepository.List(type, leagues, teams, withGoals, withStats).ToList();
-
-            return OkResponse(fixtures);
+            if (saveAsMessage)
+            {
+                _ = _fixturesRepository.List(type, leagues, teams, withGoals, withStats, saveAsMessage, backtestHash);
+                return OkResponse("Messages created");
+            }
+            else
+            {
+                var fixtures = await _fixturesRepository.List(type, leagues, teams, withGoals, withStats, saveAsMessage, backtestHash);
+                return OkResponse(fixtures.ToList());
+            }
         }
 
         [HttpPost]
@@ -89,6 +96,7 @@ namespace BetPlacer.Fixtures.API.Controllers
         {
             try
             {
+
                 await SyncCompleteFixtures(syncRequestModel);
                 await SyncNextFixtures(syncRequestModel);
 
@@ -171,7 +179,6 @@ namespace BetPlacer.Fixtures.API.Controllers
             {
                 if (syncRequestModel == null || !syncRequestModel.IsValid())
                     throw new Exception("param leagueSeasonCode is required.");
-
 
                 await _fixturesRepository.CalculateFixtureStats(syncRequestModel.LeagueSeasonCode.Value);
 

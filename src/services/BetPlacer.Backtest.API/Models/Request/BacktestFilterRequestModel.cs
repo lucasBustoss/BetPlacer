@@ -26,25 +26,25 @@ namespace BetPlacer.Backtest.API.Models.Request
         [JsonPropertyName("avgGoalsConceded")]
         public BacktestFilterValuesRequestModel AvgGoalsConcededFilterModel { get; set; }
 
-        [JsonPropertyName("firstToScoreHTPercent")]
+        [JsonPropertyName("firstToScorePercentHT")]
         public BacktestFilterValuesRequestModel FtsHTFilterModel { get; set; }
 
-        [JsonPropertyName("twoZeroHTPercent")]
+        [JsonPropertyName("twoZeroPercentHT")]
         public BacktestFilterValuesRequestModel ToScoreTwoZeroHTFilterModel { get; set; }
 
-        [JsonPropertyName("cleanSheetHTPercent")]
+        [JsonPropertyName("cleanSheetPercentHT")]
         public BacktestFilterValuesRequestModel CleanSheetsHTFilterModel { get; set; }
 
-        [JsonPropertyName("failedToScoreHTPercent")]
+        [JsonPropertyName("failedToScorePercentHT")]
         public BacktestFilterValuesRequestModel FailedToScoreHTFilterModel { get; set; }
 
-        [JsonPropertyName("bothToScoreHTPercent")]
+        [JsonPropertyName("bothToScorePercentHT")]
         public BacktestFilterValuesRequestModel BothToScoreHTFilterModel { get; set; }
 
-        [JsonPropertyName("avgGoalsHTScored")]
+        [JsonPropertyName("avgGoalsScoredHT")]
         public BacktestFilterValuesRequestModel AverageGoalsScoredHTFilterModel { get; set; }
 
-        [JsonPropertyName("avgGoalsHTConceded")]
+        [JsonPropertyName("avgGoalsConcededHT")]
         public BacktestFilterValuesRequestModel AverageGoalsConcededHTFilterModel { get; set; }
     }
 }

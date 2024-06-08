@@ -1,5 +1,8 @@
 using BetPlacer.Backtest.API.Config;
+using BetPlacer.Backtest.API.Messages;
+using BetPlacer.Backtest.API.Messages.Consumer;
 using BetPlacer.Backtest.API.Repositories;
+using BetPlacer.Backtest.API.Services;
 using BetPlacer.Core.Config;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,6 +25,8 @@ dbContextBuilder.UseNpgsql(connection);
 builder.Services.AddSingleton(new BacktestRepository(dbContextBuilder.Options));
 
 #endregion
+
+builder.Services.AddSingleton<IBacktestOrchestrator, BacktestOrchestrator>();
 
 // Add services to the container.
 

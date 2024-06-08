@@ -1,4 +1,5 @@
 using BetPlacer.Core.Config;
+using BetPlacer.Fixtures.API.Messages;
 using BetPlacer.Fixtures.API.Repositories;
 using BetPlacer.Fixtures.Config;
 using Microsoft.EntityFrameworkCore;
@@ -19,7 +20,7 @@ dbContextBuilder.UseNpgsql(connection);
 
 #region RepositoriesConfig
 
-builder.Services.AddSingleton(new FixturesRepository(dbContextBuilder.Options));
+builder.Services.AddSingleton(new FixturesRepository(dbContextBuilder.Options, new MessageSender()));
 
 #endregion
 
