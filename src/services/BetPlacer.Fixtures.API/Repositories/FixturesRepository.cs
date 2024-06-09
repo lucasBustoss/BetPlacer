@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.Collections.Concurrent;
 using BetPlacer.Fixtures.API.Messages;
 using BetPlacer.Fixtures.API.Messages.ModelToMessage;
+using BetPlacer.Fixtures.API.Models.ValueObjects.FixtureByDate;
 
 namespace BetPlacer.Fixtures.API.Repositories
 {
@@ -79,6 +80,55 @@ namespace BetPlacer.Fixtures.API.Repositories
                 fixturesVO = (await TreatFixtureObjects(fixtures, leaguesBySeasonCode, teamsByCode, goalsByFixtureCode, statsByFixtureCode, false, backtestHash));
 
             return fixturesVO.ToList();
+        }
+
+        public List<LeagueFixtureByDate> ListFixturesByDate(IEnumerable<LeaguesApiResponseModel> leagues, IEnumerable<TeamsApiResponseModel> teams)
+        {
+            List<LeagueFixtureByDate> fixturesByDate = new List<LeagueFixtureByDate>();
+            List<FixtureStatsTradeModel> stats = new List<FixtureStatsTradeModel>();
+
+            DateTime endDate = DateTime.UtcNow.AddDays(3).Date.AddMilliseconds(-1);
+            var fixtures = _context.Fixtures.Where(f => f.StartDate >= DateTime.UtcNow.Date && f.StartDate <= endDate).ToList();
+            var fixtureCodes = fixtures.Select(f => f.Code).ToList();
+
+            stats = _context.FixtureStatsTrade.Where(fst => fixtureCodes.Contains(fst.FixtureCode)).ToList();
+
+            for (var i = 0; i < 3; i++)
+            {
+                DateTime date = DateTime.Now.AddDays(i);
+
+                LeagueFixtureByDate fixtureByDate = new LeagueFixtureByDate();
+                fixtureByDate.Date = date.ToString("dd/MM/yyyy");
+
+                var fixturesCurrentDate = fixtures.Where(f => f.StartDate.AddHours(-3).ToString("yyyy-MM-dd") == date.ToString("yyyy-MM-dd")).OrderBy(f => f.SeasonCode).ToList();
+
+                foreach (var fixtureCurrentDate in fixturesCurrentDate)
+                {
+                    var league = leagues.FirstOrDefault(league => league.Season.Any(season => season.Code == fixtureCurrentDate.SeasonCode));
+
+                    if (league == null)
+                        continue;
+
+                    LeagueFixtures leagueFixtures = fixtureByDate.LeagueFixtures.FirstOrDefault(lf => lf.LeagueCode == league.Code);
+
+                    if (leagueFixtures == null)
+                    {
+                        leagueFixtures = new LeagueFixtures(league);
+                        fixtureByDate.LeagueFixtures.Add(leagueFixtures);
+                    }
+
+                    leagueFixtures.Fixtures.Add(new FixtureDate(fixtureCurrentDate));
+                }
+                
+                foreach (var leagueFixture in fixtureByDate.LeagueFixtures)
+                    leagueFixture.Fixtures = leagueFixture.Fixtures.OrderBy(f => f.Date).ToList();
+
+                fixtureByDate.LeagueFixtures = fixtureByDate.LeagueFixtures.OrderBy(lf => lf.LeagueCountry).ThenBy(lf => lf.LeagueName).ToList();
+
+                fixturesByDate.Add(fixtureByDate);
+            }
+
+            return fixturesByDate.OrderBy(fbd => fbd.Date).ToList();
         }
 
         public async Task CreateOrUpdateCompleteFixtures(IEnumerable<FixturesFootballResponseModel> fixturesResponse)

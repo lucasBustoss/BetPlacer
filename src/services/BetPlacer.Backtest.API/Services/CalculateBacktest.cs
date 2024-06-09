@@ -81,15 +81,15 @@ namespace BetPlacer.Backtest.API.Services
 
                     _badRun = 0;
                 }
-            }
-            else
-            {
-                _badRun++;
+                else
+                {
+                    _badRun++;
 
-                if (_goodRun > _maxGoodRun)
-                    _maxGoodRun = _goodRun;
+                    if (_goodRun > _maxGoodRun)
+                        _maxGoodRun = _goodRun;
 
-                _goodRun = 0;
+                    _goodRun = 0;
+                }
             }
         }
 

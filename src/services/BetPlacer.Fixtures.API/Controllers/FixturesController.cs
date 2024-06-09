@@ -91,6 +91,21 @@ namespace BetPlacer.Fixtures.API.Controllers
             }
         }
 
+        [HttpGet("date")]
+        public async Task<ActionResult> GetFixturesByDate()
+        {
+            Task<IEnumerable<LeaguesApiResponseModel>> taskLeagues = GetLeagues();
+            Task<IEnumerable<TeamsApiResponseModel>> taskTeams = GetTeams();
+
+            await Task.WhenAll(taskLeagues, taskTeams);
+
+            IEnumerable<LeaguesApiResponseModel> leagues = taskLeagues.Result;
+            IEnumerable<TeamsApiResponseModel> teams = taskTeams.Result;
+
+            var fixtures = _fixturesRepository.ListFixturesByDate(leagues, teams);
+            return OkResponse(fixtures.ToList());
+        }
+
         [HttpPost]
         public async Task<ActionResult> SyncFixtures([FromBody] FixturesRequestModel syncRequestModel)
         {
