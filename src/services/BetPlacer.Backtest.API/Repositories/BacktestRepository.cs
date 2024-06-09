@@ -1,6 +1,9 @@
 ﻿using BetPlacer.Backtest.API.Config;
+using BetPlacer.Backtest.API.Models;
 using BetPlacer.Backtest.API.Models.Entities;
+using BetPlacer.Backtest.API.Models.Request;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace BetPlacer.Backtest.API.Repositories
 {
@@ -19,8 +22,21 @@ namespace BetPlacer.Backtest.API.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public List<BacktestModel> GetBacktests(int id = 0)
+        public void UpdateFilters(int backtestCode)
         {
+           _context.Database.ExecuteSql($"UPDATE backtest SET uses_in_fixture = TRUE WHERE code = {backtestCode}");
+
+            var backtest = _context.Backtest.SingleOrDefault(b => b.Code == backtestCode);
+            if (backtest != null)
+            {
+                _context.Entry(backtest).Reload();
+            }
+        }
+
+        public List<BacktestModel> GetBacktests(bool onlyWithFilterFixture, int id = 0)
+        {
+            List<BacktestModel> backtestsToReturn = new List<BacktestModel>();
+            
             var backtests = _context.Backtest.Where(b => b.UserId == 1).ToList();
 
             if (id != 0)
@@ -48,9 +64,52 @@ namespace BetPlacer.Backtest.API.Repositories
                 backtest.Leagues = leagues;
                 backtest.LeagueSeasons = leagueSeasons;
                 backtest.Teams = teams;
+
+                if (!onlyWithFilterFixture || backtest.UsesInFixture)
+                    backtestsToReturn.Add(backtest);
             }
 
-            return backtests;
+            return backtestsToReturn;
+        }
+
+        public async Task SaveFixtureFilters(List<BacktestFilterFixtureRequestModel> fixtureFilters)
+        {
+            foreach (var fixtureFilter in fixtureFilters)
+            {
+                var existentFilter = _context.BacktestFixtureFilter.FirstOrDefault(bff => bff.BacktestCode == fixtureFilter.BacktestCode && bff.FixtureCode == fixtureFilter.FixtureCode);
+
+                if (existentFilter == null)
+                {
+                    BacktestFixtureFilterModel fixtureFilterDb = new BacktestFixtureFilterModel();
+                    fixtureFilterDb.FixtureCode = fixtureFilter.FixtureCode;
+                    fixtureFilterDb.BacktestCode = fixtureFilter.BacktestCode;
+                    _context.BacktestFixtureFilter.Add(fixtureFilterDb);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        public List<BacktestFixture> GetFixtureBacktests(List<int> fixtureCodes)
+        {
+            List<BacktestFixture> backtestFixtures = new List<BacktestFixture>();
+            
+            var fixtureFilters = _context.BacktestFixtureFilter.Where(f => fixtureCodes.Contains(f.FixtureCode)).ToList();
+
+            if (fixtureFilters != null && fixtureFilters.Count > 0)
+            {
+                var backtestCodes = fixtureFilters.Select(ff => ff.BacktestCode).ToList();
+                var backtests = _context.Backtest.Where(b => backtestCodes.Contains(b.Code)).ToList();
+
+                foreach (var fixtureFilter in fixtureFilters)
+                {
+                    var backtest = backtests.FirstOrDefault(b => b.Code == fixtureFilter.BacktestCode);
+                    BacktestFixture backtestFixture = new BacktestFixture(backtest, fixtureFilter.FixtureCode);
+                    backtestFixtures.Add(backtestFixture);
+                }
+            }
+
+            return backtestFixtures;
         }
     }
 }

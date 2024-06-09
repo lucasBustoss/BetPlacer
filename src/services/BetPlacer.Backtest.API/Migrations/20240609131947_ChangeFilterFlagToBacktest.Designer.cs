@@ -3,6 +3,7 @@ using System;
 using BetPlacer.Backtest.API.Config;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BetPlacer.Backtest.API.Migrations
 {
     [DbContext(typeof(BacktestDbContext))]
-    partial class BacktestDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240609131947_ChangeFilterFlagToBacktest")]
+    partial class ChangeFilterFlagToBacktest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -66,29 +69,6 @@ namespace BetPlacer.Backtest.API.Migrations
                     b.HasIndex("BacktestCode");
 
                     b.ToTable("backtest_filters");
-                });
-
-            modelBuilder.Entity("BetPlacer.Backtest.API.Models.Entities.BacktestFixtureFilterModel", b =>
-                {
-                    b.Property<int>("Code")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("code");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Code"));
-
-                    b.Property<int>("BacktestCode")
-                        .HasColumnType("integer")
-                        .HasColumnName("backtest_code");
-
-                    b.Property<int>("FixtureCode")
-                        .HasColumnType("integer")
-                        .HasColumnName("fixture_code");
-
-                    b.HasKey("Code")
-                        .HasName("p_k_backtest_fixture_filter");
-
-                    b.ToTable("backtest_fixture_filter");
                 });
 
             modelBuilder.Entity("BetPlacer.Backtest.API.Models.Entities.BacktestModel", b =>

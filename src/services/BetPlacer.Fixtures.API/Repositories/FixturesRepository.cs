@@ -13,6 +13,7 @@ using System.Collections.Concurrent;
 using BetPlacer.Fixtures.API.Messages;
 using BetPlacer.Fixtures.API.Messages.ModelToMessage;
 using BetPlacer.Fixtures.API.Models.ValueObjects.FixtureByDate;
+using BetPlacer.Backtest.API.Models;
 
 namespace BetPlacer.Fixtures.API.Repositories
 {
@@ -82,7 +83,14 @@ namespace BetPlacer.Fixtures.API.Repositories
             return fixturesVO.ToList();
         }
 
-        public List<LeagueFixtureByDate> ListFixturesByDate(IEnumerable<LeaguesApiResponseModel> leagues, IEnumerable<TeamsApiResponseModel> teams)
+        public List<int> GetFixtureCodesByDate(DateTime startDate, DateTime finalDate)
+        {
+            var fixtures = _context.Fixtures.Where(f => f.StartDate >= startDate && f.StartDate <= finalDate).ToList();
+
+            return fixtures.Select(f => f.Code).ToList();
+        }
+
+        public List<LeagueFixtureByDate> ListFixturesByDate(IEnumerable<LeaguesApiResponseModel> leagues, IEnumerable<TeamsApiResponseModel> teams, IEnumerable<BacktestFixture> backtestFixtures)
         {
             List<LeagueFixtureByDate> fixturesByDate = new List<LeagueFixtureByDate>();
             List<FixtureStatsTradeModel> stats = new List<FixtureStatsTradeModel>();
@@ -105,6 +113,7 @@ namespace BetPlacer.Fixtures.API.Repositories
                 foreach (var fixtureCurrentDate in fixturesCurrentDate)
                 {
                     var league = leagues.FirstOrDefault(league => league.Season.Any(season => season.Code == fixtureCurrentDate.SeasonCode));
+                    var fixtureStat = stats.FirstOrDefault(s => s.FixtureCode == fixtureCurrentDate.Code);
 
                     if (league == null)
                         continue;
@@ -117,7 +126,9 @@ namespace BetPlacer.Fixtures.API.Repositories
                         fixtureByDate.LeagueFixtures.Add(leagueFixtures);
                     }
 
-                    leagueFixtures.Fixtures.Add(new FixtureDate(fixtureCurrentDate));
+                    var backtestFixturesSelected = backtestFixtures.Where(bf => bf.FixtureCode == fixtureCurrentDate.Code).ToList();
+
+                    leagueFixtures.Fixtures.Add(new FixtureDate(fixtureCurrentDate, fixtureStat, backtestFixturesSelected));
                 }
                 
                 foreach (var leagueFixture in fixtureByDate.LeagueFixtures)

@@ -36,6 +36,7 @@ namespace BetPlacer.Backtest.API.Models.Entities
         public double MatchedFixtures { get; set; }
         public int MaxGoodRun { get; set; }
         public int MaxBadRun { get; set; }
+        public bool UsesInFixture { get; set; }
         public List<BacktestFilterModel> Filters { get; set; }
         public List<LeagueBacktestModel> Leagues { get; set; }
         public List<LeagueSeasonBacktestModel> LeagueSeasons { get; set; }

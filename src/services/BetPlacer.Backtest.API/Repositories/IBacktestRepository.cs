@@ -4,7 +4,7 @@ namespace BetPlacer.Backtest.API.Repositories
 {
     public interface IBacktestRepository
     {
-        List<BacktestModel> GetBacktests(int id = 0);
+        List<BacktestModel> GetBacktests(bool onlyWithFilterFixture, int id = 0);
         Task CreateBacktest(BacktestModel backtest);
     }
 }

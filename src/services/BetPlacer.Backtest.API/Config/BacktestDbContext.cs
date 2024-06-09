@@ -15,6 +15,7 @@ namespace BetPlacer.Backtest.API.Config
         public DbSet<LeagueBacktestModel> BacktestLeaguesList { get; set; }
         public DbSet<LeagueSeasonBacktestModel> BacktestLeagueSeasonsList { get; set; }
         public DbSet<TeamBacktestModel> BacktestTeamsList { get; set; }
+        public DbSet<BacktestFixtureFilterModel> BacktestFixtureFilter { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -90,17 +90,69 @@ namespace BetPlacer.Backtest.API.Controllers
             }
         }
 
-        [HttpGet]
-        public ActionResult GetBacktests()
+        [HttpGet("fixtures")]
+        public async Task<ActionResult> GetFixtureFilters([FromQuery] string fixtureCodesString)
         {
-            var backtests = _backtestRepository.GetBacktests();
+            try
+            {
+                if (fixtureCodesString == null)
+                    return BadRequestResponse("its necessary inform fixtureCodesString param");
+                
+                List<int> fixtureCodes = fixtureCodesString.Split(',').Select(f =>  int.Parse(f)).ToList();
+                var fixtureBacktests = _backtestRepository.GetFixtureBacktests(fixtureCodes);
+
+                return OkResponse(fixtureBacktests);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return BadRequestResponse(ex.Message);
+            }
+        }
+
+        [HttpPost("fixtures")]
+        public async Task<ActionResult> SaveFixtureFilters([FromBody] List<BacktestFilterFixtureRequestModel> request)
+        {
+            try
+            {
+                await _backtestRepository.SaveFixtureFilters(request);
+
+                return OkResponse("Filters updated");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return BadRequestResponse(ex.Message);
+            }
+        }
+
+        [HttpPut("fixtures/{backtestCode}")]
+        public ActionResult UpdateFiltersFixtureFlag(int backtestCode)
+        {
+            try
+            {
+                _backtestRepository.UpdateFilters(backtestCode);
+
+                return OkResponse("Filters updated");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return BadRequestResponse(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        public ActionResult GetBacktests([FromQuery] bool onlyWithFilterFixture = false)
+        {
+            var backtests = _backtestRepository.GetBacktests(onlyWithFilterFixture);
             return OkResponse(backtests);
         }
 
         [HttpGet("{id}")]
         public ActionResult GetBacktestById(int id)
         {
-            var backtests = _backtestRepository.GetBacktests(id);
+            var backtests = _backtestRepository.GetBacktests(false, id);
 
             if (backtests.Count > 0)
                 return OkResponse(backtests[0]);

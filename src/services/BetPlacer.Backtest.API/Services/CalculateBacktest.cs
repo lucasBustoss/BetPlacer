@@ -103,6 +103,7 @@ namespace BetPlacer.Backtest.API.Services
             backtest.Type = (int)_parameters.ResultType;
             backtest.MaxGoodRun = _maxGoodRun;
             backtest.MaxBadRun = _maxBadRun;
+            backtest.UsesInFixture = false;
 
             #region Filters
 

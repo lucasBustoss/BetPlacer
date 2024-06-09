@@ -12,6 +12,7 @@ using System.Net.Http;
 using System.Text.Json;
 using BetPlacer.Fixtures.API.Models.ValueObjects;
 using BetPlacer.Fixtures.API.Models.Entities.Trade;
+using BetPlacer.Backtest.API.Models;
 
 namespace BetPlacer.Fixtures.API.Controllers
 {
@@ -28,6 +29,9 @@ namespace BetPlacer.Fixtures.API.Controllers
 
         HttpClient _leaguesClient = new HttpClient();
         private readonly string _leaguesApiUrl;
+
+        HttpClient _backetestClient = new HttpClient();
+        private readonly string _backetestApiUrl;
 
         public FixturesController(FixturesRepository fixturesRepository, IConfiguration configuration)
         {
@@ -55,6 +59,13 @@ namespace BetPlacer.Fixtures.API.Controllers
 
             _leaguesApiUrl = configuration.GetValue<string>("LeaguesApi:AppUrl");
             _leaguesClient = new HttpClient() { BaseAddress = new Uri(_leaguesApiUrl) };
+
+            #endregion
+
+            #region BacktestApi
+
+            _backetestApiUrl = configuration.GetValue<string>("BacktestApi:AppUrl");
+            _backetestClient = new HttpClient() { BaseAddress = new Uri(_backetestApiUrl) };
 
             #endregion
 
@@ -94,6 +105,12 @@ namespace BetPlacer.Fixtures.API.Controllers
         [HttpGet("date")]
         public async Task<ActionResult> GetFixturesByDate()
         {
+            var startDate = DateTime.UtcNow.Date;
+            var endDate = DateTime.UtcNow.Date.AddDays(1).AddMilliseconds(-1);
+            var fixtureCodes = _fixturesRepository.GetFixtureCodesByDate(startDate, endDate);
+            
+            IEnumerable<BacktestFixture> backtestFixtures = await GetBacktestFixtures(fixtureCodes);
+
             Task<IEnumerable<LeaguesApiResponseModel>> taskLeagues = GetLeagues();
             Task<IEnumerable<TeamsApiResponseModel>> taskTeams = GetTeams();
 
@@ -102,7 +119,7 @@ namespace BetPlacer.Fixtures.API.Controllers
             IEnumerable<LeaguesApiResponseModel> leagues = taskLeagues.Result;
             IEnumerable<TeamsApiResponseModel> teams = taskTeams.Result;
 
-            var fixtures = _fixturesRepository.ListFixturesByDate(leagues, teams);
+            var fixtures = _fixturesRepository.ListFixturesByDate(leagues, teams, backtestFixtures);
             return OkResponse(fixtures.ToList());
         }
 
@@ -236,6 +253,26 @@ namespace BetPlacer.Fixtures.API.Controllers
             {
                 var responseLeaguesString = await request.Content.ReadAsStringAsync();
                 BaseCoreResponseModel<LeaguesApiResponseModel> response = JsonSerializer.Deserialize<BaseCoreResponseModel<LeaguesApiResponseModel>>(responseLeaguesString);
+
+                return response.Data;
+            }
+            else
+            {
+                var errorMessage = JsonSerializer.Deserialize<object>(await request.Content.ReadAsStringAsync());
+                Console.WriteLine(errorMessage);
+                Console.WriteLine(request.StatusCode);
+                return null;
+            }
+        }
+
+        private async Task<IEnumerable<BacktestFixture>> GetBacktestFixtures(List<int> fixtureCodes)
+        {
+            var request = await _backetestClient.GetAsync($"fixtures?fixtureCodesString={string.Join(", ", fixtureCodes)}");
+
+            if (request.IsSuccessStatusCode)
+            {
+                var responseLeaguesString = await request.Content.ReadAsStringAsync();
+                BaseCoreResponseModel<BacktestFixture> response = JsonSerializer.Deserialize<BaseCoreResponseModel<BacktestFixture>>(responseLeaguesString);
 
                 return response.Data;
             }
