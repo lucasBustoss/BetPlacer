@@ -43,6 +43,14 @@ namespace BetPlacer.Leagues.Controllers
             return OkResponse(league);
         }
 
+        [HttpGet("season/current")]
+        public ActionResult GetLeaguesWithCurrentSeasons()
+        {
+            var leagues = _leaguesRepository.GetLeaguesWithCurrentSeason();
+
+            return OkResponse(leagues);
+        }
+
         [HttpPost]
         public async Task<ActionResult> SyncLeagues()
         {

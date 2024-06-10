@@ -95,6 +95,39 @@ namespace BetPlacer.Sync.API.Controllers
             }
         }
 
+        [HttpPost("league/current")]
+        public async Task<ActionResult> SyncLeagueCurrentInfo()
+        {
+            try
+            {
+                var league = await GetLeagueWithCurrentSeason();
+
+                if (league != null)
+                {
+                    Stopwatch st = new Stopwatch();
+
+                    Console.WriteLine($"Começando a sincronizar as infos da liga {league.Name}");
+                    st.Start();
+
+                    await SyncTeams(league.Seasons, league.Name);
+                    await SyncFixtures(league.Seasons, league.Name);
+
+                    st.Stop();
+                    double elapsedSeconds = st.Elapsed.TotalSeconds;
+
+                    Console.WriteLine($"Fim do sync das infos da liga {league.Name}");
+                    Console.WriteLine($"Tempo decorrido: {elapsedSeconds} segundos");
+                }
+
+                Console.WriteLine("FIM DE SYNC");
+                return OkResponse("data synchronized.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequestResponse(ex.Message);
+            }
+        }
+
         #region Private methods
 
         private async Task<List<LeagueSyncResponseModel>> SyncLeagues()
@@ -120,6 +153,26 @@ namespace BetPlacer.Sync.API.Controllers
         private async Task<LeagueSyncResponseModel> GetLeague(int leagueId)
         {
             var requestLeagues = await _httpClient.GetAsync($"{_leaguesApiUrl}/{leagueId}");
+
+            if (requestLeagues.IsSuccessStatusCode)
+            {
+                var responseLeaguesString = await requestLeagues.Content.ReadAsStringAsync();
+                BaseCoreResponseModel<LeagueSyncResponseModel> response = JsonSerializer.Deserialize<BaseCoreResponseModel<LeagueSyncResponseModel>>(responseLeaguesString);
+
+                return response.Data.FirstOrDefault();
+            }
+            else
+            {
+                var errorMessage = JsonSerializer.Deserialize<object>(await requestLeagues.Content.ReadAsStringAsync());
+                Console.WriteLine(errorMessage);
+                Console.WriteLine(requestLeagues.StatusCode);
+                return null;
+            }
+        }
+
+        private async Task<LeagueSyncResponseModel> GetLeagueWithCurrentSeason()
+        {
+            var requestLeagues = await _httpClient.GetAsync($"{_leaguesApiUrl}/season/current");
 
             if (requestLeagues.IsSuccessStatusCode)
             {

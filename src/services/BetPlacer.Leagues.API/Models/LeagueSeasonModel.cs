@@ -14,6 +14,7 @@ namespace BetPlacer.Leagues.API.Models
             Code = leagueSeasonResponseModel.Id;
             LeagueCode = leagueCode;
             Year = rawYear.Length > 4 ? $"{rawYear.Substring(0, 4)}-{rawYear.Substring(4, 4)}" : rawYear;
+            Current = false;
         }
         
         public LeagueModel League { get; set; }
@@ -22,5 +23,6 @@ namespace BetPlacer.Leagues.API.Models
         public int Code { get; set; }
         public int LeagueCode { get; set; }
         public string Year { get; set; }
+        public bool Current { get; set; }
     }
 }

@@ -24,8 +24,32 @@ namespace BetPlacer.Core.API.Service
 
         public async Task<IEnumerable<LeaguesFootballResponseModel>> GetLeagues()
         {
+            IEnumerable<LeaguesFootballResponseModel> leaguesFiltered = new List<LeaguesFootballResponseModel>();
+
             var request = await _httpClient.GetAsync($"league-list?key={_apiKey}&chosen_leagues_only=true");
-            return await TreatApiRequest<LeaguesFootballResponseModel>(request);
+            var leagues = await TreatApiRequest<LeaguesFootballResponseModel>(request);
+
+            foreach (var league in leagues)
+            {
+                var seasons = new List<LeagueSeasonResponseModel>();
+
+                foreach (var season in league.Season)
+                {
+                    int year = 0;
+
+                    if (season.Year.ToString().Length == 8)
+                        year = int.Parse(season.Year.ToString().Substring(0, 4));
+                    else
+                        year = season.Year;
+
+                    if (year != 0 && year >= 2013)
+                        seasons.Add(season);
+                }
+
+                league.Season = seasons;
+            }
+
+            return leagues.Where(l => l.Season.Count() > 0).ToList();
         }
 
         public async Task<IEnumerable<TeamsFootballResponseModel>> GetTeams(int leagueSeasonCode)
