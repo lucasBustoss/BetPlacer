@@ -11,12 +11,20 @@ namespace BetPlacer.Backtest.API.Models
             Name = backtestRequest.Name;
             ResultType = (ResultType)backtestRequest.ResultType;
             ResultTeamType = (ResultTeamType)backtestRequest.ResultTeamType;
-            Filters = new BacktestFilters(backtestRequest.Filters);
+
+            if (backtestRequest.Filters != null && backtestRequest.Filters.Count > 0)
+            {
+                Filters = new List<BacktestFilter>();
+
+                foreach (var filterRequest in backtestRequest.Filters)
+                    Filters.Add(new BacktestFilter(filterRequest));
+            }
+
         }
 
         public string Name { get; set; }
         public ResultType ResultType { get; set; }
         public ResultTeamType ResultTeamType { get; set; }
-        public BacktestFilters Filters { get; set; }
+        public List<BacktestFilter> Filters { get; set; }
     }
 }

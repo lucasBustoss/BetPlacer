@@ -9,6 +9,9 @@ namespace BetPlacer.Core.Models.Response.MicroserviceAPI.Fixtures
 {
     public class FixtureStatsApiResponseModel
     {
+        [JsonPropertyName("homeMatchesCountOverall")]
+        public int HomeMatchesCountOverall { get; set; }
+
         [JsonPropertyName("homeWinsTotal")]
         public int HomeWinsTotal { get; set; }
 
@@ -185,6 +188,9 @@ namespace BetPlacer.Core.Models.Response.MicroserviceAPI.Fixtures
 
         [JsonPropertyName("homeGoalsConcededAt76To90Percent")]
         public double HomeGoalsConcededAt76To90Percent { get; set; }
+
+        [JsonPropertyName("homeMatchesCountAtHome")]
+        public int HomeMatchesCountAtHome { get; set; }
 
         [JsonPropertyName("homePPGAtHome")]
         public double HomePPGAtHome { get; set; }
@@ -366,6 +372,9 @@ namespace BetPlacer.Core.Models.Response.MicroserviceAPI.Fixtures
         [JsonPropertyName("homeGoalsConcededAt76To90PercentAtHome")]
         public double HomeGoalsConcededAt76To90PercentAtHome { get; set; }
 
+        [JsonPropertyName("awayMatchesCountOverall")]
+        public int AwayMatchesCountOverall { get; set; }
+        
         [JsonPropertyName("awayPPGTotal")]
         public double AwayPPGTotal { get; set; }
 
@@ -545,6 +554,9 @@ namespace BetPlacer.Core.Models.Response.MicroserviceAPI.Fixtures
 
         [JsonPropertyName("awayGoalsConcededAt76To90Percent")]
         public double AwayGoalsConcededAt76To90Percent { get; set; }
+
+        [JsonPropertyName("awayMatchesCountAtAway")]
+        public int AwayMatchesCountAtAway{ get; set; }
 
         [JsonPropertyName("awayPPGAtAway")]
         public double AwayPPGAtAway { get; set; }

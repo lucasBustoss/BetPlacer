@@ -14,7 +14,7 @@ namespace BetPlacer.Backtest.API.Models.Request
         public int ResultTeamType { get; set; }
 
         [JsonPropertyName("filters")]
-        public BacktestFilterRequestModel Filters { get;set; }
+        public List<BacktestFilterRequestModel> Filters { get;set; }
     }
 }
 

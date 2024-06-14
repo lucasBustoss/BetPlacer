@@ -132,6 +132,53 @@ namespace BetPlacer.Fixtures.API.Migrations
                     b.ToTable("fixtures");
                 });
 
+            modelBuilder.Entity("BetPlacer.Fixtures.API.Models.Entities.FixtureOdds", b =>
+                {
+                    b.Property<int>("Code")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("code");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Code"));
+
+                    b.Property<double>("AwayOdd")
+                        .HasColumnType("double precision")
+                        .HasColumnName("away_odd");
+
+                    b.Property<double>("BTTSNoOdd")
+                        .HasColumnType("double precision")
+                        .HasColumnName("btts_no_odd");
+
+                    b.Property<double>("BTTSYesOdd")
+                        .HasColumnType("double precision")
+                        .HasColumnName("btts_yes_odd");
+
+                    b.Property<double>("DrawOdd")
+                        .HasColumnType("double precision")
+                        .HasColumnName("draw_odd");
+
+                    b.Property<int>("FixtureCode")
+                        .HasColumnType("integer")
+                        .HasColumnName("fixture_code");
+
+                    b.Property<double>("HomeOdd")
+                        .HasColumnType("double precision")
+                        .HasColumnName("home_odd");
+
+                    b.Property<double>("Over25Odd")
+                        .HasColumnType("double precision")
+                        .HasColumnName("over25_odd");
+
+                    b.Property<double>("Under25Odd")
+                        .HasColumnType("double precision")
+                        .HasColumnName("under25_odd");
+
+                    b.HasKey("Code")
+                        .HasName("p_k_fixture_odds");
+
+                    b.ToTable("fixture_odds");
+                });
+
             modelBuilder.Entity("BetPlacer.Fixtures.API.Models.Entities.Trade.FixtureStatsTradeModel", b =>
                 {
                     b.Property<int>("Code")
@@ -556,6 +603,14 @@ namespace BetPlacer.Fixtures.API.Migrations
                     b.Property<double>("AwayLossesPercentHTTotal")
                         .HasColumnType("double precision")
                         .HasColumnName("away_losses_percent_ht_total");
+
+                    b.Property<int>("AwayMatchesCountAtAway")
+                        .HasColumnType("integer")
+                        .HasColumnName("away_matches_count_at_away");
+
+                    b.Property<int>("AwayMatchesCountOverall")
+                        .HasColumnType("integer")
+                        .HasColumnName("away_matches_count_overall");
 
                     b.Property<double>("AwayPPGAtAway")
                         .HasColumnType("double precision")
@@ -1040,6 +1095,14 @@ namespace BetPlacer.Fixtures.API.Migrations
                     b.Property<double>("HomeLossesPercentHTTotal")
                         .HasColumnType("double precision")
                         .HasColumnName("home_losses_percent_ht_total");
+
+                    b.Property<int>("HomeMatchesCountAtHome")
+                        .HasColumnType("integer")
+                        .HasColumnName("home_matches_count_at_home");
+
+                    b.Property<int>("HomeMatchesCountOverall")
+                        .HasColumnType("integer")
+                        .HasColumnName("home_matches_count_overall");
 
                     b.Property<double>("HomePPGAtHome")
                         .HasColumnType("double precision")

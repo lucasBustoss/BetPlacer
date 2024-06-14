@@ -33,7 +33,7 @@ namespace BetPlacer.Leagues.Controllers
         {
             bool getLeaguesWithSeason = withSeasons != null ? withSeasons.Value : false;
             var leagues = _leaguesRepository.List(getLeaguesWithSeason);
-            return OkResponse(leagues);
+            return OkResponse(leagues.OrderBy(l => l.Name).ToList());
         }
 
         [HttpGet("{id}")]

@@ -44,6 +44,7 @@ namespace BetPlacer.Fixtures.API.Services
                 FixtureStatsTradeModel stats = new FixtureStatsTradeModel();
                 stats.FixtureCode = fixture.Code;
 
+                GetTotals(stats, fixture, homePastFixturesAtHome, homePastFixturesAtAway, awayPastFixturesAtHome, awayPastFixturesAtAway);
                 GetPPG(stats, fixture, homePastFixturesAtHome, homePastFixturesAtAway, awayPastFixturesAtHome, awayPastFixturesAtAway);
                 GetTotalWins(stats, fixture, homePastFixturesAtHome, homePastFixturesAtAway, awayPastFixturesAtHome, awayPastFixturesAtAway);
                 GetGoalsStats(stats, fixture, homePastFixturesAtHome, homePastFixturesAtAway, awayPastFixturesAtHome, awayPastFixturesAtAway, fixtureGoals.ToList());
@@ -57,6 +58,15 @@ namespace BetPlacer.Fixtures.API.Services
         }
 
         #region GetStats
+
+        private void GetTotals(FixtureStatsTradeModel stats, FixtureModel fixture, List<FixtureModel> homePastFixturesAtHome, List<FixtureModel> homePastFixturesAtAway, List<FixtureModel> awayPastFixturesAtHome, List<FixtureModel> awayPastFixturesAtAway)
+        {
+            stats.HomeMatchesCountOverall = CalculateTotals(homePastFixturesAtHome.Concat(homePastFixturesAtAway).ToList(), fixture.HomeTeamId);
+            stats.HomeMatchesCountAtHome = CalculateTotals(homePastFixturesAtHome, fixture.HomeTeamId);
+
+            stats.AwayMatchesCountOverall = CalculateTotals(awayPastFixturesAtHome.Concat(awayPastFixturesAtAway).ToList(), fixture.AwayTeamId);
+            stats.AwayMatchesCountAtAway = CalculateTotals(awayPastFixturesAtAway, fixture.AwayTeamId);
+        }
 
         private void GetPPG(FixtureStatsTradeModel stats, FixtureModel fixture, List<FixtureModel> homePastFixturesAtHome, List<FixtureModel> homePastFixturesAtAway, List<FixtureModel> awayPastFixturesAtHome, List<FixtureModel> awayPastFixturesAtAway)
         {
@@ -450,6 +460,13 @@ namespace BetPlacer.Fixtures.API.Services
         #endregion
 
         #region Calculations
+
+        private int CalculateTotals(List<FixtureModel> fixtures, int teamId)
+        {
+            var count = fixtures.Where(f => f.HomeTeamId == teamId || f.AwayTeamId == f.AwayTeamId).Count();
+            return count;
+        }
+
 
         private double CalculatePPG(List<FixtureModel> fixtures, int teamId)
         {

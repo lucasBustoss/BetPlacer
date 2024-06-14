@@ -14,6 +14,7 @@ namespace BetPlacer.Fixtures.Config
         public DbSet<FixtureModel> Fixtures { get; set; }
         public DbSet<FixtureGoalsModel> FixtureGoals { get; set; }
         public DbSet<FixtureStatsTradeModel> FixtureStatsTrade { get; set; }
+        public DbSet<FixtureOdds> FixtureOdds { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

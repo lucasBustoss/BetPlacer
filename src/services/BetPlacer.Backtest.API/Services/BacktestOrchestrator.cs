@@ -1,6 +1,7 @@
 ﻿using BetPlacer.Backtest.API.Messages.Consumer;
 using BetPlacer.Backtest.API.Models;
 using BetPlacer.Backtest.API.Models.Entities;
+using BetPlacer.Backtest.API.Models.ValueObjects;
 using BetPlacer.Core.Models.Response.Microservice.Leagues;
 using BetPlacer.Core.Models.Response.Microservice.Teams;
 
@@ -15,7 +16,7 @@ namespace BetPlacer.Backtest.API.Services
             _serviceProvider = serviceProvider;
         }
 
-        public async Task<BacktestModel> StartBacktestAsync(BacktestParameters parameters, List<LeaguesApiResponseModel> leagues, List<TeamsApiResponseModel> teams, string backtestHash)
+        public async Task<BacktestVO> StartBacktestAsync(BacktestParameters parameters, List<LeaguesApiResponseModel> leagues, List<TeamsApiResponseModel> teams, string backtestHash)
         {
             using (var scope = _serviceProvider.CreateScope())
             {

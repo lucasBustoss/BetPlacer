@@ -1,6 +1,7 @@
 ﻿using BetPlacer.Backtest.API.Models.Entities.Odds;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using BetPlacer.Backtest.API.Models.ValueObjects;
 
 namespace BetPlacer.Backtest.API.Models.Entities
 {
@@ -8,20 +9,22 @@ namespace BetPlacer.Backtest.API.Models.Entities
     {
         public BacktestModel()
         {
-            
+
         }
 
-        public BacktestModel(bool createData)
+        public BacktestModel(BacktestVO backtest)
         {
-            if (createData)
-            {
-                CreationDate = DateTime.UtcNow;
-                UserId = 1;
-                Filters = new List<BacktestFilterModel>();
-                Leagues = new List<LeagueBacktestModel>();
-                LeagueSeasons = new List<LeagueSeasonBacktestModel>();
-                Teams = new List<TeamBacktestModel>();
-            }
+            Name = backtest.Name;
+            UserId = backtest.UserId;
+            CreationDate = backtest.CreationDate;
+            Type = backtest.Type;
+            TeamType = backtest.TeamType;
+            FilteredFixtures = backtest.FilteredFixtures;
+            MatchedFixtures = backtest.MatchedFixtures;
+            MaxGoodRun = backtest.MaxGoodRun;
+            MaxBadRun = backtest.MaxBadRun;
+            UsesInFixture = backtest.UsesInFixture;
+
         }
 
         [Key]
@@ -37,9 +40,5 @@ namespace BetPlacer.Backtest.API.Models.Entities
         public int MaxGoodRun { get; set; }
         public int MaxBadRun { get; set; }
         public bool UsesInFixture { get; set; }
-        public List<BacktestFilterModel> Filters { get; set; }
-        public List<LeagueBacktestModel> Leagues { get; set; }
-        public List<LeagueSeasonBacktestModel> LeagueSeasons { get; set; }
-        public List<TeamBacktestModel> Teams { get; set; }
     }
 }

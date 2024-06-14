@@ -1,50 +1,43 @@
-﻿using BetPlacer.Backtest.API.Models.Request.Filters;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace BetPlacer.Backtest.API.Models.Request
 {
     public class BacktestFilterRequestModel
     {
-        [JsonPropertyName("firstToScorePercent")]
-        public BacktestFilterValuesRequestModel FirstToScorePercentFilterModel { get; set; }
+        [JsonPropertyName("filterCode")]
+        public int FilterCode { get; set; }
 
-        [JsonPropertyName("twoZeroPercent")]
-        public BacktestFilterValuesRequestModel TwoZeroPercentFilterModel { get; set; }
+        [JsonPropertyName("filterName")]
+        public string FilterName { get; set; }
 
-        [JsonPropertyName("cleanSheetPercent")]
-        public BacktestFilterValuesRequestModel CleanSheetPercentFilterModel { get; set; }
+        [JsonPropertyName("compareType")]
+        public int CompareType { get; set; }
 
-        [JsonPropertyName("failedToScorePercent")]
-        public BacktestFilterValuesRequestModel FailedToScorePercentFilterModel { get; set; }
+        [JsonPropertyName("teamType")]
+        public int TeamType { get; set; }
 
-        [JsonPropertyName("bothToScorePercent")]
-        public BacktestFilterValuesRequestModel BothToScorePercentFilterModel { get; set; }
+        [JsonPropertyName("propType")]
+        public int PropType { get; set; }
 
-        [JsonPropertyName("avgGoalsScored")]
-        public BacktestFilterValuesRequestModel AvgGoalsScoredFilterModel { get; set; }
+        [JsonPropertyName("minCountMatches")]
+        public int MinCountMatches { get; set; }
 
-        [JsonPropertyName("avgGoalsConceded")]
-        public BacktestFilterValuesRequestModel AvgGoalsConcededFilterModel { get; set; }
+        [JsonPropertyName("minCountMatchesAtAway")]
+        public int MinCountMatchesAtAway { get; set; }
 
-        [JsonPropertyName("firstToScorePercentHT")]
-        public BacktestFilterValuesRequestModel FtsHTFilterModel { get; set; }
+        [JsonPropertyName("initialValue")]
+        public double? InitialValue { get; set; }
 
-        [JsonPropertyName("twoZeroPercentHT")]
-        public BacktestFilterValuesRequestModel ToScoreTwoZeroHTFilterModel { get; set; }
+        [JsonPropertyName("finalValue")]
+        public double? FinalValue { get; set; }
 
-        [JsonPropertyName("cleanSheetPercentHT")]
-        public BacktestFilterValuesRequestModel CleanSheetsHTFilterModel { get; set; }
+        [JsonPropertyName("calculateType")]
+        public int CalculateType { get; set; }
 
-        [JsonPropertyName("failedToScorePercentHT")]
-        public BacktestFilterValuesRequestModel FailedToScoreHTFilterModel { get; set; }
+        [JsonPropertyName("calculateOperation")]
+        public int? CalculateOperation { get; set; }
 
-        [JsonPropertyName("bothToScorePercentHT")]
-        public BacktestFilterValuesRequestModel BothToScoreHTFilterModel { get; set; }
-
-        [JsonPropertyName("avgGoalsScoredHT")]
-        public BacktestFilterValuesRequestModel AverageGoalsScoredHTFilterModel { get; set; }
-
-        [JsonPropertyName("avgGoalsConcededHT")]
-        public BacktestFilterValuesRequestModel AverageGoalsConcededHTFilterModel { get; set; }
+        [JsonPropertyName("relativeValue")]
+        public double? RelativeValue { get; set; }
     }
 }

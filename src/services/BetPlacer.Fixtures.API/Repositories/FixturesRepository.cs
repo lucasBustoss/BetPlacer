@@ -14,6 +14,7 @@ using BetPlacer.Fixtures.API.Messages;
 using BetPlacer.Fixtures.API.Messages.ModelToMessage;
 using BetPlacer.Fixtures.API.Models.ValueObjects.FixtureByDate;
 using BetPlacer.Backtest.API.Models;
+using BetPlacer.Fixtures.API.Models.RequestModel;
 
 namespace BetPlacer.Fixtures.API.Repositories
 {
@@ -81,6 +82,20 @@ namespace BetPlacer.Fixtures.API.Repositories
                 fixturesVO = (await TreatFixtureObjects(fixtures, leaguesBySeasonCode, teamsByCode, goalsByFixtureCode, statsByFixtureCode, false, backtestHash));
 
             return fixturesVO.ToList();
+        }
+
+        public IEnumerable<FixtureModel> GetFixturesWithoutOdds(LeaguesApiResponseModel league)
+        {
+            var leagueSeasonCodes = league.Season.Select(s => s.Code).ToList();
+            var fixturesWithoutOdds = _context.Fixtures
+                                      .Where(f => !_context.FixtureOdds
+                                                        .Any(fo => fo.FixtureCode == f.Code)
+                                                  && leagueSeasonCodes.Contains(f.SeasonCode) 
+                                                  && f.StartDate < DateTime.UtcNow.AddDays(-1))
+                                      .OrderBy(f => f.StartDate)
+                                      .ToList();
+
+            return fixturesWithoutOdds.ToList();
         }
 
         public List<int> GetFixtureCodesByDate(DateTime startDate, DateTime finalDate)
@@ -215,6 +230,12 @@ namespace BetPlacer.Fixtures.API.Repositories
             //await CreateFixtureGoals(fixturesResponse, fixturesSaved);
 
             #endregion
+        }
+
+        public async Task CreateOdds(FixtureOdds odds)
+        {
+            _context.Add(odds);
+            await _context.SaveChangesAsync();
         }
 
         public async Task CalculateFixtureStats(int leagueSeasonCode)

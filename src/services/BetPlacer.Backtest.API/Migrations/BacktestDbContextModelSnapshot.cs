@@ -22,6 +22,30 @@ namespace BetPlacer.Backtest.API.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("BetPlacer.Backtest.API.Models.Entities.BacktestAdditionalInformationModel", b =>
+                {
+                    b.Property<int>("Code")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("code");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Code"));
+
+                    b.Property<int>("BacktestCode")
+                        .HasColumnType("integer")
+                        .HasColumnName("backtest_code");
+
+                    b.Property<string>("Info")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("info");
+
+                    b.HasKey("Code")
+                        .HasName("p_k_backtest_additional_information");
+
+                    b.ToTable("backtest_additional_information");
+                });
+
             modelBuilder.Entity("BetPlacer.Backtest.API.Models.Entities.BacktestFilterModel", b =>
                 {
                     b.Property<int>("Code")
@@ -39,6 +63,15 @@ namespace BetPlacer.Backtest.API.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("compare_type");
 
+                    b.Property<int>("FilterCode")
+                        .HasColumnType("integer")
+                        .HasColumnName("filter_code");
+
+                    b.Property<string>("FilterName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("filter_name");
+
                     b.Property<double>("FinalValue")
                         .HasColumnType("double precision")
                         .HasColumnName("final_value");
@@ -46,11 +79,6 @@ namespace BetPlacer.Backtest.API.Migrations
                     b.Property<double>("InitialValue")
                         .HasColumnType("double precision")
                         .HasColumnName("initial_value");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("name");
 
                     b.Property<int>("PropType")
                         .HasColumnType("integer")
@@ -145,6 +173,117 @@ namespace BetPlacer.Backtest.API.Migrations
                         .HasName("p_k_backtest");
 
                     b.ToTable("backtest");
+                });
+
+            modelBuilder.Entity("BetPlacer.Backtest.API.Models.Entities.Filters.FilterBacktestModel", b =>
+                {
+                    b.Property<int>("Code")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("code");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Code"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.Property<string>("Prop")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("prop");
+
+                    b.HasKey("Code")
+                        .HasName("p_k_filters");
+
+                    b.ToTable("filters");
+
+                    b.HasData(
+                        new
+                        {
+                            Code = 1,
+                            Name = "% de jogos sendo primeiro a marcar",
+                            Prop = "firstToScorePercent"
+                        },
+                        new
+                        {
+                            Code = 2,
+                            Name = "% de jogos sendo primeiro a marcar 2x0",
+                            Prop = "twoZeroPercent"
+                        },
+                        new
+                        {
+                            Code = 3,
+                            Name = "% de jogos sem sofrer gols",
+                            Prop = "cleanSheetPercent"
+                        },
+                        new
+                        {
+                            Code = 4,
+                            Name = "% de jogos em que não marcou gols",
+                            Prop = "failedToScorePercent"
+                        },
+                        new
+                        {
+                            Code = 5,
+                            Name = "% de jogos em que os dois times marcaram",
+                            Prop = "bothToScorePercent"
+                        },
+                        new
+                        {
+                            Code = 6,
+                            Name = "Média de gols marcados",
+                            Prop = "avgGoalsScored"
+                        },
+                        new
+                        {
+                            Code = 7,
+                            Name = "Média de gols sofridos",
+                            Prop = "avgGoalsConceded"
+                        },
+                        new
+                        {
+                            Code = 8,
+                            Name = "% de jogos sendo primeiro a marcar no HT",
+                            Prop = "firstToScorePercentHT"
+                        },
+                        new
+                        {
+                            Code = 9,
+                            Name = "% de jogos sendo primeiro a marcar 2x0 no HT",
+                            Prop = "twoZeroPercentHT"
+                        },
+                        new
+                        {
+                            Code = 10,
+                            Name = "% de jogos sem sofrer gols no HT",
+                            Prop = "cleanSheetPercentHT"
+                        },
+                        new
+                        {
+                            Code = 11,
+                            Name = "% de jogos em que não marcou gols no HT",
+                            Prop = "failedToScorePercentHT"
+                        },
+                        new
+                        {
+                            Code = 12,
+                            Name = "% de jogos em que os dois times marcaram no HT",
+                            Prop = "bothToScorePercentHT"
+                        },
+                        new
+                        {
+                            Code = 13,
+                            Name = "Média de gols marcados no HT",
+                            Prop = "avgGoalsScoredHT"
+                        },
+                        new
+                        {
+                            Code = 14,
+                            Name = "Média de gols sofridos no HT",
+                            Prop = "avgGoalsConcededHT"
+                        });
                 });
 
             modelBuilder.Entity("BetPlacer.Backtest.API.Models.Entities.LeagueBacktestModel", b =>
@@ -261,7 +400,7 @@ namespace BetPlacer.Backtest.API.Migrations
             modelBuilder.Entity("BetPlacer.Backtest.API.Models.Entities.BacktestFilterModel", b =>
                 {
                     b.HasOne("BetPlacer.Backtest.API.Models.Entities.BacktestModel", "Backtest")
-                        .WithMany("Filters")
+                        .WithMany()
                         .HasForeignKey("BacktestCode")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
@@ -273,7 +412,7 @@ namespace BetPlacer.Backtest.API.Migrations
             modelBuilder.Entity("BetPlacer.Backtest.API.Models.Entities.LeagueBacktestModel", b =>
                 {
                     b.HasOne("BetPlacer.Backtest.API.Models.Entities.BacktestModel", "Backtest")
-                        .WithMany("Leagues")
+                        .WithMany()
                         .HasForeignKey("BacktestCode")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
@@ -285,7 +424,7 @@ namespace BetPlacer.Backtest.API.Migrations
             modelBuilder.Entity("BetPlacer.Backtest.API.Models.Entities.LeagueSeasonBacktestModel", b =>
                 {
                     b.HasOne("BetPlacer.Backtest.API.Models.Entities.BacktestModel", "Backtest")
-                        .WithMany("LeagueSeasons")
+                        .WithMany()
                         .HasForeignKey("BacktestCode")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
@@ -297,24 +436,13 @@ namespace BetPlacer.Backtest.API.Migrations
             modelBuilder.Entity("BetPlacer.Backtest.API.Models.Entities.TeamBacktestModel", b =>
                 {
                     b.HasOne("BetPlacer.Backtest.API.Models.Entities.BacktestModel", "Backtest")
-                        .WithMany("Teams")
+                        .WithMany()
                         .HasForeignKey("BacktestCode")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("f_k_backtest_teams_list_backtest_backtest_code");
 
                     b.Navigation("Backtest");
-                });
-
-            modelBuilder.Entity("BetPlacer.Backtest.API.Models.Entities.BacktestModel", b =>
-                {
-                    b.Navigation("Filters");
-
-                    b.Navigation("LeagueSeasons");
-
-                    b.Navigation("Leagues");
-
-                    b.Navigation("Teams");
                 });
 #pragma warning restore 612, 618
         }

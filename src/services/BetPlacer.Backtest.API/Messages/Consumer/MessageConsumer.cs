@@ -92,7 +92,6 @@ namespace BetPlacer.Backtest.API.Messages.Consumer
                 if (message.Fixture != null)
                 {
                     _calculate.CalculateFixture(message.Fixture);
-                    Console.WriteLine("Processed fixture.");
 
                     _channel.BasicAck(evt.DeliveryTag, false);
                 }

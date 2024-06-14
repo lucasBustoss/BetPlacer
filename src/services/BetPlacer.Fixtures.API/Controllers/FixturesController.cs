@@ -102,6 +102,15 @@ namespace BetPlacer.Fixtures.API.Controllers
             }
         }
 
+        [HttpGet("odds/{leagueCode}")]
+        public async Task<ActionResult> GetFixturesWithoutOdds(int leagueCode)
+        {
+            var league = await GetLeaguesById(leagueCode);
+            
+            var fixtures = _fixturesRepository.GetFixturesWithoutOdds(league.FirstOrDefault());
+            return OkResponse(fixtures);
+        }
+
         [HttpGet("date")]
         public async Task<ActionResult> GetFixturesByDate()
         {
@@ -121,6 +130,21 @@ namespace BetPlacer.Fixtures.API.Controllers
 
             var fixtures = _fixturesRepository.ListFixturesByDate(leagues, teams, backtestFixtures);
             return OkResponse(fixtures.ToList());
+        }
+
+        [HttpPost("odds")]
+        public async Task<ActionResult> SyncFixtures([FromBody] FixtureOddsRequest oddsRequest)
+        {
+            try
+            {
+                await _fixturesRepository.CreateOdds(new Models.Entities.FixtureOdds(oddsRequest));
+
+                return OkResponse("odds created");
+            }
+            catch (Exception ex)
+            {
+                return BadRequestResponse(ex.Message);
+            }
         }
 
         [HttpPost]
@@ -248,6 +272,26 @@ namespace BetPlacer.Fixtures.API.Controllers
         private async Task<IEnumerable<LeaguesApiResponseModel>> GetLeagues()
         {
             var request = await _leaguesClient.GetAsync("?withSeasons=true");
+
+            if (request.IsSuccessStatusCode)
+            {
+                var responseLeaguesString = await request.Content.ReadAsStringAsync();
+                BaseCoreResponseModel<LeaguesApiResponseModel> response = JsonSerializer.Deserialize<BaseCoreResponseModel<LeaguesApiResponseModel>>(responseLeaguesString);
+
+                return response.Data;
+            }
+            else
+            {
+                var errorMessage = JsonSerializer.Deserialize<object>(await request.Content.ReadAsStringAsync());
+                Console.WriteLine(errorMessage);
+                Console.WriteLine(request.StatusCode);
+                return null;
+            }
+        }
+
+        private async Task<IEnumerable<LeaguesApiResponseModel>> GetLeaguesById(int leagueCode)
+        {
+            var request = await _leaguesClient.GetAsync($"{leagueCode}");
 
             if (request.IsSuccessStatusCode)
             {

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BetPlacer.Fixtures.API.Models.Entities.Trade
@@ -10,6 +11,12 @@ namespace BetPlacer.Fixtures.API.Models.Entities.Trade
         [Key]
         public int Code { get; set; }
         public int FixtureCode { get; set; }
+
+        public int HomeMatchesCountOverall { get; set; }
+        public int HomeMatchesCountAtHome { get; set; }
+        
+        public int AwayMatchesCountOverall { get; set; }
+        public int AwayMatchesCountAtAway { get; set; }
 
         #region HomeTeam
 

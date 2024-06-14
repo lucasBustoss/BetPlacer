@@ -18,4 +18,18 @@
         Overall = 1,
         HomeAway = 2
     }
+
+    public enum FilterCalculateType 
+    { 
+        Absolute = 1,
+        Relative = 2
+    }
+
+    public enum FilterCalculateOperation 
+    { 
+        Sum = 1,
+        Multiplication = 2,
+        Subtraction = 3,
+        Division = 4,
+    }
 }

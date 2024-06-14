@@ -90,8 +90,24 @@ namespace BetPlacer.Backtest.API.Controllers
             }
         }
 
+        [HttpGet("filters")]
+        public ActionResult GetFilters()
+        {
+            try
+            {
+                var filters = _backtestRepository.GetFilters();
+
+                return OkResponse(filters);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return BadRequestResponse(ex.Message);
+            }
+        }
+
         [HttpGet("fixtures")]
-        public async Task<ActionResult> GetFixtureFilters([FromQuery] string fixtureCodesString)
+        public ActionResult GetFixtureFilters([FromQuery] string fixtureCodesString)
         {
             try
             {
