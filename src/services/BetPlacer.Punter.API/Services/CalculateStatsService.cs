@@ -51,6 +51,7 @@ namespace BetPlacer.Punter.API.Services
 
             CalculateScoredAverage(averageData, last10MatchesHome, last10MatchesAway);
             CalculateConcededAverage(averageData, last10MatchesHome, last10MatchesAway);
+            CalculatePointsAverage(averageData, last10MatchesHome, last10MatchesAway);
         }
 
         private void CalculateScoredAverage(TeamAverageData averageData, List<MatchBaseData> homeMatches, List<MatchBaseData> awayMatches)
@@ -131,6 +132,39 @@ namespace BetPlacer.Punter.API.Services
             averageData.AwayGoalConcededCv = Math.Round(stdAwayGoalConcededValue / avgAwayGoalConcededValue, 2);
             averageData.AwayGoalConcededValueAvg = Math.Round(sumAwayConcededGoalsValue / awayMatches.Count(), 2);
             averageData.AwayGoalConcededCostAvg = Math.Round(sumAwayConcededGoalsCost / awayMatches.Count(), 2);
+
+            #endregion
+        }
+
+        private void CalculatePointsAverage(TeamAverageData averageData, List<MatchBaseData> homeMatches, List<MatchBaseData> awayMatches)
+        {
+            #region Home
+
+            double sumHomePointsValue = homeMatches.Sum(hm => hm.HomePointsValue);
+            double sumAwayPercentageOdd = homeMatches.Sum(hm => hm.AwayPercentageOdd);
+
+            double stdHomePoints = MathUtils.StandardDeviation(homeMatches.Select(hm => (double)hm.HomePoints).ToList());
+
+            double avgHomePointsValue = sumHomePointsValue / sumAwayPercentageOdd;
+
+            averageData.HomePointsAverage = Math.Round(avgHomePointsValue, 2);
+            averageData.HomePointsStd = Math.Round(stdHomePoints, 2);
+            averageData.HomePointsCv = Math.Round(stdHomePoints / avgHomePointsValue, 2);
+
+            #endregion
+
+            #region Away
+
+            double sumAwayPointsValue = awayMatches.Sum(am => am.AwayPointsValue);
+            double sumHomePercentageOdd = awayMatches.Sum(am => am.HomePercentageOdd);
+
+            double stdAwayPoints = MathUtils.StandardDeviation(awayMatches.Select(am => (double)am.AwayPoints).ToList());
+
+            double avgAwayPointsValue = sumAwayPointsValue / sumHomePercentageOdd;
+
+            averageData.AwayPointsAverage = Math.Round(avgAwayPointsValue, 2);
+            averageData.AwayPointsStd = Math.Round(stdAwayPoints, 2);
+            averageData.AwayPointsCv = Math.Round(stdAwayPoints / avgAwayPointsValue, 2);
 
             #endregion
         }

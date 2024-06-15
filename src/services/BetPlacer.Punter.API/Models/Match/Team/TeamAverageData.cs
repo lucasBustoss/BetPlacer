@@ -27,6 +27,10 @@
         public double HomeGoalConcededValueAvg { get; set; }
         public double HomeGoalConcededCostAvg { get; set; }
 
+        public double HomePointsAverage { get; set; }
+        public double HomePointsStd { get; set; }
+        public double HomePointsCv { get; set; }
+
         public double AwayGoalScoredAvg { get; set; }
         public double AwayGoalScoredStd { get; set; }
         public double AwayGoalScoredCv { get; set; }
@@ -38,5 +42,9 @@
         public double AwayGoalConcededCv { get; set; }
         public double AwayGoalConcededValueAvg { get; set; }
         public double AwayGoalConcededCostAvg { get; set; }
+
+        public double AwayPointsAverage { get; set; }
+        public double AwayPointsStd { get; set; }
+        public double AwayPointsCv { get; set; }
     }
 }
