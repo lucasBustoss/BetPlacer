@@ -6,14 +6,12 @@
 
     public class TeamAverageData
     {
-        public TeamAverageData(string teamName, string season)
+        public TeamAverageData(string teamName)
         {
             TeamName = teamName;
-            Season = season;
         }
 
         public string TeamName { get; set; }
-        public string Season { get; set; }
 
         public double HomeGoalScoredAvg { get; set; }
         public double HomeGoalScoredStd { get; set; }
@@ -59,6 +57,11 @@
         public double HomeOddsStd { get; set; }
         public double HomeOddsCv { get; set; }
 
+        public double HomeRPSMO { get; set; }
+        public double HomeRPSMOHT { get; set; }
+        public double HomeRPSGoals { get; set; }
+        public double HomeRPSBTTS { get; set; }
+
         public double AwayGoalScoredAvg { get; set; }
         public double AwayGoalScoredStd { get; set; }
         public double AwayGoalScoredCv { get; set; }
@@ -102,5 +105,10 @@
         public double AwayOddsAvg { get; set; }
         public double AwayOddsStd { get; set; }
         public double AwayOddsCv { get; set; }
+
+        public double AwayRPSMO { get; set; }
+        public double AwayRPSMOHT { get; set; }
+        public double AwayRPSGoals { get; set; }
+        public double AwayRPSBTTS { get; set; }
     }
 }

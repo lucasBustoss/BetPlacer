@@ -32,6 +32,8 @@ namespace BetPlacer.Punter.API.Models
         public int HomeGoals { get; set; }
         public int AwayGoals { get; set; }
         public string MatchResult { get; set; }
+        public string GoalsResult { get; set; }
+        public string BttsResult { get; set; }
         public int HomePoints { get; set; }
         public int AwayPoints { get; set; }
         public int HomeGoalsDifference { get; set; }

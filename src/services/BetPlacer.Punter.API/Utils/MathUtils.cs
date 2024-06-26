@@ -14,5 +14,24 @@
             }
             return result;
         }
+
+        public static double PoissonProbability(double lambda, int k)
+        {
+            double numerator = Math.Pow(lambda, k) * Math.Exp(-lambda);
+            double denominator = Factorial(k);
+            return numerator / denominator;
+        }
+
+        static int Factorial(int n)
+        {
+            if (n == 0)
+                return 1;
+            int result = 1;
+            for (int i = 1; i <= n; i++)
+            {
+                result *= i;
+            }
+            return result;
+        }
     }
 }

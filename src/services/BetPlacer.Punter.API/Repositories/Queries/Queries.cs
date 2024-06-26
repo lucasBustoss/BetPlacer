@@ -31,6 +31,16 @@
                         END AS ""MatchResult"",
                         CASE
                             WHEN COALESCE((SELECT COUNT(*) FROM fixture_goals WHERE fixture_code = f.code AND team_id = f.home_team_id), 0) 
+                                + COALESCE((SELECT COUNT(*) FROM fixture_goals WHERE fixture_code = f.code AND team_id = f.away_team_id), 0) > 2 THEN 'OV'
+                            ELSE 'UN'
+                        END AS ""GoalsResult"",
+                        CASE
+                            WHEN COALESCE((SELECT COUNT(*) FROM fixture_goals WHERE fixture_code = f.code AND team_id = f.home_team_id), 0) > 0
+                                AND COALESCE((SELECT COUNT(*) FROM fixture_goals WHERE fixture_code = f.code AND team_id = f.away_team_id), 0) > 0 THEN 'S'
+                            ELSE 'N'
+                        END AS ""BttsResult"",
+                        CASE
+                            WHEN COALESCE((SELECT COUNT(*) FROM fixture_goals WHERE fixture_code = f.code AND team_id = f.home_team_id), 0) 
                                 > COALESCE((SELECT COUNT(*) FROM fixture_goals WHERE fixture_code = f.code AND team_id = f.away_team_id), 0) THEN 3
                             WHEN COALESCE((SELECT COUNT(*) FROM fixture_goals WHERE fixture_code = f.code AND team_id = f.home_team_id), 0) 
                                 < COALESCE((SELECT COUNT(*) FROM fixture_goals WHERE fixture_code = f.code AND team_id = f.away_team_id), 0) THEN 0
@@ -99,6 +109,8 @@
                     ""HomeGoals"",
                     ""AwayGoals"",
                     ""MatchResult"",
+                    ""GoalsResult"",
+                    ""BttsResult"",
                     ""HomePoints"",
                     ""AwayPoints"",
                     ""HomeGoalsDifference"",
