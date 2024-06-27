@@ -7,7 +7,7 @@ namespace BetPlacer.Punter.API.Models.Match
         private bool _valuesNormalized = false;
         private int _index = -1;
 
-        public MatchBarCode(int index, int matchCode, double homeOdd, double drawOdd, double awayOdd, double over25Odd, double under25Odd, double bttsYesOdd, double bttsNoOdd, string matchOddsResult, string matchOddsHTResult, string goalsResult, string bttsResult)
+        public MatchBarCode(int index, int matchCode, double homeOdd, double drawOdd, double awayOdd, double over25Odd, double under25Odd, double bttsYesOdd, double bttsNoOdd, string matchOddsResult, string matchOddsHTResult, string bttsResult, int homeGoals, int awayGoals)
         {
             _index = index;
             
@@ -25,8 +25,21 @@ namespace BetPlacer.Punter.API.Models.Match
 
             MatchOddsResult = matchOddsResult;
             MatchOddsHTResult = matchOddsHTResult;
-            GoalsResult = goalsResult;
             BttsResult = bttsResult;
+
+            string goalsResult = "";
+            int totalGoals = homeGoals + awayGoals;
+
+            if (totalGoals == 2)
+                goalsResult = "UN";
+            else if (totalGoals == 3)
+                goalsResult = "OV";
+            else if (totalGoals < 2)
+                goalsResult = "SU";
+            else
+                goalsResult = "SO";
+
+            GoalsResult = goalsResult;
         }
 
         public void NormalizeValues()

@@ -6,10 +6,11 @@
         {
             MatchCode = match.MatchCode;
             Date = match.Date;
-            HomeOdd = match.HomeOdd;
+            Season = match.Season;
+            HomeOdd =  match.HomeOdd;
             DrawOdd = match.DrawOdd;
             AwayOdd = match.AwayOdd;
-            Over25Odd = match.Over25Odd;
+            Over25Odd =  match.Over25Odd;
             Under25Odd = match.Under25Odd;
             BttsYesOdd = match.BttsYesOdd;
             BttsNoOdd = match.BttsNoOdd;
@@ -25,6 +26,7 @@
 
         public int MatchCode { get; set; }
         public string Date { get; set; }
+        public string Season { get; set; }
         public double HomeOdd { get; set; }
         public double DrawOdd { get; set; }
         public double AwayOdd { get; set; }
@@ -40,6 +42,62 @@
         public string MatchOddsHTClassification { get; set; }
         public string GoalsClassification { get; set; }
         public string BttsClassification { get; set; }
+
+        public double HomeOddPercent
+        {
+            get
+            {
+                return 1 / HomeOdd;
+            }
+        }
+
+        public double DrawOddPercent
+        {
+            get
+            {
+                return 1 / DrawOdd;
+            }
+        }
+
+        public double AwayOddPercent
+        {
+            get
+            {
+                return 1 / AwayOdd;
+            }
+        }
+
+        public double Over25OddPercent
+        {
+            get
+            {
+                return 1 / Over25Odd;
+            }
+        }
+
+        public double Under25OddPercent
+        {
+            get
+            {
+                return 1 / Under25OddPercent;
+            }
+        }
+
+        public double BttsYesOddPercent
+        {
+            get
+            {
+                return 1 / BttsYesOdd;
+            }
+        }
+
+        public double BttsNoOddPercent
+        {
+            get
+            {
+                return 1 / BttsNoOdd;
+            }
+        }
 
         public int TotalGoals
         {

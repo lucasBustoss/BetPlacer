@@ -1,11 +1,9 @@
 ﻿using BetPlacer.Punter.API.Models;
 using BetPlacer.Punter.API.Models.Match;
 using BetPlacer.Punter.API.Models.Match.Team;
+using BetPlacer.Punter.API.Models.Strategy;
 using BetPlacer.Punter.API.Utils;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Security.Cryptography;
-using static OfficeOpenXml.ExcelErrorValue;
+using System.Text.RegularExpressions;
 
 namespace BetPlacer.Punter.API.Services
 {
@@ -16,7 +14,6 @@ namespace BetPlacer.Punter.API.Services
             #region Base data
 
             List<TeamAverageData> teamsAverageData = new List<TeamAverageData>();
-            List<MatchBarCode> matchesBarCode = new List<MatchBarCode>();
 
             List<TeamMatchesBySeason> teamMatches = matchBaseData
                 .Where(mbd => mbd.Season == "2013" || mbd.Season == "2013-2014")
@@ -50,14 +47,19 @@ namespace BetPlacer.Punter.API.Services
 
             #region Bar code
 
+            List<MatchBarCode> matchesBarCode = new List<MatchBarCode>();
+            List<MatchBarCode> matchesKNN = new List<MatchBarCode>();
+
             for (int i = 0; i < matchesInOtherSeasons.Count; i++)
             {
                 MatchBaseData match = matchesInOtherSeasons[i];
 
                 MatchBarCode matchBarCode = GetMatchBarCode(match, teamsAverageData, i);
-                matchBarCode.NormalizeValues();
-
                 matchesBarCode.Add(matchBarCode);
+                
+                MatchBarCode matchBarCodeToKNN = GetMatchBarCode(match, teamsAverageData, i);
+                matchBarCodeToKNN.NormalizeValues();
+                matchesKNN.Add(matchBarCodeToKNN);
 
                 UpdateTeamAverageData(teamsAverageData, teamMatches, match, true);
                 UpdateTeamAverageData(teamsAverageData, teamMatches, match, false);
@@ -67,14 +69,45 @@ namespace BetPlacer.Punter.API.Services
 
             #region KNN
 
-            List<MatchAnalyzed> matchesAnalyzed = CalculateKNN(matchesBarCode, matchesInOtherSeasons);
+            List<MatchAnalyzed> matchesAnalyzed = CalculateKNN(matchesKNN, matchesInOtherSeasons);
 
             #endregion
 
-            Console.WriteLine(matchesAnalyzed);
+            #region Results
+
+            double stake = 100;
+            int totalMatches = matchesAnalyzed.Count;
+            List<Strategy> strategies = CalculateResults(matchesAnalyzed, stake);
+
+            foreach (Strategy strategy in strategies)
+            {
+                var filteredClassifications = strategy.StrategyClassifications.Where(sc => sc.ProfitLoss > -5 && sc.HistoricalCoefficientVariation <= 0.3).ToList();
+                strategy.StrategyClassifications = filteredClassifications;
+            }
+
+            strategies = strategies.Where(s => s.StrategyClassifications.Count > 0 && s.StrategyClassifications.Select(sc => sc.TotalMatches).Sum() > totalMatches * 0.25).ToList();
+            List<StrategyInfo> strategyInfos = new List<StrategyInfo>();
+
+            if (strategies.Count > 0)
+            {
+                foreach (Strategy strategy in strategies)
+                {
+                    StrategyInfo strategyInfo = FilterMatchesByClassifications(strategy, matchesAnalyzed, stake);
+
+                    if (strategyInfo != null) 
+                        strategyInfos.Add(strategyInfo);
+                }
+            }
+
+            #endregion
+
+            if (strategyInfos.Count > 0)
+                VariableCalculator.CalculateBestVariables(strategyInfos, matchesBarCode, stake);
         }
 
         #region Private methods
+
+        #region Averages
 
         private void CalculateAverage(TeamAverageData averageData, List<MatchBaseData> matches)
         {
@@ -544,21 +577,24 @@ namespace BetPlacer.Punter.API.Services
             teamsAverageData.Add(averageData);
         }
 
+        #endregion
+
         private MatchBarCode GetMatchBarCode(MatchBaseData match, List<TeamAverageData> teamsAverageData, int index)
         {
             MatchBarCode barCode = new MatchBarCode(
-                index, match.MatchCode, 
-                match.HomeOdd, 
-                match.DrawOdd, 
-                match.AwayOdd, 
-                match.Over25Odd, 
-                match.Under25Odd, 
-                match.BttsYesOdd, 
-                match.BttsNoOdd, 
-                match.MatchResult, 
-                match.MatchResultHT, 
-                match.GoalsResult, 
-                match.BttsResult);
+                index, match.MatchCode,
+                match.HomeOdd,
+                match.DrawOdd,
+                match.AwayOdd,
+                match.Over25Odd,
+                match.Under25Odd,
+                match.BttsYesOdd,
+                match.BttsNoOdd,
+                match.MatchResult,
+                match.MatchResultHT,
+                match.BttsResult,
+                match.HomeGoals,
+                match.AwayGoals);
 
             var homeAverageData = teamsAverageData.Where(t => t.TeamName == match.HomeTeam).FirstOrDefault();
             var awayAverageData = teamsAverageData.Where(t => t.TeamName == match.AwayTeam).FirstOrDefault();
@@ -646,7 +682,7 @@ namespace BetPlacer.Punter.API.Services
         private List<MatchAnalyzed> CalculateKNN(List<MatchBarCode> matches, List<MatchBaseData> baseMatches)
         {
             List<MatchAnalyzed> matchesAnalyzed = new List<MatchAnalyzed>();
-            
+
             for (int k = 100; k < matches.Count; k++)
             {
                 KNNCalculator knnCalculator = new KNNCalculator();
@@ -672,6 +708,240 @@ namespace BetPlacer.Punter.API.Services
             }
 
             return matchesAnalyzed;
+        }
+
+        private List<Strategy> CalculateResults(List<MatchAnalyzed> matches, double stake)
+        {
+            List<Strategy> strategies = new List<Strategy>();
+            Dictionary<string, List<MatchAnalyzed>> matchesGrouped = GetMatchesGroupedByClassification(matches);
+            List<string> strategiesName = StrategyUtils.GetStrategyNames();
+
+            foreach (var strategyName in strategiesName)
+            {
+                Strategy strategy = new Strategy(strategyName);
+
+                foreach (string classification in matchesGrouped.Keys)
+                {
+                    StrategyClassification strategyClassification = new StrategyClassification(classification);
+                    List<MatchAnalyzed> matchesByClassification = matchesGrouped.Where(mg => mg.Key == classification).FirstOrDefault().Value;
+                    List<double> results = new List<double>();
+                    Dictionary<string, List<double>> resultsPerSeason = StrategyUtils.GetMatchResults(matchesByClassification, strategyName, stake);
+
+                    foreach (var kvp in resultsPerSeason)
+                    {
+                        List<double> seasonResults = kvp.Value;
+                        results.AddRange(seasonResults);
+                    }
+
+                    Dictionary<string, double> winRatePerSeason = GetWinRatePerSeason(resultsPerSeason);
+                    List<double> treatedWinRates = winRatePerSeason.Select(wrps => wrps.Value).Where(r => r > 0).ToList();
+                    double stdHistoricalWinRate = MathUtils.StandardDeviation(treatedWinRates);
+                    double avgHistoricalWinRate = treatedWinRates.Average();
+
+                    double winRate = (double)results.Where(r => r > 0).Count() / (double)results.Count();
+
+                    strategyClassification.ProfitLoss = results.Sum() / stake;
+                    strategyClassification.WinRate = winRate;
+                    strategyClassification.HistoricalCoefficientVariation = stdHistoricalWinRate / avgHistoricalWinRate;
+                    strategyClassification.AverageOdd = 1 / winRate;
+                    strategyClassification.TotalMatches = results.Count();
+                    strategyClassification.TotalGreens = results.Where(r => r > 0).Count();
+                    strategyClassification.TotalReds = results.Where(r => r < 0).Count();
+
+                    strategy.StrategyClassifications.Add(strategyClassification);
+                }
+
+                strategies.Add(strategy);
+            }
+
+            return strategies;
+        }
+
+        private Dictionary<string, List<MatchAnalyzed>> GetMatchesGroupedByClassification(List<MatchAnalyzed> matches)
+        {
+            Dictionary<string, List<MatchAnalyzed>> matchesByClassification = new Dictionary<string, List<MatchAnalyzed>>();
+            // Match Odds
+            matchesByClassification.Add("BackH", new List<MatchAnalyzed>());
+            matchesByClassification.Add("BackD", new List<MatchAnalyzed>());
+            matchesByClassification.Add("BackA", new List<MatchAnalyzed>());
+            matchesByClassification.Add("LayA", new List<MatchAnalyzed>());
+            matchesByClassification.Add("LayD", new List<MatchAnalyzed>());
+            matchesByClassification.Add("LayH", new List<MatchAnalyzed>());
+            matchesByClassification.Add("Misto", new List<MatchAnalyzed>());
+
+            // Match Odds HT
+            matchesByClassification.Add("BackH-HT", new List<MatchAnalyzed>());
+            matchesByClassification.Add("BackD-HT", new List<MatchAnalyzed>());
+            matchesByClassification.Add("BackA-HT", new List<MatchAnalyzed>());
+            matchesByClassification.Add("LayA-HT", new List<MatchAnalyzed>());
+            matchesByClassification.Add("LayD-HT", new List<MatchAnalyzed>());
+            matchesByClassification.Add("LayH-HT", new List<MatchAnalyzed>());
+            matchesByClassification.Add("Misto-HT", new List<MatchAnalyzed>());
+
+            // Goals
+            matchesByClassification.Add("Over", new List<MatchAnalyzed>());
+            matchesByClassification.Add("Und", new List<MatchAnalyzed>());
+            matchesByClassification.Add("Sover", new List<MatchAnalyzed>());
+            matchesByClassification.Add("Sund", new List<MatchAnalyzed>());
+
+            // BTTS
+            matchesByClassification.Add("Sim", new List<MatchAnalyzed>());
+            matchesByClassification.Add("Não", new List<MatchAnalyzed>());
+            matchesByClassification.Add("SuperS", new List<MatchAnalyzed>());
+            matchesByClassification.Add("SuperN", new List<MatchAnalyzed>());
+
+            foreach (MatchAnalyzed match in matches)
+            {
+                var classificationMO = matchesByClassification.Where(k => k.Key == match.MatchOddsClassification).FirstOrDefault();
+                classificationMO.Value.Add(match);
+
+                var classificationMOHT = matchesByClassification.Where(k => k.Key == match.MatchOddsHTClassification).FirstOrDefault();
+                classificationMOHT.Value.Add(match);
+
+                var classificationGoals = matchesByClassification.Where(k => k.Key == match.GoalsClassification).FirstOrDefault();
+                classificationGoals.Value.Add(match);
+
+                var classificationBtts = matchesByClassification.Where(k => k.Key == match.BttsClassification).FirstOrDefault();
+                classificationBtts.Value.Add(match);
+            }
+
+            return matchesByClassification;
+        }
+
+        private Dictionary<string, double> GetWinRatePerSeason(Dictionary<string, List<double>> resultsPerSeason)
+        {
+            Dictionary<string, double> winRatePerSeason = new Dictionary<string, double>();
+
+            foreach (var rps in resultsPerSeason)
+            {
+                var winRate = (double)rps.Value.Where(r => r > 0).Count() / (double)rps.Value.Count();
+                winRatePerSeason.Add(rps.Key, winRate);
+            }
+
+            return winRatePerSeason;
+        }
+
+        private string GetClassificationGroup(string name)
+        {
+            if (
+                name == "BackH" ||
+                name == "BackD" ||
+                name == "BackA" ||
+                name == "LayA" ||
+                name == "LayD" ||
+                name == "LayH" ||
+                name == "Misto"
+                )
+            {
+                return "Grupo 1";
+            }
+            else if (name == "BackH-HT" ||
+                name == "BackD-HT" ||
+                name == "BackA-HT" ||
+                name == "LayA-HT" ||
+                name == "LayD-HT" ||
+                name == "LayH-HT" ||
+                name == "Misto-HT")
+            {
+                return "Grupo 2";
+            }
+            else if (name == "Over" || name == "Und" || name == "Sover" || name == "Sund")
+                return "Grupo 3";
+            else if (name == "Sim" || name == "Não" || name == "SuperS" || name == "SuperN")
+                return "Grupo 4";
+            else
+                return "Outro";
+        }
+
+        private string GetClassificationProperty(string name)
+        {
+            if (
+                name == "BackH" ||
+                name == "BackD" ||
+                name == "BackA" ||
+                name == "LayA" ||
+                name == "LayD" ||
+                name == "LayH" ||
+                name == "Misto"
+                )
+            {
+                return "MatchOddsClassification";
+            }
+            else if (name == "BackH-HT" ||
+                name == "BackD-HT" ||
+                name == "BackA-HT" ||
+                name == "LayA-HT" ||
+                name == "LayD-HT" ||
+                name == "LayH-HT" ||
+                name == "Misto-HT")
+            {
+                return "MatchOddsHTClassification";
+            }
+            else if (name == "Over" || name == "Und" || name == "Sover" || name == "Sund")
+                return "GoalsClassification";
+            else if (name == "Sim" || name == "Não" || name == "SuperS" || name == "SuperN")
+                return "BttsClassification";
+            else
+                return "Outro";
+        }
+
+        private StrategyInfo FilterMatchesByClassifications(Strategy strategy, List<MatchAnalyzed> matches, double stake)
+        {
+            List<MatchAnalyzed> matchesWithValue = new List<MatchAnalyzed>();
+            List<MatchAnalyzed> filteredMatches = new List<MatchAnalyzed>();
+            List<string> classificationsApplied = new List<string>();
+
+            var groupedClassifications = strategy.StrategyClassifications
+                .GroupBy(sc => GetClassificationGroup(sc.Name)).ToList();
+
+            List<string> groupPriority = StrategyUtils.GetPriorityRankingGroupByStrategy(strategy.Name);
+
+            double lastResult = 0;
+
+            foreach (string priority in groupPriority)
+            {
+                List<StrategyClassification> classifications = groupedClassifications
+                    .Where(gc => gc.Key == priority)
+                    .SelectMany(gc => gc.ToList())
+                    .ToList();
+
+                foreach (StrategyClassification classification in classifications)
+                {
+                    string propertyClassification = GetClassificationProperty(classification.Name);
+                    List<MatchAnalyzed> matchesFilteredByClassification = matches.Where(m => GetClassificationPropertyValue(m, propertyClassification) == classification.Name).ToList();
+
+                    filteredMatches.AddRange(matchesFilteredByClassification);
+                    filteredMatches = filteredMatches.DistinctBy(fm => fm.MatchCode).ToList();
+
+                    Dictionary<string, List<double>> resultDictionary = StrategyUtils.GetMatchResults(filteredMatches, strategy.Name, stake);
+                    double result = resultDictionary.Values.SelectMany(list => list).Sum() / stake;
+
+                    if (result > lastResult)
+                    {
+                        matchesWithValue = filteredMatches;
+                        lastResult = result;
+                        classificationsApplied.Add(classification.Name);
+                    }
+                }
+
+            }
+
+            StrategyInfo strategyInfo = null;
+
+            if (matchesWithValue.Count > matches.Count * 0.25)
+                strategyInfo = new StrategyInfo(strategy.Name, classificationsApplied, matchesWithValue, lastResult);
+            
+            return strategyInfo;
+        }
+
+        private string GetClassificationPropertyValue(MatchAnalyzed obj, string propertyName)
+        {
+            var propertyInfo = obj.GetType().GetProperty(propertyName);
+
+            if (propertyInfo != null)
+                return propertyInfo.GetValue(obj).ToString();
+
+            return null;
         }
 
         #endregion

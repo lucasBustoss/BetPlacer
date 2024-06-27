@@ -1,4 +1,7 @@
-﻿namespace BetPlacer.Punter.API.Utils
+﻿using MathNet.Numerics.Distributions;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+
+namespace BetPlacer.Punter.API.Utils
 {
     public static class MathUtils
     {
@@ -22,7 +25,17 @@
             return numerator / denominator;
         }
 
-        static int Factorial(int n)
+        public static double Confidence(double alpha, double stdDev, double sampleSize)
+        {
+            double z = Normal.InvCDF(0, 1, 1 - alpha / 2);
+
+            // Cálculo da confiança
+            double confidence = z * (stdDev / Math.Sqrt(sampleSize));
+
+            return confidence;
+        }
+
+        private static int Factorial(int n)
         {
             if (n == 0)
                 return 1;

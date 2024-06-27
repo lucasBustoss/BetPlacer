@@ -112,7 +112,7 @@ namespace BetPlacer.Punter.API.Utils
             foreach (var item in _listTop3)
                 result += item.MatchOddsHTResult;
 
-            return GetNormalizedMatchOddsClassification(result);
+            return GetNormalizedMatchOddsHTClassification(result);
         }
 
         public string GetGoalsClassification()
@@ -140,7 +140,7 @@ namespace BetPlacer.Punter.API.Utils
         private string GetNormalizedMatchOddsClassification(string classification)
         {
             string result = "";
-            
+
             switch (classification)
             {
                 case "HHH":
@@ -198,6 +198,67 @@ namespace BetPlacer.Punter.API.Utils
             return result;
         }
 
+        private string GetNormalizedMatchOddsHTClassification(string classification)
+        {
+            string result = "";
+
+            switch (classification)
+            {
+                case "HHH":
+                    result = "BackH-HT";
+                    break;
+                case "HHA":
+                case "HAH":
+                case "AHH":
+                    result = "LayD-HT";
+                    break;
+                case "HHD":
+                case "HDH":
+                case "DHH":
+                    result = "LayA-HT";
+                    break;
+                case "AAA":
+                    result = "BackA-HT";
+                    break;
+                case "AAH":
+                case "AHA":
+                case "HAA":
+                    result = "LayD-HT";
+                    break;
+                case "AAD":
+                case "ADA":
+                case "DAA":
+                    result = "LayH-HT";
+                    break;
+                case "DDD":
+                    result = "BackD-HT";
+                    break;
+                case "DDH":
+                case "DHD":
+                case "HDD":
+                    result = "LayA-HT";
+                    break;
+                case "DDA":
+                case "DAD":
+                case "ADD":
+                    result = "LayH-HT";
+                    break;
+                case "ADH":
+                case "AHD":
+                case "DHA":
+                case "DAH":
+                case "HAD":
+                case "HDA":
+                    result = "Misto-HT";
+                    break;
+                default:
+                    result = "Invalid classification";
+                    break;
+            }
+
+            return result;
+        }
+
         private string GetNormalizedGoalsClassification(string classification)
         {
             string result = "";
@@ -221,13 +282,13 @@ namespace BetPlacer.Punter.API.Utils
                 case "SOSOSU":
                 case "SOSOUN":
                 case "SOSUOV":
+                case "SOSUSO":
                 case "SOUNOV":
                 case "SOUNSO":
                 case "SUOVOV":
                 case "SUOVSO":
                 case "SUSOOV":
                 case "SUSOSO":
-                case "SOUNUN":
                 case "UNOVOV":
                 case "UNOVSO":
                 case "UNSOOV":
@@ -247,7 +308,9 @@ namespace BetPlacer.Punter.API.Utils
                 case "OVUNSU":
                 case "OVUNUN":
                 case "SOSUSU":
+                case "SOSUUN":
                 case "SOUNSU":
+                case "SOUNUN":
                 case "SUOVSU":
                 case "SUOVUN":
                 case "SUSOSU":
@@ -256,12 +319,14 @@ namespace BetPlacer.Punter.API.Utils
                 case "SUSUSO":
                 case "SUUNOV":
                 case "SUUNSO":
+                case "SUUNUN":
                 case "UNOVSU":
                 case "UNOVUN":
                 case "UNSOSU":
                 case "UNSOUN":
                 case "UNSUOV":
                 case "UNSUSO":
+                case "UNSUUN":
                 case "UNUNOV":
                 case "UNUNSO":
                 case "UNUNSU":
@@ -271,6 +336,7 @@ namespace BetPlacer.Punter.API.Utils
 
                 case "SUSUSU":
                 case "SUSUUN":
+                case "SUUNSU":
                 case "UNSUSU":
                     result = "Sund";
                     break;
