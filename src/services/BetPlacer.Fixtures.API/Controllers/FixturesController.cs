@@ -13,6 +13,7 @@ using System.Text.Json;
 using BetPlacer.Fixtures.API.Models.ValueObjects;
 using BetPlacer.Fixtures.API.Models.Entities.Trade;
 using BetPlacer.Backtest.API.Models;
+using BetPlacer.Core.API.Models.Request.PinnacleOdds;
 
 namespace BetPlacer.Fixtures.API.Controllers
 {
@@ -20,7 +21,7 @@ namespace BetPlacer.Fixtures.API.Controllers
     public class FixturesController : BaseController
     {
         private readonly FixturesRepository _fixturesRepository;
-        private readonly HttpClient _httpClient;
+        private readonly HttpClient _coreClient;
         private readonly string _apiUrl;
         private readonly string _apiKey;
 
@@ -45,9 +46,9 @@ namespace BetPlacer.Fixtures.API.Controllers
             _apiUrl = configuration.GetValue<string>("CoreApi:AppUrl");
             _apiKey = configuration.GetValue<string>("CoreApi:AppKey");
 
-            _httpClient = new HttpClient() { BaseAddress = new Uri(_apiUrl) };
-            _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
-            _httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
+            _coreClient = new HttpClient() { BaseAddress = new Uri(_apiUrl) };
+            _coreClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
+            _coreClient.DefaultRequestHeaders.Add("Accept", "application/json");
 
             #endregion
 
@@ -116,7 +117,7 @@ namespace BetPlacer.Fixtures.API.Controllers
         public async Task<ActionResult> GetFixturesWithoutOdds(int leagueCode)
         {
             var league = await GetLeaguesById(leagueCode);
-            
+
             var fixtures = _fixturesRepository.GetFixturesWithoutOdds(league.FirstOrDefault());
             return OkResponse(fixtures);
         }
@@ -157,12 +158,26 @@ namespace BetPlacer.Fixtures.API.Controllers
             }
         }
 
+        [HttpPut("odds")]
+        public async Task<ActionResult> UpdateOdds([FromBody] FixtureOddsRequest oddsRequest)
+        {
+            try
+            {
+                await _fixturesRepository.UpdateOdds(new Models.Entities.FixtureOdds(oddsRequest));
+
+                return OkResponse("odds updated");
+            }
+            catch (Exception ex)
+            {
+                return BadRequestResponse(ex.Message);
+            }
+        }
+
         [HttpPost]
         public async Task<ActionResult> SyncFixtures([FromBody] FixturesRequestModel syncRequestModel)
         {
             try
             {
-
                 await SyncCompleteFixtures(syncRequestModel);
                 await SyncNextFixtures(syncRequestModel);
 
@@ -182,7 +197,7 @@ namespace BetPlacer.Fixtures.API.Controllers
                 if (syncRequestModel == null || !syncRequestModel.IsValid())
                     throw new Exception("param leagueSeasonCode is required.");
 
-                var request = await _httpClient.GetAsync($"fixtures/complete?leagueSeasonCode={syncRequestModel.LeagueSeasonCode}");
+                var request = await _coreClient.GetAsync($"fixtures/complete?leagueSeasonCode={syncRequestModel.LeagueSeasonCode}");
 
                 if (request.IsSuccessStatusCode)
                 {
@@ -207,24 +222,33 @@ namespace BetPlacer.Fixtures.API.Controllers
         }
 
         [HttpPost("next")]
-        public async Task<ActionResult> SyncNextFixtures([FromBody] FixturesRequestModel syncRequestModel)
+        public async Task<ActionResult> SyncNextFixtures(FixturesRequestModel syncRequestModel)
         {
             try
             {
                 if (syncRequestModel == null || !syncRequestModel.IsValid())
                     throw new Exception("param leagueSeasonCode is required.");
 
-                var request = await _httpClient.GetAsync($"fixtures/next?leagueSeasonCode={syncRequestModel.LeagueSeasonCode}");
+                var request = await _coreClient.GetAsync($"fixtures/next?leagueSeasonCode={syncRequestModel.LeagueSeasonCode}");
 
                 if (request.IsSuccessStatusCode)
                 {
                     var responseLeaguesString = await request.Content.ReadAsStringAsync();
                     BaseCoreResponseModel<FixturesFootballResponseModel> response = JsonSerializer.Deserialize<BaseCoreResponseModel<FixturesFootballResponseModel>>(responseLeaguesString);
 
-                    await _fixturesRepository.CreateNextFixtures(response.Data);
+                    if (response != null & response.Data != null && response.Data.Count() > 0)
+                    {
+
+                        var leagues = await GetLeagues();
+                        var league = leagues.Where(l => l.Season.Any(s => s.Code == syncRequestModel.LeagueSeasonCode)).FirstOrDefault();
+                        List<PinnacleOddsModel> pinnacleOdds = await GetPinnacleOdds(league.Code);
+
+                        await _fixturesRepository.CreateOrUpdateNextFixtures(response.Data, pinnacleOdds);
+                    }
 
                     return OkResponse("Next fixtures synchronized");
                 }
+                else
                 {
                     var errorMessage = JsonSerializer.Deserialize<object>(await request.Content.ReadAsStringAsync());
                     Console.WriteLine(errorMessage);
@@ -349,6 +373,26 @@ namespace BetPlacer.Fixtures.API.Controllers
                 BaseCoreResponseModel<PunterBacktestFixture> response = JsonSerializer.Deserialize<BaseCoreResponseModel<PunterBacktestFixture>>(responseLeaguesString);
 
                 return response.Data.Where(d => fixtureCodes.Contains(d.FixtureCode)).ToList();
+            }
+            else
+            {
+                var errorMessage = JsonSerializer.Deserialize<object>(await request.Content.ReadAsStringAsync());
+                Console.WriteLine(errorMessage);
+                Console.WriteLine(request.StatusCode);
+                return null;
+            }
+        }
+
+        private async Task<List<PinnacleOddsModel>> GetPinnacleOdds(int leagueCode)
+        {
+            var request = await _coreClient.GetAsync($"pinnacle?leagueCode={leagueCode}");
+
+            if (request.IsSuccessStatusCode)
+            {
+                var responseLeaguesString = await request.Content.ReadAsStringAsync();
+                BaseCoreResponseModel<PinnacleOddsModel> response = JsonSerializer.Deserialize<BaseCoreResponseModel<PinnacleOddsModel>>(responseLeaguesString);
+
+                return response.Data.ToList();
             }
             else
             {

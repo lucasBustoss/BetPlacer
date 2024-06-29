@@ -15,6 +15,8 @@ using BetPlacer.Fixtures.API.Messages.ModelToMessage;
 using BetPlacer.Fixtures.API.Models.ValueObjects.FixtureByDate;
 using BetPlacer.Backtest.API.Models;
 using BetPlacer.Fixtures.API.Models.RequestModel;
+using BetPlacer.Core.API.Models.Request.PinnacleOdds;
+using BetPlacer.Fixtures.API.Utils;
 
 namespace BetPlacer.Fixtures.API.Repositories
 {
@@ -166,7 +168,10 @@ namespace BetPlacer.Fixtures.API.Repositories
                         }
                     }
 
-                    leagueFixtures.Fixtures.Add(new FixtureDate(fixtureCurrentDate, fixtureStat, filters));
+                    FixtureOdds odd = _context.FixtureOdds.Where(f => f.FixtureCode == fixtureCurrentDate.Code).FirstOrDefault();
+
+
+                    leagueFixtures.Fixtures.Add(new FixtureDate(fixtureCurrentDate, fixtureStat, filters, odd));
                 }
 
                 foreach (var leagueFixture in fixtureByDate.LeagueFixtures)
@@ -226,10 +231,9 @@ namespace BetPlacer.Fixtures.API.Repositories
             #endregion
         }
 
-        public async Task CreateNextFixtures(IEnumerable<FixturesFootballResponseModel> fixturesResponse)
+        public async Task CreateOrUpdateNextFixtures(IEnumerable<FixturesFootballResponseModel> fixturesResponse, List<PinnacleOddsModel> odds)
         {
             #region Fixtures
-
 
             var existingFixtures = _context.Fixtures.ToDictionary(fixture => fixture.Code);
             List<FixtureModel> fixturesSaved = new List<FixtureModel>();
@@ -241,7 +245,6 @@ namespace BetPlacer.Fixtures.API.Repositories
                 if (!existingFixtures.ContainsKey(fixtureResponse.Code))
                 {
                     _context.Fixtures.Add(fixtureModel);
-
                     fixturesSaved.Add(fixtureModel);
                 }
                 else
@@ -263,12 +266,50 @@ namespace BetPlacer.Fixtures.API.Repositories
             //await CreateFixtureGoals(fixturesResponse, fixturesSaved);
 
             #endregion
+
+            #region FixtureOdds
+
+            foreach (PinnacleOddsModel odd in odds)
+            {
+                string homeFootyStatsName = FixtureUtils.GetFootyStatsNameByPinnacleName(odd.HomeTeam);
+                string awayFootyStatsName = FixtureUtils.GetFootyStatsNameByPinnacleName(odd.AwayTeam);
+
+                FixturesFootballResponseModel fixtureToOdd = fixturesResponse.Where(fr =>
+                        (fr.HomeTeamName == homeFootyStatsName ||
+                        fr.AwayTeamName == awayFootyStatsName) &&
+                        FixtureUtils.TimestampToDatetime(fr.DateTimestamp).AddHours(3).ToString("yyyy-MM-dd'T'HH:mm:ss") == odd.Date)
+                    .FirstOrDefault();
+
+                
+                if (fixtureToOdd != null)
+                    await CreateOdds(new FixtureOdds(fixtureToOdd.Code, odd.HomeOdd, odd.DrawOdd, odd.AwayOdd, odd.Over25Odd, odd.Under25Odd, odd.BttsYesOdd.Value, odd.BttsNoOdd.Value));
+            }
+
+            #endregion
         }
 
         public async Task CreateOdds(FixtureOdds odds)
         {
-            _context.Add(odds);
-            await _context.SaveChangesAsync();
+            var existingOdd = _context.FixtureOdds.Where(o => o.FixtureCode == odds.FixtureCode).FirstOrDefault();
+
+            if (existingOdd == null)
+            {
+                _context.FixtureOdds.Add(odds);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task UpdateOdds(FixtureOdds odds)
+        {
+            var existingOdd = _context.FixtureOdds.Where(o => o.FixtureCode == odds.FixtureCode).FirstOrDefault();
+
+            if (existingOdd != null)
+            {
+                var newOdds = odds;
+                newOdds.Code = existingOdd.Code;
+                _context.Entry(existingOdd).CurrentValues.SetValues(newOdds);
+                await _context.SaveChangesAsync();
+            }
         }
 
         public async Task CalculateFixtureStats(int leagueSeasonCode)

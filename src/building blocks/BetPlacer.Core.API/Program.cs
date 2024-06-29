@@ -1,4 +1,5 @@
-using BetPlacer.Core.API.Service;
+using BetPlacer.Core.API.Service.FootballApi;
+using BetPlacer.Core.API.Service.PinnacleOdds;
 using BetPlacer.Core.Config;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +8,7 @@ builder.Services.AddApiConfiguration();
 // Add services to the container.
 
 builder.Services.AddScoped<IFootballApiService, FootballApiService>();
+builder.Services.AddScoped<IPinnacleOddsService, PinnacleOddsService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

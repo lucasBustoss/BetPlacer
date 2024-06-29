@@ -2,7 +2,7 @@
 using BetPlacer.Core.Models.Response.FootballAPI.Leagues;
 using BetPlacer.Core.Models.Response.FootballAPI.Teams;
 
-namespace BetPlacer.Core.API.Service
+namespace BetPlacer.Core.API.Service.FootballApi
 {
     public interface IFootballApiService
     {

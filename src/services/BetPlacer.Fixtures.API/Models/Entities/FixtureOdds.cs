@@ -1,6 +1,7 @@
 ﻿using BetPlacer.Fixtures.API.Models.RequestModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace BetPlacer.Fixtures.API.Models.Entities
 {
@@ -8,7 +9,7 @@ namespace BetPlacer.Fixtures.API.Models.Entities
     {
         public FixtureOdds()
         {
-            
+
         }
 
         public FixtureOdds(FixtureOddsRequest oddsRequest)
@@ -23,9 +24,22 @@ namespace BetPlacer.Fixtures.API.Models.Entities
             BTTSNoOdd = oddsRequest.OddBttsNo;
         }
 
+        public FixtureOdds(int fixtureCode, double homeOdd, double drawOdd, double awayOdd, double over25Odd, double under25Odd, double bttsYesOdd, double bttsNoOdd)
+        {
+            FixtureCode = fixtureCode;
+            HomeOdd = homeOdd;
+            DrawOdd = drawOdd;
+            AwayOdd = awayOdd;
+            Over25Odd = over25Odd;
+            Under25Odd = under25Odd;
+            BTTSYesOdd = bttsYesOdd;
+            BTTSNoOdd = bttsNoOdd;
+        }
+
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)] 
         public int Code { get; set; }
+
         public int FixtureCode { get; set; }
         public double HomeOdd { get; set; }
         public double DrawOdd { get; set; }

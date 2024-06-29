@@ -4,7 +4,7 @@ using BetPlacer.Core.Models.Response.FootballAPI.Leagues;
 using BetPlacer.Core.Models.Response.FootballAPI.Teams;
 using System.Text.Json;
 
-namespace BetPlacer.Core.API.Service
+namespace BetPlacer.Core.API.Service.FootballApi
 {
     public class FootballApiService : IFootballApiService
     {

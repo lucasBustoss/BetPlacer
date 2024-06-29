@@ -1,4 +1,5 @@
-﻿using BetPlacer.Core.Models.Response.FootballAPI.Fixtures;
+﻿using BetPlacer.Core.API.Models.Request.PinnacleOdds;
+using BetPlacer.Core.Models.Response.FootballAPI.Fixtures;
 using BetPlacer.Fixtures.API.Models;
 
 namespace BetPlacer.Fixtures.API.Repositories
@@ -7,6 +8,6 @@ namespace BetPlacer.Fixtures.API.Repositories
     {
         /*IEnumerable<Fixture> List();*/
         Task CreateOrUpdateCompleteFixtures(IEnumerable<FixturesFootballResponseModel> fixtures);
-        Task CreateNextFixtures(IEnumerable<FixturesFootballResponseModel> fixtures);
+        Task CreateOrUpdateNextFixtures(IEnumerable<FixturesFootballResponseModel> fixtures, List<PinnacleOddsModel> odds);
     }
 }
