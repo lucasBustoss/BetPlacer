@@ -1,6 +1,7 @@
-﻿using BetPlacer.Punter.API.Models.Intervals;
-using BetPlacer.Punter.API.Models.Match;
-using BetPlacer.Punter.API.Models.Strategy;
+﻿using BetPlacer.Punter.API.Models.ValueObjects.Intervals;
+using BetPlacer.Punter.API.Models.ValueObjects.Match;
+using BetPlacer.Punter.API.Models.ValueObjects.Strategy;
+using System.Text.RegularExpressions;
 
 namespace BetPlacer.Punter.API.Utils
 {
@@ -12,6 +13,8 @@ namespace BetPlacer.Punter.API.Utils
 
             foreach (StrategyInfo strategy in strategies)
             {
+                List<BestInterval> bestIntervals = new List<BestInterval>();
+
                 foreach (string variable in variables)
                 {
                     List<Tuple<double, double>> variableByResult = new List<Tuple<double, double>>();
@@ -39,8 +42,6 @@ namespace BetPlacer.Punter.API.Utils
 
                     if (selectedBestIntervals.Count > 0)
                     {
-                        List<BestInterval> bestIntervals = new List<BestInterval>();
-
                         foreach (Tuple<double, double> bestInterval in selectedBestIntervals)
                         {
                             BestInterval interval = GetBestIntervalInfo(strategy, bestInterval, matches, variable, stake);
@@ -48,6 +49,17 @@ namespace BetPlacer.Punter.API.Utils
                         }
                     }
                 }
+
+                List<BestInterval> filteredIntervals = bestIntervals
+                    .Where(bi => bi.InferiorLimit > 0)
+                    .OrderBy(bi => bi.CoefficientVariation)
+                    .ThenByDescending(bi => bi.InferiorLimit)
+                    .GroupBy(obj => obj.PropertyName)
+                    .Select(group => group.OrderBy(obj => obj.CoefficientVariation).First())
+                    .ToList();
+
+                strategy.BestIntervals = filteredIntervals;
+                strategy.ResultAfterIntervals = GetResultWithIntervalsApplied(strategy, matches, stake);
             }
         }
 
@@ -203,7 +215,7 @@ namespace BetPlacer.Punter.API.Utils
                 {
                     if (currentTolerate == maxTolerate)
                     {
-                        finalValue = lastFinalValue ;
+                        finalValue = lastFinalValue;
                         shouldSetInitialValue = true;
                         shouldValidateValues = true;
                         currentTolerate++;
@@ -223,7 +235,7 @@ namespace BetPlacer.Punter.API.Utils
                         shouldSetInitialValue = false;
                     }
 
-                    currentAccumulate += result; 
+                    currentAccumulate += result;
                     currentTolerate = 0;
                     matchesInFilter += variableInterval.MatchesCount;
                 }
@@ -256,7 +268,7 @@ namespace BetPlacer.Punter.API.Utils
         {
             List<Tuple<double, double>> resultVariables = new List<Tuple<double, double>>();
             List<int> matchClassifiedCodes = strategy.Matches.Select(m => m.MatchCode).ToList();
-            
+
             List<MatchBarCode> filteredList = matches.Where(obj => matchClassifiedCodes.Contains(obj.MatchCode)).ToList();
 
             List<MatchBarCode> selectedMatches = filteredList.Where(m =>
@@ -268,7 +280,7 @@ namespace BetPlacer.Punter.API.Utils
             foreach (MatchBarCode matchBarCode in selectedMatches)
             {
                 MatchAnalyzed matchAnalyzed = strategy.Matches.Where(m => m.MatchCode == matchBarCode.MatchCode).FirstOrDefault();
-                
+
                 double propertyValue = GetVariableValue(matchBarCode, property);
                 double result = StrategyUtils.GetMatchResult(matchAnalyzed, strategy.Name, stake);
 
@@ -286,6 +298,64 @@ namespace BetPlacer.Punter.API.Utils
             BestInterval bestInterval = new BestInterval(property, interval.Item1, interval.Item2, cvResult, inferiorLimit);
 
             return bestInterval;
+        }
+
+        private static List<ResultInterval> GetResultWithIntervalsApplied(StrategyInfo strategy, List<MatchBarCode> matches, double stake)
+        {
+            List<ResultInterval> resultIntervals = new List<ResultInterval>();
+            List<int> matchClassifiedCodes = strategy.Matches.Select(m => m.MatchCode).ToList();
+            List<MatchBarCode> filteredList = matches.Where(obj => matchClassifiedCodes.Contains(obj.MatchCode)).ToList();
+            string composeName = "";
+
+            int lastTotalMatches = 0;
+            double lastResult = 0;
+
+            bool isFirst = true;
+
+            foreach (BestInterval bestInterval in strategy.BestIntervals)
+            {
+                filteredList = filteredList.Where(m =>
+                {
+                    var propertyValue = GetVariableValue(m, bestInterval.PropertyName);
+                    return propertyValue >= bestInterval.InitialInterval && propertyValue <= bestInterval.FinalInterval;
+                }).ToList();
+
+                List<int> filteredListCodes = filteredList.Select(fl => fl.MatchCode).ToList();
+                List<MatchAnalyzed> matchesAnalyzed = strategy.Matches.Where(obj => filteredListCodes.Contains(obj.MatchCode)).ToList();
+
+                List<double> results = StrategyUtils.GetMatchResults(matchesAnalyzed, strategy.Name, stake).Values.SelectMany(list => list).ToList();
+                double result = results.Sum() / stake;
+
+                int totalMatches = filteredList.Count;
+
+                if (totalMatches != lastTotalMatches && result != lastResult && totalMatches > (matches.Count * 0.05))
+                {
+                    var stdResult = MathUtils.StandardDeviation(results);
+                    var avgResult = results.Average();
+                    var cvResult = stdResult / avgResult;
+
+                    var confidence = MathUtils.Confidence(0.05, stdResult, totalMatches);
+                    var inferiorLimit = avgResult - confidence;
+
+                    if (isFirst)
+                    {
+                        composeName += $"{bestInterval.PropertyName}";
+                        isFirst = false;
+                    }
+                    else
+                        composeName += $" - {bestInterval.PropertyName}";
+
+                    ResultInterval resultInterval = new ResultInterval(composeName, (double)totalMatches / (double)matches.Count, result, cvResult, inferiorLimit);
+
+                    resultIntervals.Add(resultInterval);
+
+                    lastResult = result;
+                    lastTotalMatches = totalMatches;
+                }
+
+            }
+
+            return resultIntervals;
         }
 
         #endregion

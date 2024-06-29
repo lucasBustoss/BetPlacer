@@ -1,4 +1,4 @@
-﻿namespace BetPlacer.Punter.API.Models.Match.Team
+﻿namespace BetPlacer.Punter.API.Models.ValueObjects.Match.Team
 {
     /// <summary>
     ///     Classe que calcula a média ponderada, desvio padrão e coeficiente de variação das variáveis de cada time de MatchBaseData

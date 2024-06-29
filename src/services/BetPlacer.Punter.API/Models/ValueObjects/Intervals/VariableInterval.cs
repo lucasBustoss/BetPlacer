@@ -1,4 +1,4 @@
-﻿namespace BetPlacer.Punter.API.Models.Intervals
+﻿namespace BetPlacer.Punter.API.Models.ValueObjects.Intervals
 {
     public class VariableInterval
     {

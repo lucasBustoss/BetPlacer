@@ -1,11 +1,9 @@
 using BetPlacer.Core.Controllers;
 using BetPlacer.Punter.API.Models;
-using BetPlacer.Punter.API.Repositories;
+using BetPlacer.Punter.API.Models.Request;
+using BetPlacer.Punter.API.Models.ValueObjects.Strategy;
 using BetPlacer.Punter.API.Services;
 using Microsoft.AspNetCore.Mvc;
-using OfficeOpenXml;
-using OfficeOpenXml.Table;
-using System.ComponentModel;
 
 namespace BetPlacer.Punter.API.Controllers
 {
@@ -13,63 +11,47 @@ namespace BetPlacer.Punter.API.Controllers
     public class PunterController : BaseController
     {
         private readonly PunterRepository _punterRepository;
-        private readonly CalculateStatsService _calculateStatsService;
+        private readonly BacktestService _backtestService;
         
         public PunterController(PunterRepository punterRepository)
         {
             _punterRepository = punterRepository;
-            _calculateStatsService = new CalculateStatsService();
+            _backtestService = new BacktestService();
         }
 
-        [HttpGet]
-        public async Task<ActionResult> GetMatchBaseData(int leagueCode, bool generateExcel)
+        [HttpPost]
+        public async Task<ActionResult> CreateBacktest(int leagueCode)
         {
             List<MatchBaseData> info = await _punterRepository.GetMatchBaseDataAsync(leagueCode);
 
-            if (generateExcel)
-                GenerateExcel<MatchBaseData>(info);
+            List<StrategyInfo> strategies = _backtestService.CalculateStats(info);
+            _punterRepository.Create(leagueCode, strategies);
+            //TelegramMessage.SendMessage();
 
-            _calculateStatsService.CalculateStats(info);
-
-            return OkResponse(info);
+            return OkResponse(strategies);
         }
 
-        #region Private methods
-
-        public void GenerateExcel<T>(List<T> lista)
+        [HttpPost("analyze")]
+        public async Task<ActionResult> AnalyzeNextMatches([FromBody] AnalyzeMatchRequest analyzeMatchRequest)
         {
-            ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
+            var backtest = _punterRepository.GetBacktestsByLeague(analyzeMatchRequest.LeagueCode);
 
-            using (var package = new ExcelPackage())
-            {
-                var worksheet = package.Workbook.Worksheets.Add("Dados");
+            if (backtest == null)
+                return BadRequestResponse("dont exists a backtest active in this league.");
 
-                var properties = typeof(T).GetProperties();
-                for (int i = 0; i < properties.Length; i++)
-                {
-                    worksheet.Cells[1, i + 1].Value = properties[i].Name;
-                }
+            List<MatchBaseData> lastMatches = await _punterRepository.GetLastMatches(analyzeMatchRequest.LeagueCode);
+            List<NextMatch> nextMatches = await _punterRepository.GetNextMatches(analyzeMatchRequest.Date, analyzeMatchRequest.LeagueCode);
 
-                for (int i = 0; i < lista.Count; i++)
-                {
-                    var item = lista[i];
-                    for (int j = 0; j < properties.Length; j++)
-                    {
-                        worksheet.Cells[i + 2, j + 1].Value = properties[j].GetValue(item);
-                    }
-                }
+            _backtestService.FilterMatches(backtest, lastMatches, nextMatches);
 
-                var range = worksheet.Cells[1, 1, lista.Count + 1, properties.Length];
-                var table = worksheet.Tables.Add(range, "TabelaDados");
-                table.TableStyle = TableStyles.Medium1;
-
-                worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
-
-                var fileInfo = new FileInfo("C:\\Users\\bob_l\\Documents\\teste.xlsx");
-                package.SaveAs(fileInfo);
-            }
+            return OkResponse("matches analyzed.");
         }
 
-        #endregion
+        [HttpGet]
+        public ActionResult GetBacktestByLeague(int leagueCode)
+        {
+            var backtest = _punterRepository.GetBacktestsByLeague(leagueCode);
+            return OkResponse(backtest);
+        }
     }
 }

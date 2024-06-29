@@ -1,4 +1,4 @@
-﻿namespace BetPlacer.Punter.API.Models.Strategy
+﻿namespace BetPlacer.Punter.API.Models.ValueObjects.Strategy
 {
     public class Strategy
     {

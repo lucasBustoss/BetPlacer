@@ -1,4 +1,4 @@
-﻿using BetPlacer.Punter.API.Models.Match;
+﻿using BetPlacer.Punter.API.Models.ValueObjects.Match;
 
 namespace BetPlacer.Punter.API.Utils
 {
@@ -92,7 +92,7 @@ namespace BetPlacer.Punter.API.Utils
 
         public void GetTop3()
         {
-            _listTop3 = _listKNN.OrderBy(knn => knn.Value).Take(3).Select(knn => knn.Key).ToList();
+            _listTop3 = _listKNN.Where(l => l.Value != 0).OrderBy(knn => knn.Value).Take(3).Select(knn => knn.Key).ToList();
         }
 
         public string GetMatchOddsClassification()

@@ -1,6 +1,4 @@
-﻿using BetPlacer.Punter.API.Models.Match;
-using BetPlacer.Punter.API.Models.Strategy;
-using System.Text.RegularExpressions;
+﻿using BetPlacer.Punter.API.Models.ValueObjects.Match;
 
 namespace BetPlacer.Punter.API.Utils
 {
@@ -17,6 +15,24 @@ namespace BetPlacer.Punter.API.Utils
                 "PUNTER - Under 2.5",
                 "PUNTER - BTTS Sim",
                 "PUNTER - BTTS Não",
+                "PUNTER - Handicap +1.0 Casa",
+                "PUNTER - Handicap +0.75 Casa",
+                "PUNTER - Handicap +0.5 Casa",
+                "PUNTER - Handicap +0.25 Casa",
+                "PUNTER - Handicap 0.0 Casa",
+                "PUNTER - Handicap -0.25 Casa",
+                //"PUNTER - Handicap -0.5 Casa",
+                "PUNTER - Handicap -0.75 Casa",
+                "PUNTER - Handicap -1.0 Casa",
+                "PUNTER - Handicap +1.0 Fora",
+                "PUNTER - Handicap +0.75 Fora",
+                "PUNTER - Handicap +0.5 Fora",
+                "PUNTER - Handicap +0.25 Fora",
+                "PUNTER - Handicap 0.0 Fora",
+                "PUNTER - Handicap -0.25 Fora",
+                //"PUNTER - Handicap -0.5 Fora",
+                "PUNTER - Handicap -0.75 Fora",
+                "PUNTER - Handicap -1.0 Fora",
                 "TRADE - Vencer HT Casa",
             ];
 
@@ -32,6 +48,24 @@ namespace BetPlacer.Punter.API.Utils
                 case "PUNTER - Back Casa":
                 case "PUNTER - Back Empate":
                 case "PUNTER - Back Fora":
+                case "PUNTER - Handicap +1.0 Casa":
+                case "PUNTER - Handicap +0.75 Casa":
+                case "PUNTER - Handicap +0.5 Casa":
+                case "PUNTER - Handicap +0.25 Casa":
+                case "PUNTER - Handicap 0.0 Casa":
+                case "PUNTER - Handicap -0.25 Casa":
+                case "PUNTER - Handicap -0.5 Casa":
+                case "PUNTER - Handicap -0.75 Casa":
+                case "PUNTER - Handicap -1.0 Casa":
+                case "PUNTER - Handicap +1.0 Fora":
+                case "PUNTER - Handicap +0.75 Fora":
+                case "PUNTER - Handicap +0.5 Fora":
+                case "PUNTER - Handicap +0.25 Fora":
+                case "PUNTER - Handicap 0.0 Fora":
+                case "PUNTER - Handicap -0.25 Fora":
+                case "PUNTER - Handicap -0.5 Fora":
+                case "PUNTER - Handicap -0.75 Fora":
+                case "PUNTER - Handicap -1.0 Fora":
                     ranking.Add("Grupo 1");
                     ranking.Add("Grupo 2");
                     ranking.Add("Grupo 3");
@@ -136,6 +170,160 @@ namespace BetPlacer.Punter.API.Utils
                 case "PUNTER - BTTS Não":
                     if (match.HomeGoals == 0 || match.AwayGoals == 0)
                         result = stake * match.BttsNoOdd - stake;
+                    else
+                        result = stake * -1;
+
+                    break;
+                case "PUNTER - Handicap +1.0 Casa":
+                    if (match.HomeGoals >= match.AwayGoals)
+                        result = stake * match.HomeHandicap1Odd - stake;
+                    else if (match.HomeGoals - match.AwayGoals == -1)
+                        result = 0;
+                    else
+                        result = stake * -1;
+
+                    break;
+                case "PUNTER - Handicap +0.75 Casa":
+                    if (match.HomeGoals >= match.AwayGoals)
+                        result = stake * match.HomeHandicap075Odd - stake;
+                    else if (match.HomeGoals - match.AwayGoals == -1)
+                        result = stake * 0.5 * -1;
+                    else
+                        result = stake * -1;
+
+                    break;
+                case "PUNTER - Handicap +0.5 Casa":
+                    if (match.HomeGoals >= match.AwayGoals)
+                        result = stake * match.HomeHandicap05Odd - stake;
+                    else
+                        result = stake * -1;
+
+                    break;
+                case "PUNTER - Handicap +0.25 Casa":
+                    if (match.HomeGoals > match.AwayGoals)
+                        result = stake * match.HomeHandicap025Odd - stake;
+                    else if (match.HomeGoals == match.AwayGoals)
+                        result = (stake * match.HomeHandicap025Odd - stake) * 0.5;
+                    else
+                        result = stake * -1;
+
+                    break;
+                case "PUNTER - Handicap 0.0 Casa":
+                    if (match.HomeGoals > match.AwayGoals)
+                        result = stake * match.HomeHandicap0Odd - stake;
+                    else if (match.HomeGoals == match.AwayGoals)
+                        result = 0;
+                    else
+                        result = stake * -1;
+
+                    break;
+                case "PUNTER - Handicap -0.25 Casa":
+                    if (match.HomeGoals > match.AwayGoals)
+                        result = stake * match.HomeHandicap025NegativeOdd - stake;
+                    else if (match.HomeGoals == match.AwayGoals)
+                        result = stake * 0.5 * -1;
+                    else
+                        result = stake * -1;
+
+                    break;
+                case "PUNTER - Handicap -0.5 Casa":
+                    if (match.HomeGoals > match.AwayGoals)
+                        result = stake * match.HomeHandicap05NegativeOdd - stake;
+                    else
+                        result = stake * -1;
+
+                    break;
+                case "PUNTER - Handicap -0.75 Casa":
+                    if (match.HomeGoals > match.AwayGoals + 1)
+                        result = stake * match.HomeHandicap075NegativeOdd - stake;
+                    else if (match.HomeGoals == match.AwayGoals + 1)
+                        result = (stake * match.HomeHandicap075NegativeOdd - stake) * 0.5;
+                    else
+                        result = stake * -1;
+
+                    break;
+                case "PUNTER - Handicap -1.0 Casa":
+                    if (match.HomeGoals > match.AwayGoals + 1)
+                        result = stake * match.HomeHandicap1NegativeOdd - stake;
+                    else if (match.HomeGoals == match.AwayGoals + 1)
+                        result = 0;
+                    else
+                        result = stake * -1;
+
+                    break;
+                case "PUNTER - Handicap +1.0 Fora":
+                    if (match.AwayGoals >= match.HomeGoals)
+                        result = stake * match.AwayHandicap1Odd - stake;
+                    else if (match.AwayGoals - match.HomeGoals == -1)
+                        result = 0;
+                    else
+                        result = stake * -1;
+
+                    break;
+                case "PUNTER - Handicap +0.75 Fora":
+                    if (match.AwayGoals >= match.HomeGoals)
+                        result = stake * match.AwayHandicap075Odd - stake;
+                    else if (match.AwayGoals - match.HomeGoals == -1)
+                        result = stake * 0.5 * -1;
+                    else
+                        result = stake * -1;
+
+                    break;
+                case "PUNTER - Handicap +0.5 Fora":
+                    if (match.AwayGoals >= match.HomeGoals)
+                        result = stake * match.AwayHandicap05Odd - stake;
+                    else
+                        result = stake * -1;
+
+                    break;
+                case "PUNTER - Handicap +0.25 Fora":
+                    if (match.AwayGoals > match.HomeGoals)
+                        result = stake * match.AwayHandicap025Odd - stake;
+                    else if (match.AwayGoals == match.HomeGoals)
+                        result = (stake * match.AwayHandicap025Odd - stake) * 0.5;
+                    else
+                        result = stake * -1;
+
+                    break;
+                case "PUNTER - Handicap 0.0 Fora":
+                    if (match.AwayGoals > match.HomeGoals)
+                        result = stake * match.AwayHandicap0Odd - stake;
+                    else if (match.AwayGoals == match.HomeGoals)
+                        result = 0;
+                    else
+                        result = stake * -1;
+
+                    break;
+                case "PUNTER - Handicap -0.25 Fora":
+                    if (match.AwayGoals > match.HomeGoals)
+                        result = stake * match.AwayHandicap025NegativeOdd - stake;
+                    else if (match.AwayGoals == match.HomeGoals)
+                        result = stake * 0.5 * -1;
+                    else
+                        result = stake * -1;
+
+                    break;
+                case "PUNTER - Handicap -0.5 Fora":
+                    if (match.AwayGoals > match.HomeGoals)
+                        result = stake * match.AwayHandicap05NegativeOdd - stake;
+                    else
+                        result = stake * -1;
+
+                    break;
+                case "PUNTER - Handicap -0.75 Fora":
+                    if (match.AwayGoals > match.HomeGoals + 1)
+                        result = stake * match.AwayHandicap075NegativeOdd - stake;
+                    else if (match.AwayGoals == match.HomeGoals + 1)
+                        result = (stake * match.AwayHandicap075NegativeOdd - stake) * 0.5;
+                    else
+                        result = stake * -1;
+
+                    break;
+                case "PUNTER - Handicap -1.0 Fora":
+                    if (match.AwayGoals > match.HomeGoals + 1)
+                        result = stake * match.AwayHandicap1NegativeOdd - stake;
+                    else if (match.AwayGoals == match.HomeGoals + 1)
+                        result = 0;
                     else
                         result = stake * -1;
 

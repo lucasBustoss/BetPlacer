@@ -1,4 +1,4 @@
-﻿namespace BetPlacer.Punter.API.Models.Match.Team
+﻿namespace BetPlacer.Punter.API.Models.ValueObjects.Match.Team
 {
     public class TeamMatchesBySeason
     {

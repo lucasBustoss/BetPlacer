@@ -1,10 +1,33 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace BetPlacer.Punter.API.Models
 {
-    public class MatchBaseData
+    [Keyless]
+    public partial class MatchBaseData
     {
-        [Key]
+        public MatchBaseData()
+        {
+            
+        }
+
+        public MatchBaseData(NextMatch nextMatch)
+        {
+            MatchCode = nextMatch.MatchCode;
+            Season = nextMatch.Season;
+            Date = nextMatch.Date;
+            HomeTeam = nextMatch.HomeTeam;
+            AwayTeam = nextMatch.AwayTeam;
+            HomeOdd = nextMatch.HomeOdd;
+            DrawOdd = nextMatch.DrawOdd;
+            AwayOdd = nextMatch.AwayOdd;
+            Over25Odd = nextMatch.Over25Odd;
+            Under25Odd = nextMatch.Under25Odd;
+            BttsYesOdd = nextMatch.BttsYesOdd;
+            BttsNoOdd = nextMatch.BttsNoOdd;
+        }
+
         public int MatchCode { get; set; }
         public string Season { get; set; }
 
@@ -54,7 +77,8 @@ namespace BetPlacer.Punter.API.Models
         public double HomeConcededGoalValue { get; set; }
         public double HomeConcededGoalCost { get; set; }
         public double AwayConcededGoalValue { get; set; }
-        public double AwayConcededGoalCost { get; set; }
+                public double AwayConcededGoalCost { get; set; }
+        
         public double HomePointsValue { get; set; }
         public double AwayPointsValue { get; set; }
         public double HomeGoalsDifferenceValue { get; set; }

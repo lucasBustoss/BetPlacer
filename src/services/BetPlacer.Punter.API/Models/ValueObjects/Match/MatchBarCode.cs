@@ -1,16 +1,35 @@
 ﻿using BetPlacer.Punter.API.Utils.Normalization;
 
-namespace BetPlacer.Punter.API.Models.Match
+namespace BetPlacer.Punter.API.Models.ValueObjects.Match
 {
     public class MatchBarCode
     {
         private bool _valuesNormalized = false;
         private int _index = -1;
 
+        // Ctor para NextMatch
+        public MatchBarCode(int matchCode, double homeOdd, double drawOdd, double awayOdd, double over25Odd, double under25Odd, double bttsYesOdd, double bttsNoOdd, int index)
+        {
+            MatchCode = matchCode;
+
+            HomeOdd = 1 / homeOdd;
+            DrawOdd = 1 / drawOdd;
+            AwayOdd = 1 / awayOdd;
+
+            Over25Odd = 1 / over25Odd;
+            Under25Odd = 1 / under25Odd;
+
+            BttsYesOdd = 1 / bttsYesOdd;
+            BttsNoOdd = 1 / bttsNoOdd;
+
+            _index = index;
+        }
+
+        // Ctor para MatchBaseData (pastMatch)
         public MatchBarCode(int index, int matchCode, double homeOdd, double drawOdd, double awayOdd, double over25Odd, double under25Odd, double bttsYesOdd, double bttsNoOdd, string matchOddsResult, string matchOddsHTResult, string bttsResult, int homeGoals, int awayGoals)
         {
             _index = index;
-            
+
             MatchCode = matchCode;
 
             HomeOdd = 1 / homeOdd;
@@ -94,41 +113,40 @@ namespace BetPlacer.Punter.API.Models.Match
             HomeBTTSRPS = NormalizeHomeBTTSRPS(HomeBTTSRPS);
 
             AwayCVPoints = NormalizeAwayCVPoints(AwayCVPoints);
-            AwayCVPointsHT = NormalizeAwayCVPoints(AwayCVPoints);
-            AwayPoints = NormalizeAwayCVPoints(AwayCVPoints);
-            AwayPointsHT = NormalizeAwayCVPoints(AwayCVPoints);
-            AwayDifferenceGoals = NormalizeAwayCVPoints(AwayCVPoints);
-            AwayDifferenceGoalsHT = NormalizeAwayCVPoints(AwayCVPoints);
-            AwayCVDifferenceGoals = NormalizeAwayCVPoints(AwayCVPoints);
-            AwayCVDifferenceGoalsHT = NormalizeAwayCVPoints(AwayCVPoints);
-            AwayPoisson = NormalizeAwayCVPoints(AwayCVPoints);
-            AwayPoissonHT = NormalizeAwayCVPoints(AwayCVPoints);
-            AwayGoalsScored = NormalizeAwayCVPoints(AwayCVPoints);
-            AwayGoalsScoredValue = NormalizeAwayCVPoints(AwayCVPoints);
-            AwayGoalsScoredCost = NormalizeAwayCVPoints(AwayCVPoints);
-            AwayGoalsScoredCV = NormalizeAwayCVPoints(AwayCVPoints);
-            AwayGoalsScoredHT = NormalizeAwayCVPoints(AwayCVPoints);
-            AwayGoalsScoredValueHT = NormalizeAwayCVPoints(AwayCVPoints);
-            AwayGoalsScoredCostHT = NormalizeAwayCVPoints(AwayCVPoints);
-            AwayGoalsScoredCVHT = NormalizeAwayCVPoints(AwayCVPoints);
-            AwayGoalsConceded = NormalizeAwayCVPoints(AwayCVPoints);
-            AwayGoalsConcededValue = NormalizeAwayCVPoints(AwayCVPoints);
-            AwayGoalsConcededCost = NormalizeAwayCVPoints(AwayCVPoints);
-            AwayGoalsConcededCV = NormalizeAwayCVPoints(AwayCVPoints);
-            AwayGoalsConcededHT = NormalizeAwayCVPoints(AwayCVPoints);
-            AwayGoalsConcededValueHT = NormalizeAwayCVPoints(AwayCVPoints);
-            AwayGoalsConcededCostHT = NormalizeAwayCVPoints(AwayCVPoints);
-            AwayGoalsConcededCVHT = NormalizeAwayCVPoints(AwayCVPoints);
-            AwayOddsCV = NormalizeAwayCVPoints(AwayCVPoints);
-            AwayMatchOddsRPS = NormalizeAwayCVPoints(AwayCVPoints);
-            AwayMatchOddsHTRPS = NormalizeAwayCVPoints(AwayCVPoints);
-            AwayGoalsRPS = NormalizeAwayCVPoints(AwayCVPoints);
-            AwayBTTSRPS = NormalizeAwayCVPoints(AwayCVPoints);
+            AwayCVPointsHT = NormalizeAwayCVPointsHT(AwayCVPointsHT);
+            AwayPoints = NormalizeAwayPoints(AwayPoints);
+            AwayPointsHT = NormalizeAwayPointsHT(AwayPointsHT);
+            AwayDifferenceGoals = NormalizeAwayDifferenceGoals(AwayDifferenceGoals);
+            AwayDifferenceGoalsHT = NormalizeAwayDifferenceGoalsHT(AwayDifferenceGoalsHT);
+            AwayCVDifferenceGoals = NormalizeAwayCVDifferenceGoals(AwayCVDifferenceGoals);
+            AwayCVDifferenceGoalsHT = NormalizeAwayCVDifferenceGoalsHT(AwayCVDifferenceGoalsHT);
+            AwayPoisson = NormalizeAwayPoisson(AwayPoisson);
+            AwayPoissonHT = NormalizeAwayPoissonHT(AwayPoissonHT);
+            AwayGoalsScored = NormalizeAwayGoalsScored(AwayGoalsScored);
+            AwayGoalsScoredValue = NormalizeAwayGoalsScoredValue(AwayGoalsScoredValue);
+            AwayGoalsScoredCost = NormalizeAwayGoalsScoredCost(AwayGoalsScoredCost);
+            AwayGoalsScoredCV = NormalizeAwayGoalsScoredCV(AwayGoalsScoredCV);
+            AwayGoalsScoredHT = NormalizeAwayGoalsScoredHT(AwayGoalsScoredHT);
+            AwayGoalsScoredValueHT = NormalizeAwayGoalsScoredValueHT(AwayGoalsScoredValueHT);
+            AwayGoalsScoredCostHT = NormalizeAwayGoalsScoredCostHT(AwayGoalsScoredCostHT);
+            AwayGoalsScoredCVHT = NormalizeAwayGoalsScoredCVHT(AwayGoalsScoredCVHT);
+            AwayGoalsConceded = NormalizeAwayGoalsConceded(AwayGoalsConceded);
+            AwayGoalsConcededValue = NormalizeAwayGoalsConcededValue(AwayGoalsConcededValue);
+            AwayGoalsConcededCost = NormalizeAwayGoalsConcededCost(AwayGoalsConcededCost);
+            AwayGoalsConcededCV = NormalizeAwayGoalsConcededCV(AwayGoalsConcededCV);
+            AwayGoalsConcededHT = NormalizeAwayGoalsConcededHT(AwayGoalsConcededHT);
+            AwayGoalsConcededValueHT = NormalizeAwayGoalsConcededValueHT(AwayGoalsConcededValueHT);
+            AwayGoalsConcededCostHT = NormalizeAwayGoalsConcededCostHT(AwayGoalsConcededCostHT);
+            AwayGoalsConcededCVHT = NormalizeAwayGoalsConcededCVHT(AwayGoalsConcededCVHT);
+            AwayOddsCV = NormalizeAwayOddsCV(AwayOddsCV);
+            AwayMatchOddsRPS = NormalizeAwayMatchOddsRPS(AwayMatchOddsRPS);
+            AwayMatchOddsHTRPS = NormalizeAwayMatchOddsHTRPS(AwayMatchOddsHTRPS);
+            AwayGoalsRPS = NormalizeAwayGoalsRPS(AwayGoalsRPS);
+            AwayBTTSRPS = NormalizeAwayBTTSRPS(AwayBTTSRPS);
 
             _valuesNormalized = true;
         }
 
-        public int Code { get; set; }
         public int MatchCode { get; set; }
 
         public string MatchOddsResult { get; set; }
