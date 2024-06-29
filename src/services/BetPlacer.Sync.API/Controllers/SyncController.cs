@@ -228,7 +228,7 @@ namespace BetPlacer.Sync.API.Controllers
                 Console.WriteLine($"Começando a calcular stats da liga {name} - Season {leagueSeason.Year}");
                 st.Start();
 
-                await CalculateStats(leagueSeason);
+               // await CalculateStats(leagueSeason);
 
                 st.Stop();
                 double elapsedSeconds2 = st.Elapsed.TotalSeconds;

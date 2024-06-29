@@ -42,12 +42,12 @@ public class PunterRepository : IPunterRepository
                 foreach (var combinedInterval in combinedIntervals)
                 {
                     ResultInterval resultInterval = new ResultInterval(
-                        combinedInterval.Name, combinedInterval.PercentMatches, combinedInterval.Result, combinedInterval.CoefficientVariation, combinedInterval.InferiorLimit);
+                        combinedInterval.Name, combinedInterval.PercentMatches, combinedInterval.Result, combinedInterval.CoefficientVariation, combinedInterval.InferiorLimit, combinedInterval.Active, combinedInterval.Code);
 
                     resultIntervals.Add(resultInterval);
                 }
 
-                StrategyInfo strategyInfo = new StrategyInfo(backtest.Name, classifications.Select(s => s.Classification).ToList(), backtest.ResultAfterClassification, bestIntervals, resultIntervals);
+                StrategyInfo strategyInfo = new StrategyInfo(backtest.Code, backtest.Name, classifications.Select(s => s.Classification).ToList(), backtest.ResultAfterClassification, bestIntervals, resultIntervals);
                 strategyInfos.Add(strategyInfo);
             }
         }
@@ -55,10 +55,45 @@ public class PunterRepository : IPunterRepository
         return strategyInfos;
     }
 
+    public List<FixtureStrategyModel> GetFixturesStrategy()
+    {
+        var fixturesStrategy = _context.FixtureStrategy.ToList();
+        return fixturesStrategy;
+    }
+
     public PunterBacktestModel GetBacktestByLeagueCodeAndStrategyName(int leagueCode, string strategyName)
     {
         var backtest = _context.PunterBacktest.Where(pb => pb.LeagueCode == leagueCode && pb.Name == strategyName).FirstOrDefault();
         return backtest;
+    }
+
+    public void ActiveFilter(int strategyCode, int filterCode)
+    {
+        var backtest = _context.PunterBacktest.Where(pb => pb.Code == strategyCode).FirstOrDefault();
+
+        if (backtest != null)
+        {
+            var combinedIntervals = _context.PunterBacktestCombinedInterval.Where(pbci => pbci.PunterBacktestCode == backtest.Code).ToList();
+
+            foreach (var combinedInterval in combinedIntervals)
+                combinedInterval.Active = combinedInterval.Code == filterCode;
+
+            _context.SaveChanges();
+        }
+    }
+
+    public void SaveMatchAnalysis(List<FixtureStrategyModel> fixtureStrategies)
+    {
+        foreach (var fixtureStrategy in fixtureStrategies)
+        {
+            var existentFixtureStrategy =
+                _context.FixtureStrategy.Where(f => f.FixtureCode == fixtureStrategy.FixtureCode && f.StrategyName == fixtureStrategy.StrategyName).FirstOrDefault();
+
+            if (existentFixtureStrategy == null)
+                _context.FixtureStrategy.Add(fixtureStrategy);
+        }
+
+        _context.SaveChanges();
     }
 
     public async void Create(int leagueCode, List<StrategyInfo> strategies)
@@ -92,13 +127,13 @@ public class PunterRepository : IPunterRepository
                 foreach (BestInterval strategyInterval in strategy.BestIntervals)
                 {
                     PunterBacktestIntervalModel interval = new PunterBacktestIntervalModel(
-                        backtest.Code, 
-                        strategyInterval.PropertyName, 
-                        strategyInterval.InitialInterval, 
-                        strategyInterval.FinalInterval, 
-                        strategyInterval.CoefficientVariation, 
+                        backtest.Code,
+                        strategyInterval.PropertyName,
+                        strategyInterval.InitialInterval,
+                        strategyInterval.FinalInterval,
+                        strategyInterval.CoefficientVariation,
                         strategyInterval.InferiorLimit);
-                    
+
                     _context.PunterBacktestInterval.Add(interval);
                 }
 
@@ -111,12 +146,12 @@ public class PunterRepository : IPunterRepository
                 {
                     PunterBacktestCombinedIntervalModel result = new PunterBacktestCombinedIntervalModel(
                         backtest.Code,
-                        strategyResult.Name, 
-                        strategyResult.PercentMatches, 
-                        strategyResult.Result, 
-                        strategyResult.CoefficientVariation, 
+                        strategyResult.Name,
+                        strategyResult.PercentMatches,
+                        strategyResult.Result,
+                        strategyResult.CoefficientVariation,
                         strategyResult.InferiorLimit);
-                    
+
                     _context.PunterBacktestCombinedInterval.Add(result);
                 }
 
@@ -133,13 +168,13 @@ public class PunterRepository : IPunterRepository
 
         foreach (var combinedInterval in backtestCombinedIntervals)
             _context.Remove(combinedInterval);
-        
+
         foreach (var interval in backtestIntervals)
             _context.Remove(interval);
-        
-        foreach (var classification in  backtestClassifications)
+
+        foreach (var classification in backtestClassifications)
             _context.Remove(classification);
-        
+
         _context.Remove(backtest);
     }
 

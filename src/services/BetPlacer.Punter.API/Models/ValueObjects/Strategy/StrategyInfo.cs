@@ -13,8 +13,9 @@ namespace BetPlacer.Punter.API.Models.ValueObjects.Strategy
             ResultAfterClassification = resultAfterClassification;
         }
 
-        public StrategyInfo(string name, List<string> classifications, double resultAfterClassification, List<BestInterval> bestIntervals, List<ResultInterval> resultIntervals)
+        public StrategyInfo(int code, string name, List<string> classifications, double resultAfterClassification, List<BestInterval> bestIntervals, List<ResultInterval> resultIntervals)
         {
+            Code = code;
             Name = name;
             Classifications = classifications;
             ResultAfterClassification = resultAfterClassification;
@@ -22,6 +23,7 @@ namespace BetPlacer.Punter.API.Models.ValueObjects.Strategy
             ResultAfterIntervals = resultIntervals;
         }
 
+        public int Code { get; set; }
         public string Name { get; set; }
         public List<string> Classifications { get; set; }
         public List<MatchAnalyzed> Matches { get; set; }

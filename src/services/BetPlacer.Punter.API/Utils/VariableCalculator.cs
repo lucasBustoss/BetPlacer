@@ -345,7 +345,7 @@ namespace BetPlacer.Punter.API.Utils
                     else
                         composeName += $" - {bestInterval.PropertyName}";
 
-                    ResultInterval resultInterval = new ResultInterval(composeName, (double)totalMatches / (double)matches.Count, result, cvResult, inferiorLimit);
+                    ResultInterval resultInterval = new ResultInterval(composeName, (double)totalMatches / (double)matches.Count, result, cvResult, inferiorLimit, false, 0);
 
                     resultIntervals.Add(resultInterval);
 

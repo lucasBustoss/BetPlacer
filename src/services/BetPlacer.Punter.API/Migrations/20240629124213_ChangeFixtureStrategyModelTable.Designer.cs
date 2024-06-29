@@ -2,6 +2,7 @@
 using BetPlacer.Punter.API.Config;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,9 +11,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BetPlacer.Punter.API.Migrations
 {
     [DbContext(typeof(PunterDbContext))]
-    partial class PunterDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240629124213_ChangeFixtureStrategyModelTable")]
+    partial class ChangeFixtureStrategyModelTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -39,9 +42,9 @@ namespace BetPlacer.Punter.API.Migrations
                         .HasColumnName("strategy_name");
 
                     b.HasKey("Code")
-                        .HasName("p_k_fixture_strategy");
+                        .HasName("p_k_fixture_strategy_model");
 
-                    b.ToTable("fixture_strategy");
+                    b.ToTable("fixture_strategy_model");
                 });
 
             modelBuilder.Entity("BetPlacer.Punter.API.Models.Entities.PunterBacktestClassificationModel", b =>

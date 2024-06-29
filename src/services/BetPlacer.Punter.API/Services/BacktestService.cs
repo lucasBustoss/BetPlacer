@@ -1,5 +1,7 @@
 ﻿using BetPlacer.Punter.API.Models;
+using BetPlacer.Punter.API.Models.Entities;
 using BetPlacer.Punter.API.Models.ValueObjects;
+using BetPlacer.Punter.API.Models.ValueObjects.Intervals;
 using BetPlacer.Punter.API.Models.ValueObjects.Match;
 using BetPlacer.Punter.API.Models.ValueObjects.Match.Team;
 using BetPlacer.Punter.API.Models.ValueObjects.Strategy;
@@ -10,7 +12,7 @@ namespace BetPlacer.Punter.API.Services
     public class BacktestService
     {
         // Método para filtrar os jogos incompletos e verificar se ele está dentro dos intervalos escolhidos
-        public void FilterMatches(List<StrategyInfo> backtests, List<MatchBaseData> matchBaseData, List<NextMatch> nextMatches)
+        public List<FixtureStrategyModel> FilterMatches(List<StrategyInfo> backtests, List<MatchBaseData> matchBaseData, List<NextMatch> nextMatches)
         {
             #region Mount data
 
@@ -61,6 +63,8 @@ namespace BetPlacer.Punter.API.Services
 
             #region Filter
 
+            List<FixtureStrategyModel> fixtureStrategies = new List<FixtureStrategyModel>();
+
             foreach (var fixtureToFilter in fixturesToFilter)
             {
                 foreach (var backtest in backtests)
@@ -107,9 +111,40 @@ namespace BetPlacer.Punter.API.Services
                     if (!classificationAnalysis)
                         continue;
 
-                    // DESENVOLVER FILTRO DOS VALORES
+                    ResultInterval activeInterval = backtest.ResultAfterIntervals.Count > 0 ? backtest.ResultAfterIntervals.Where(rai => rai.Active).FirstOrDefault() : null;
+                    bool variablesAnalysis = true;
+
+                    if (activeInterval != null)
+                    {
+                        List<string> variableNames = activeInterval.Name.Split(" - ").ToList();
+
+                        foreach (var variableName in variableNames)
+                        {
+                            BestInterval variableInterval = backtest.BestIntervals.Where(b => b.PropertyName == variableName).FirstOrDefault();
+
+                            if (variableInterval != null) 
+                            { 
+                                double variableValue = GetVariableValue(variableName, fixtureToFilter);
+
+                                if (variableValue < variableInterval.InitialInterval || variableValue > variableInterval.FinalInterval )
+                                {
+                                    variablesAnalysis = false;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if (!variablesAnalysis || activeInterval == null)
+                        continue;
+
+                    fixtureStrategies.Add(new FixtureStrategyModel(fixtureToFilter.MatchCode, backtest.Name));
                 }
+
+                return fixtureStrategies;
             }
+
+            return fixtureStrategies;
 
             #endregion
         }
@@ -1133,6 +1168,16 @@ namespace BetPlacer.Punter.API.Services
             barCodes.Add(barCode);
 
             return barCodes;
+        }
+
+        public double GetVariableValue(string variableName, FixtureToFilter fixture)
+        {
+            var propertyInfo = fixture.GetType().GetProperty(variableName);
+
+            if (propertyInfo != null)
+                return (double)propertyInfo.GetValue(fixture);
+
+            throw new Exception($"Propriedade {propertyInfo} não encontrada no objeto FixtureToFilter.");
         }
 
         #endregion

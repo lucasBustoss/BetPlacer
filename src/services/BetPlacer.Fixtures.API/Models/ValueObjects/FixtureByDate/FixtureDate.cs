@@ -6,7 +6,7 @@ namespace BetPlacer.Fixtures.API.Models.ValueObjects.FixtureByDate
 {
     public class FixtureDate
     {
-        public FixtureDate(FixtureModel fixtureModel, FixtureStatsTradeModel stats, List<BacktestFixture> backtestFixtures)
+        public FixtureDate(FixtureModel fixtureModel, FixtureStatsTradeModel stats, string filters)
         {
             Code = fixtureModel.Code;
             Date = fixtureModel.StartDate.AddHours(-3).ToString("dd/MM/yyyy HH:mm");
@@ -16,16 +16,12 @@ namespace BetPlacer.Fixtures.API.Models.ValueObjects.FixtureByDate
             OddDraw = 2;
             OddAway = 2;
 
+            Filters = filters;
+
             if (stats != null)
             {
                 Stats = stats;
                 Stats.Fixture = null;
-            }
-
-            if (backtestFixtures != null && backtestFixtures.Count > 0) 
-            {
-                List<string> backtestNames = backtestFixtures.Select(x => x.BacktestName).Distinct().ToList();
-                Filters = string.Join(", ", backtestNames);
             }
         }
 

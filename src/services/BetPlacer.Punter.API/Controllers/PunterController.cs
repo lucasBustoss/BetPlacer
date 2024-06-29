@@ -1,5 +1,6 @@
 using BetPlacer.Core.Controllers;
 using BetPlacer.Punter.API.Models;
+using BetPlacer.Punter.API.Models.Entities;
 using BetPlacer.Punter.API.Models.Request;
 using BetPlacer.Punter.API.Models.ValueObjects.Strategy;
 using BetPlacer.Punter.API.Services;
@@ -42,15 +43,33 @@ namespace BetPlacer.Punter.API.Controllers
             List<MatchBaseData> lastMatches = await _punterRepository.GetLastMatches(analyzeMatchRequest.LeagueCode);
             List<NextMatch> nextMatches = await _punterRepository.GetNextMatches(analyzeMatchRequest.Date, analyzeMatchRequest.LeagueCode);
 
-            _backtestService.FilterMatches(backtest, lastMatches, nextMatches);
+            List<FixtureStrategyModel> fixtureStrategies = _backtestService.FilterMatches(backtest, lastMatches, nextMatches);
+
+            if (fixtureStrategies.Count > 0)
+                _punterRepository.SaveMatchAnalysis(fixtureStrategies);
 
             return OkResponse("matches analyzed.");
+        }
+
+        [HttpPost("filter/active")]
+        public ActionResult ActiveFilter([FromBody] ActiveFilterRequest activeFilterRequest)
+        {
+            _punterRepository.ActiveFilter(activeFilterRequest.StrategyCode, activeFilterRequest.FilterCode);
+
+            return OkResponse("filter active.");
         }
 
         [HttpGet]
         public ActionResult GetBacktestByLeague(int leagueCode)
         {
             var backtest = _punterRepository.GetBacktestsByLeague(leagueCode);
+            return OkResponse(backtest);
+        }
+
+        [HttpGet("fixtures")]
+        public ActionResult GetFixtureStrategies()
+        {
+            var backtest = _punterRepository.GetFixturesStrategy();
             return OkResponse(backtest);
         }
     }

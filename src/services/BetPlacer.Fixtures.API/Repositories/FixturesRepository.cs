@@ -90,7 +90,7 @@ namespace BetPlacer.Fixtures.API.Repositories
             var fixturesWithoutOdds = _context.Fixtures
                                       .Where(f => !_context.FixtureOdds
                                                         .Any(fo => fo.FixtureCode == f.Code)
-                                                  && leagueSeasonCodes.Contains(f.SeasonCode) 
+                                                  && leagueSeasonCodes.Contains(f.SeasonCode)
                                                   && f.StartDate < DateTime.UtcNow.AddDays(-1))
                                       .OrderBy(f => f.StartDate)
                                       .ToList();
@@ -105,7 +105,7 @@ namespace BetPlacer.Fixtures.API.Repositories
             return fixtures.Select(f => f.Code).ToList();
         }
 
-        public List<LeagueFixtureByDate> ListFixturesByDate(IEnumerable<LeaguesApiResponseModel> leagues, IEnumerable<TeamsApiResponseModel> teams, IEnumerable<BacktestFixture> backtestFixtures)
+        public List<LeagueFixtureByDate> ListFixturesByDate(IEnumerable<LeaguesApiResponseModel> leagues, IEnumerable<TeamsApiResponseModel> teams, IEnumerable<PunterBacktestFixture> fixturesStrategy)
         {
             List<LeagueFixtureByDate> fixturesByDate = new List<LeagueFixtureByDate>();
             List<FixtureStatsTradeModel> stats = new List<FixtureStatsTradeModel>();
@@ -141,11 +141,34 @@ namespace BetPlacer.Fixtures.API.Repositories
                         fixtureByDate.LeagueFixtures.Add(leagueFixtures);
                     }
 
-                    var backtestFixturesSelected = backtestFixtures.Where(bf => bf.FixtureCode == fixtureCurrentDate.Code).ToList();
+                    string filters = "-";
 
-                    leagueFixtures.Fixtures.Add(new FixtureDate(fixtureCurrentDate, fixtureStat, backtestFixturesSelected));
+                    if (fixturesStrategy != null && fixturesStrategy.Count() > 0)
+                    {
+                        bool isFirst = true;
+
+                        foreach (var fixtureStrategy in fixturesStrategy)
+                        {
+                            var existentFixtureInStrategy = fixtureStrategy.FixtureCode == fixtureCurrentDate.Code;
+
+                            if (!existentFixtureInStrategy)
+                                continue;
+
+                            string strategy = fixtureStrategy.StrategyName;
+
+                            if (isFirst)
+                            {
+                                filters = strategy;
+                                isFirst = false;
+                            }
+                            else
+                                filters += $" - {strategy}";
+                        }
+                    }
+
+                    leagueFixtures.Fixtures.Add(new FixtureDate(fixtureCurrentDate, fixtureStat, filters));
                 }
-                
+
                 foreach (var leagueFixture in fixtureByDate.LeagueFixtures)
                     leagueFixture.Fixtures = leagueFixture.Fixtures.OrderBy(f => f.Date).ToList();
 
@@ -207,17 +230,27 @@ namespace BetPlacer.Fixtures.API.Repositories
         {
             #region Fixtures
 
+
             var existingFixtures = _context.Fixtures.ToDictionary(fixture => fixture.Code);
             List<FixtureModel> fixturesSaved = new List<FixtureModel>();
 
             foreach (var fixtureResponse in fixturesResponse)
             {
+                var fixtureModel = new FixtureModel(fixtureResponse);
+
                 if (!existingFixtures.ContainsKey(fixtureResponse.Code))
                 {
-                    var fixtureModel = new FixtureModel(fixtureResponse);
                     _context.Fixtures.Add(fixtureModel);
 
                     fixturesSaved.Add(fixtureModel);
+                }
+                else
+                {
+                    var oldFixture = existingFixtures[fixtureResponse.Code];
+
+                    var newFixture = fixtureModel;
+                    newFixture.Code = oldFixture.Code;
+                    _context.Entry(oldFixture).CurrentValues.SetValues(newFixture);
                 }
             }
 

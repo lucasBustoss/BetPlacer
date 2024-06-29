@@ -17,7 +17,7 @@ namespace BetPlacer.Punter.API.Config
         public DbSet<PunterBacktestClassificationModel> PunterBacktestClassification { get; set; }
         public DbSet<PunterBacktestIntervalModel> PunterBacktestInterval { get; set; }
         public DbSet<PunterBacktestCombinedIntervalModel> PunterBacktestCombinedInterval { get; set; }
-        public DbSet<FixtureIntervalModel> FixtureIntervalModel { get; set; }
+        public DbSet<FixtureStrategyModel> FixtureStrategy { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -29,7 +29,8 @@ namespace BetPlacer.Punter.API.Config
                 if (entityType.ClrType == typeof(PunterBacktestModel) ||
                     entityType.ClrType == typeof(PunterBacktestClassificationModel) ||
                     entityType.ClrType == typeof(PunterBacktestIntervalModel) ||
-                    entityType.ClrType == typeof(PunterBacktestCombinedIntervalModel))
+                    entityType.ClrType == typeof(PunterBacktestCombinedIntervalModel) ||
+                    entityType.ClrType == typeof(FixtureStrategyModel))
                 {
                     entityType.SetTableName(entityType.GetTableName().ToSnakeCase());
 
@@ -50,9 +51,9 @@ namespace BetPlacer.Punter.API.Config
                     }
                 }
 
-                modelBuilder.Entity<FixtureIntervalModel>(entity =>
+                modelBuilder.Entity<FixtureStrategyModel>(entity =>
                 {
-                    entity.Property(e => e.IntervalName)
+                    entity.Property(e => e.StrategyName)
                         .IsRequired(false);
                 });
             }
