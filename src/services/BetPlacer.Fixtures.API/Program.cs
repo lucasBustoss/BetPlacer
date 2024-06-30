@@ -20,7 +20,7 @@ dbContextBuilder.UseNpgsql(connection);
 
 #region RepositoriesConfig
 
-builder.Services.AddSingleton(new FixturesRepository(dbContextBuilder.Options, new MessageSender()));
+builder.Services.AddSingleton(new FixturesRepository(dbContextBuilder.Options));
 
 #endregion
 
@@ -28,6 +28,11 @@ builder.Services.AddSingleton(new FixturesRepository(dbContextBuilder.Options, n
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Configuration
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables();
 
 var app = builder.Build();
 

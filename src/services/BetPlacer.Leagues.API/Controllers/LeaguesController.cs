@@ -13,17 +13,25 @@ namespace BetPlacer.Leagues.Controllers
         private readonly LeaguesRepository _leaguesRepository;
         private readonly HttpClient _httpClient;
         private readonly string _apiUrl;
-        private readonly string _apiKey;
 
         public LeaguesController(LeaguesRepository leaguesRepository, IConfiguration configuration)
         {
             _leaguesRepository = leaguesRepository;
-            
+
             _httpClient = new HttpClient();
-            _apiUrl = configuration.GetValue<string>("CoreApi:AppUrl");
-            _apiKey = configuration.GetValue<string>("CoreApi:AppKey");
+
+            #region EnvironmentVariable
+
+            var coreApiAddress = Environment.GetEnvironmentVariable("BETPLACER_CoreApiAddress") ?? configuration["BetPlacer:CoreApiAddress"];
+            if (string.IsNullOrEmpty(coreApiAddress))
+                throw new Exception("A variável de ambiente BETPLACER_CoreApiAddress não está definida.");
+
+            _apiUrl = coreApiAddress;
+
+            #endregion
 
             _httpClient = new HttpClient() { BaseAddress = new Uri(_apiUrl) };
+
             _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
             _httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
         }
@@ -31,9 +39,18 @@ namespace BetPlacer.Leagues.Controllers
         [HttpGet]
         public ActionResult GetLeagues(bool? withSeasons)
         {
-            bool getLeaguesWithSeason = withSeasons != null ? withSeasons.Value : false;
-            var leagues = _leaguesRepository.List(getLeaguesWithSeason);
-            return OkResponse(leagues.OrderBy(l => l.Name).ToList());
+            Console.WriteLine("oieeeeeeeeee");
+            try
+            {
+                bool getLeaguesWithSeason = withSeasons != null ? withSeasons.Value : false;
+                var leagues = _leaguesRepository.List(getLeaguesWithSeason);
+                return OkResponse(leagues.OrderBy(l => l.Name).ToList());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return BadRequestResponse(ex.Message);
+            }
         }
 
         [HttpGet("{id}")]

@@ -1,24 +1,26 @@
-#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER app
+# Usar a imagem base oficial do .NET SDK para compilar a aplicação
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
+
+# Copiar os arquivos .csproj e restaurar as dependências
+COPY src/building_blocks/BetPlacer.Core/BetPlacer.Core.csproj ./building_blocks/BetPlacer.Core/
+COPY src/services/BetPlacer.Sync.API/BetPlacer.Sync.API.csproj ./services/BetPlacer.Sync.API/
+RUN dotnet restore ./services/BetPlacer.Sync.API/BetPlacer.Sync.API.csproj
+
+# Copiar o restante do código
+COPY src/building_blocks/BetPlacer.Core/ ./building_blocks/BetPlacer.Core/
+COPY src/services/BetPlacer.Sync.API/ ./services/BetPlacer.Sync.API/
+
+# Compilar o projeto
+RUN dotnet publish ./services/BetPlacer.Sync.API/BetPlacer.Sync.API.csproj -c Release -o /app/publish
+
+# Usar uma imagem runtime do .NET para rodar a aplicação
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+WORKDIR /app
+COPY --from=build /app/publish .
+
+# Expor a porta 8080
 EXPOSE 8080
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-ARG BUILD_CONFIGURATION=Release
-WORKDIR /src
-COPY ["src/services/BetPlacer.Sync.API/BetPlacer.Sync.API.csproj", "src/services/BetPlacer.Sync.API/"]
-RUN dotnet restore "./src/services/BetPlacer.Sync.API/BetPlacer.Sync.API.csproj"
-COPY . .
-WORKDIR "/src/src/services/BetPlacer.Sync.API"
-RUN dotnet build "./BetPlacer.Sync.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
-
-FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./BetPlacer.Sync.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
-
-FROM base AS final
-WORKDIR /app
-COPY --from=publish /app/publish .
+# Definir o comando de entrada
 ENTRYPOINT ["dotnet", "BetPlacer.Sync.API.dll"]

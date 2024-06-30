@@ -46,6 +46,12 @@ namespace BetPlacer.Fixtures.API.Controllers
             _apiUrl = configuration.GetValue<string>("CoreApi:AppUrl");
             _apiKey = configuration.GetValue<string>("CoreApi:AppKey");
 
+            var coreApiAddress = Environment.GetEnvironmentVariable("BETPLACER_CoreApiAddress") ?? configuration["BetPlacer:CoreApiAddress"];
+            if (string.IsNullOrEmpty(coreApiAddress))
+                throw new Exception("A variável de ambiente BETPLACER_CoreApiAddress não está definida.");
+
+            _apiUrl = coreApiAddress;
+
             _coreClient = new HttpClient() { BaseAddress = new Uri(_apiUrl) };
             _coreClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
             _coreClient.DefaultRequestHeaders.Add("Accept", "application/json");
@@ -54,32 +60,39 @@ namespace BetPlacer.Fixtures.API.Controllers
 
             #region TeamsApi
 
-            _teamsApiUrl = configuration.GetValue<string>("TeamsApi:AppUrl");
-            _teamsClient = new HttpClient() { BaseAddress = new Uri(_teamsApiUrl) };
+            var teamsApiAddress = Environment.GetEnvironmentVariable("BETPLACER_TeamsApiAddress") ?? configuration["BetPlacer:TeamsApiAddress"];
+            if (string.IsNullOrEmpty(teamsApiAddress))
+                throw new Exception("A variável de ambiente BETPLACER_TeamsApiAddress não está definida.");
+
+            _teamsApiUrl = teamsApiAddress;
 
             #endregion
 
             #region LeaguesApi
 
-            _leaguesApiUrl = configuration.GetValue<string>("LeaguesApi:AppUrl");
+            var leaguesApiAddress = Environment.GetEnvironmentVariable("BETPLACER_LeaguesApiAddress") ?? configuration["BetPlacer:LeaguesApiAddress"];
+            if (string.IsNullOrEmpty(leaguesApiAddress))
+                throw new Exception("A variável de ambiente BETPLACER_LeaguesApiAddress não está definida.");
+
+            _leaguesApiUrl = leaguesApiAddress;
+
+            #endregion
+
+            #region PunterApi
+
+            var punterApiAddress = Environment.GetEnvironmentVariable("BETPLACER_PunterApiAddress") ?? configuration["BetPlacer:PunterApiAddress"];
+            if (string.IsNullOrEmpty(punterApiAddress))
+                throw new Exception("A variável de ambiente BETPLACER_PunterApiAddress não está definida.");
+
+            _punterApiUrl = punterApiAddress;
+
+            #endregion
+
+            Console.WriteLine(_leaguesApiUrl);
+
             _leaguesClient = new HttpClient() { BaseAddress = new Uri(_leaguesApiUrl) };
-
-            #endregion
-
-            #region BacktestApi
-
-            _backetestApiUrl = configuration.GetValue<string>("BacktestApi:AppUrl");
-            _backetestClient = new HttpClient() { BaseAddress = new Uri(_backetestApiUrl) };
-
-            #endregion
-
-            #region BacktestApi
-
-            _punterApiUrl = configuration.GetValue<string>("PunterApi:AppUrl");
+            _teamsClient = new HttpClient() { BaseAddress = new Uri(_teamsApiUrl) };
             _punterClient = new HttpClient() { BaseAddress = new Uri(_punterApiUrl) };
-
-            #endregion
-
         }
 
         [HttpGet("")]
@@ -238,7 +251,6 @@ namespace BetPlacer.Fixtures.API.Controllers
 
                     if (response != null & response.Data != null && response.Data.Count() > 0)
                     {
-
                         var leagues = await GetLeagues();
                         var league = leagues.Where(l => l.Season.Any(s => s.Code == syncRequestModel.LeagueSeasonCode)).FirstOrDefault();
                         List<PinnacleOddsModel> pinnacleOdds = await GetPinnacleOdds(league.Code);

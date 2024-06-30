@@ -13,7 +13,7 @@ namespace BetPlacer.Punter.API.Controllers
     {
         private readonly PunterRepository _punterRepository;
         private readonly BacktestService _backtestService;
-        
+
         public PunterController(PunterRepository punterRepository)
         {
             _punterRepository = punterRepository;
@@ -21,12 +21,12 @@ namespace BetPlacer.Punter.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateBacktest(int leagueCode)
+        public async Task<ActionResult> CreateBacktest([FromBody] AnalyzeLeagueRequest analyzeLeagueRequest)
         {
-            List<MatchBaseData> info = await _punterRepository.GetMatchBaseDataAsync(leagueCode);
+            List<MatchBaseData> info = await _punterRepository.GetMatchBaseDataAsync(analyzeLeagueRequest.LeagueCode);
 
             List<StrategyInfo> strategies = _backtestService.CalculateStats(info);
-            _punterRepository.Create(leagueCode, strategies);
+            await _punterRepository.Create(analyzeLeagueRequest.LeagueCode, strategies);
             //TelegramMessage.SendMessage();
 
             return OkResponse(strategies);
@@ -35,18 +35,32 @@ namespace BetPlacer.Punter.API.Controllers
         [HttpPost("analyze")]
         public async Task<ActionResult> AnalyzeNextMatches([FromBody] AnalyzeMatchRequest analyzeMatchRequest)
         {
-            var backtest = _punterRepository.GetBacktestsByLeague(analyzeMatchRequest.LeagueCode);
+            if (analyzeMatchRequest != null && analyzeMatchRequest.LeagueCodes.Count > 0)
+            {
+                foreach (int leagueCode in analyzeMatchRequest.LeagueCodes)
+                {
+                    var backtest = _punterRepository.GetBacktestsByLeague(leagueCode);
 
-            if (backtest == null)
-                return BadRequestResponse("dont exists a backtest active in this league.");
+                    if (backtest == null || backtest.Count == 0)
+                        continue;
 
-            List<MatchBaseData> lastMatches = await _punterRepository.GetLastMatches(analyzeMatchRequest.LeagueCode);
-            List<NextMatch> nextMatches = await _punterRepository.GetNextMatches(analyzeMatchRequest.Date, analyzeMatchRequest.LeagueCode);
+                    List<MatchBaseData> lastMatches = await _punterRepository.GetLastMatches(leagueCode);
+                    List<NextMatch> nextMatches = await _punterRepository.GetNextMatches(analyzeMatchRequest.Date, leagueCode);
 
-            List<FixtureStrategyModel> fixtureStrategies = _backtestService.FilterMatches(backtest, lastMatches, nextMatches);
+                    List<FixtureStrategyModel> fixtureStrategies = _backtestService.FilterMatches(backtest, lastMatches, nextMatches);
 
-            if (fixtureStrategies.Count > 0)
-                _punterRepository.SaveMatchAnalysis(fixtureStrategies);
+                    foreach (var nextMatch in nextMatches)
+                    {
+                        var existentAnalysis = fixtureStrategies.Where(f => f.FixtureCode == nextMatch.MatchCode).FirstOrDefault();
+
+                        if (existentAnalysis == null)
+                            fixtureStrategies.Add(new FixtureStrategyModel(nextMatch.MatchCode, null));
+                    }
+
+                    if (fixtureStrategies.Count > 0)
+                        _punterRepository.SaveMatchAnalysis(fixtureStrategies);
+                }
+            }
 
             return OkResponse("matches analyzed.");
         }

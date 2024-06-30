@@ -6,13 +6,14 @@ namespace BetPlacer.Fixtures.API.Models.ValueObjects.FixtureByDate
 {
     public class FixtureDate
     {
-        public FixtureDate(FixtureModel fixtureModel, FixtureStatsTradeModel stats, string filters, FixtureOdds odd)
+        public FixtureDate(FixtureModel fixtureModel, FixtureStatsTradeModel stats, string filters, FixtureOdds odd, bool analyzedFixture)
         {
             Code = fixtureModel.Code;
             Date = fixtureModel.StartDate.AddHours(-3).ToString("dd/MM/yyyy HH:mm");
             HomeTeamName = fixtureModel.HomeTeamName;
             AwayTeamName = fixtureModel.AwayTeamName;
             FixtureOdds = odd;
+            AnalyzedFixture = analyzedFixture;
             Filters = filters;
 
             if (stats != null)
@@ -27,6 +28,7 @@ namespace BetPlacer.Fixtures.API.Models.ValueObjects.FixtureByDate
         public string HomeTeamName { get; set; }
         public string AwayTeamName { get; set; }
         public string Filters { get; set; }
+        public bool AnalyzedFixture { get; set; }
         public FixtureOdds FixtureOdds { get; set; }
 
         public bool InformedOdds

@@ -21,7 +21,19 @@ namespace BetPlacer.Teams.API.Controllers
             _teamsRepository = teamsRepository;
 
             _httpClient = new HttpClient();
-            _apiUrl = configuration.GetValue<string>("CoreApi:AppUrl");
+
+            #region EnvironmentVariable
+
+            var env = Environment.GetEnvironmentVariable("BETPLACER_CoreApiAddress");
+
+            var coreApiAddress = Environment.GetEnvironmentVariable("BETPLACER_CoreApiAddress") ?? configuration["BetPlacer:CoreApiAddress"];
+            if (string.IsNullOrEmpty(coreApiAddress))
+                throw new Exception("A variável de ambiente BETPLACER_CoreApiAddress não está definida.");
+
+            _apiUrl = coreApiAddress;
+
+            #endregion
+
             _apiKey = configuration.GetValue<string>("CoreApi:AppKey");
 
             _httpClient = new HttpClient() { BaseAddress = new Uri(_apiUrl) };

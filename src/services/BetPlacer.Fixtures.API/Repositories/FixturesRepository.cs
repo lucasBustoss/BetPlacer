@@ -24,13 +24,13 @@ namespace BetPlacer.Fixtures.API.Repositories
     {
         private readonly FixturesDbContext _context;
         private readonly CalculateFixtureStatsService _calculateService;
-        private readonly MessageSender _messageSender;
+        //private readonly MessageSender _messageSender;
 
-        public FixturesRepository(DbContextOptions<FixturesDbContext> db, MessageSender messageSender)
+        public FixturesRepository(DbContextOptions<FixturesDbContext> db)
         {
             _context = new FixturesDbContext(db);
             _calculateService = new CalculateFixtureStatsService();
-            _messageSender = messageSender ?? throw new ArgumentNullException(nameof(messageSender));
+            //_messageSender = messageSender ?? throw new ArgumentNullException(nameof(messageSender));
         }
 
         public async Task<IEnumerable<Fixture>> List(FixtureListSearchType searchType, IEnumerable<LeaguesApiResponseModel> leagues, IEnumerable<TeamsApiResponseModel> teams, bool withGoals, bool withStats, bool saveAsMessage, string backtestHash)
@@ -144,7 +144,7 @@ namespace BetPlacer.Fixtures.API.Repositories
                     }
 
                     string filters = "-";
-
+                    bool analyzedFixture = false;
                     if (fixturesStrategy != null && fixturesStrategy.Count() > 0)
                     {
                         bool isFirst = true;
@@ -157,6 +157,7 @@ namespace BetPlacer.Fixtures.API.Repositories
                                 continue;
 
                             string strategy = fixtureStrategy.StrategyName;
+                            analyzedFixture = true;
 
                             if (isFirst)
                             {
@@ -169,9 +170,7 @@ namespace BetPlacer.Fixtures.API.Repositories
                     }
 
                     FixtureOdds odd = _context.FixtureOdds.Where(f => f.FixtureCode == fixtureCurrentDate.Code).FirstOrDefault();
-
-
-                    leagueFixtures.Fixtures.Add(new FixtureDate(fixtureCurrentDate, fixtureStat, filters, odd));
+                    leagueFixtures.Fixtures.Add(new FixtureDate(fixtureCurrentDate, fixtureStat, filters, odd, analyzedFixture));
                 }
 
                 foreach (var leagueFixture in fixtureByDate.LeagueFixtures)
@@ -269,20 +268,23 @@ namespace BetPlacer.Fixtures.API.Repositories
 
             #region FixtureOdds
 
-            foreach (PinnacleOddsModel odd in odds)
+            if (odds != null)
             {
-                string homeFootyStatsName = FixtureUtils.GetFootyStatsNameByPinnacleName(odd.HomeTeam);
-                string awayFootyStatsName = FixtureUtils.GetFootyStatsNameByPinnacleName(odd.AwayTeam);
+                foreach (PinnacleOddsModel odd in odds)
+                {
+                    string homeFootyStatsName = FixtureUtils.GetFootyStatsNameByPinnacleName(odd.HomeTeam);
+                    string awayFootyStatsName = FixtureUtils.GetFootyStatsNameByPinnacleName(odd.AwayTeam);
 
-                FixturesFootballResponseModel fixtureToOdd = fixturesResponse.Where(fr =>
-                        (fr.HomeTeamName == homeFootyStatsName ||
-                        fr.AwayTeamName == awayFootyStatsName) &&
-                        FixtureUtils.TimestampToDatetime(fr.DateTimestamp).AddHours(3).ToString("yyyy-MM-dd'T'HH:mm:ss") == odd.Date)
-                    .FirstOrDefault();
+                    FixturesFootballResponseModel fixtureToOdd = fixturesResponse.Where(fr =>
+                            (fr.HomeTeamName == homeFootyStatsName ||
+                            fr.AwayTeamName == awayFootyStatsName) &&
+                            FixtureUtils.TimestampToDatetime(fr.DateTimestamp).AddHours(3).ToString("yyyy-MM-dd'T'HH:mm:ss") == odd.Date)
+                        .FirstOrDefault();
 
-                
-                if (fixtureToOdd != null)
-                    await CreateOdds(new FixtureOdds(fixtureToOdd.Code, odd.HomeOdd, odd.DrawOdd, odd.AwayOdd, odd.Over25Odd, odd.Under25Odd, odd.BttsYesOdd.Value, odd.BttsNoOdd.Value));
+
+                    if (fixtureToOdd != null)
+                        await CreateOdds(new FixtureOdds(fixtureToOdd.Code, odd.HomeOdd, odd.DrawOdd, odd.AwayOdd, odd.Over25Odd, odd.Under25Odd, odd.BttsYesOdd.Value, odd.BttsNoOdd.Value));
+                }
             }
 
             #endregion
@@ -450,12 +452,12 @@ namespace BetPlacer.Fixtures.API.Repositories
                         {
                             var fixtureVO = new Fixture(fixture, league, homeTeam, awayTeam, goalsFixture, statFixture);
                             var message = new FixtureMessage { Fixture = fixtureVO };
-                            _messageSender.SendMessage<FixtureMessage>(message, $"backtest_{backtestHash}");
+                            //_messageSender.SendMessage<FixtureMessage>(message, $"backtest_{backtestHash}");
                         }
                     }
 
                     // Send end of messages signal
-                    _messageSender.SendEndOfMessagesSignal($"backtest_{backtestHash}");
+                    //_messageSender.SendEndOfMessagesSignal($"backtest_{backtestHash}");
                 });
             }
             else

@@ -20,9 +20,29 @@ namespace BetPlacer.Sync.API.Controllers
         {
             _httpClient = new HttpClient();
             _httpClient.Timeout = TimeSpan.FromMinutes(30);
-            _leaguesApiUrl = configuration.GetValue<string>("Apis:LeaguesApi");
-            _teamsApiUrl = configuration.GetValue<string>("Apis:TeamsApi");
-            _fixturesApiUrl = configuration.GetValue<string>("Apis:FixturesApi");
+
+            #region EnvironmentVariable
+
+            var env = Environment.GetEnvironmentVariable("BETPLACER_CoreApiAddress");
+
+            var leaguesApiAddress = Environment.GetEnvironmentVariable("BETPLACER_LeaguesApiAddress") ?? configuration["BetPlacer:LeaguesApiAddress"];
+            var teamsApiAddress = Environment.GetEnvironmentVariable("BETPLACER_TeamsApiAddress") ?? configuration["BetPlacer:TeamsApiAddress"];
+            var fixturesApiAddress = Environment.GetEnvironmentVariable("BETPLACER_FixturesApiAddress") ?? configuration["BetPlacer:FixturesApiAddress"];
+
+            if (string.IsNullOrEmpty(leaguesApiAddress))
+                throw new Exception("A variável de ambiente BETPLACER_LeaguesApiAddress não está definida.");
+
+            if (string.IsNullOrEmpty(teamsApiAddress))
+                throw new Exception("A variável de ambiente BETPLACER_TeamsApiAddress não está definida.");
+
+            if (string.IsNullOrEmpty(fixturesApiAddress))
+                throw new Exception("A variável de ambiente BETPLACER_FixturesApiAddress não está definida.");
+
+            _leaguesApiUrl = leaguesApiAddress;
+            _teamsApiUrl = teamsApiAddress;
+            _fixturesApiUrl = fixturesApiAddress;
+
+            #endregion
         }
 
         [HttpPost]
@@ -53,6 +73,7 @@ namespace BetPlacer.Sync.API.Controllers
 
                     }
                 }
+                Console.WriteLine(5);
 
                 return OkResponse("data synchronized.");
             }
@@ -100,23 +121,28 @@ namespace BetPlacer.Sync.API.Controllers
         {
             try
             {
-                var league = await GetLeagueWithCurrentSeason();
+                Console.WriteLine(1);
+                var leagues = await GetLeagueWithCurrentSeason();
+                Console.WriteLine(2);
 
-                if (league != null)
+                if (leagues != null && leagues.Count > 0)
                 {
-                    Stopwatch st = new Stopwatch();
+                    foreach (LeagueSyncResponseModel league in leagues)
+                    {
+                        Stopwatch st = new Stopwatch();
 
-                    Console.WriteLine($"Começando a sincronizar as infos da liga {league.Name}");
-                    st.Start();
+                        Console.WriteLine($"Começando a sincronizar as infos da liga {league.Name}");
+                        st.Start();
 
-                    await SyncTeams(league.Seasons, league.Name);
-                    await SyncFixtures(league.Seasons, league.Name);
+                        await SyncTeams(league.Seasons, league.Name);
+                        await SyncFixtures(league.Seasons, league.Name);
 
-                    st.Stop();
-                    double elapsedSeconds = st.Elapsed.TotalSeconds;
+                        st.Stop();
+                        double elapsedSeconds = st.Elapsed.TotalSeconds;
 
-                    Console.WriteLine($"Fim do sync das infos da liga {league.Name}");
-                    Console.WriteLine($"Tempo decorrido: {elapsedSeconds} segundos");
+                        Console.WriteLine($"Fim do sync das infos da liga {league.Name}");
+                        Console.WriteLine($"Tempo decorrido: {elapsedSeconds} segundos");
+                    }
                 }
 
                 Console.WriteLine("FIM DE SYNC");
@@ -124,6 +150,7 @@ namespace BetPlacer.Sync.API.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex);
                 return BadRequestResponse(ex.Message);
             }
         }
@@ -170,16 +197,18 @@ namespace BetPlacer.Sync.API.Controllers
             }
         }
 
-        private async Task<LeagueSyncResponseModel> GetLeagueWithCurrentSeason()
+        private async Task<List<LeagueSyncResponseModel>> GetLeagueWithCurrentSeason()
         {
+            Console.WriteLine($"LEAGUE_API_URL: {_leaguesApiUrl}");
             var requestLeagues = await _httpClient.GetAsync($"{_leaguesApiUrl}/season/current");
 
             if (requestLeagues.IsSuccessStatusCode)
             {
+                Console.WriteLine(2);
                 var responseLeaguesString = await requestLeagues.Content.ReadAsStringAsync();
                 BaseCoreResponseModel<LeagueSyncResponseModel> response = JsonSerializer.Deserialize<BaseCoreResponseModel<LeagueSyncResponseModel>>(responseLeaguesString);
 
-                return response.Data.FirstOrDefault();
+                return response.Data.ToList();
             }
             else
             {
@@ -228,7 +257,7 @@ namespace BetPlacer.Sync.API.Controllers
                 Console.WriteLine($"Começando a calcular stats da liga {name} - Season {leagueSeason.Year}");
                 st.Start();
 
-               // await CalculateStats(leagueSeason);
+                // await CalculateStats(leagueSeason);
 
                 st.Stop();
                 double elapsedSeconds2 = st.Elapsed.TotalSeconds;

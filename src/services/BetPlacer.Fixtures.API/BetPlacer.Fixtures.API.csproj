@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\building blocks\BetPlacer.Core\BetPlacer.Core.csproj" />
+    <ProjectReference Include="..\..\building_blocks\BetPlacer.Core\BetPlacer.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

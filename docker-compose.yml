@@ -1,0 +1,96 @@
+version: '3.8'
+
+services:
+  betplacer_core_api:
+    build:
+      context: .
+      dockerfile: src/building_blocks/BetPlacer.Core.API/Dockerfile
+    image: betplacer.core.api:latest
+    networks:
+      - betplacer-network
+    ports:
+      - "3000:8080"
+      
+  betplacer_leagues_api:
+    build:
+      context: .
+      dockerfile: src/services/BetPlacer.Leagues.API/Dockerfile
+    image: betplacer.leagues.api:latest
+    environment:
+      - BETPLACER_CoreApiAddress=http://betplacer_core_api:8080/api/core/
+    networks:
+      - betplacer-network
+    ports:
+      - "3001:8080"
+      
+  betplacer_teams_api:
+    build:
+      context: .
+      dockerfile: src/services/BetPlacer.Teams.API/Dockerfile
+    image: betplacer.teams.api:latest
+    environment:
+      - BETPLACER_CoreApiAddress=http://betplacer_core_api:8080/api/core/
+    networks:
+      - betplacer-network
+    ports:
+      - "3002:8080"
+      
+  betplacer_sync_api:
+    build:
+      context: .
+      dockerfile: src/services/BetPlacer.Sync.API/Dockerfile
+    image: betplacer.sync.api:latest
+    environment:
+      - BETPLACER_LeaguesApiAddress=http://betplacer_leagues_api:8080/api/leagues
+      - BETPLACER_TeamsApiAddress=http://betplacer_teams_api:8080/api/teams
+      - BETPLACER_FixturesApiAddress=http://betplacer_fixtures_api:8080/api/fixtures
+    networks:
+      - betplacer-network
+    ports:
+      - "3003:8080"
+      
+  betplacer_fixtures_api:
+    build:
+      context: .
+      dockerfile: src/services/BetPlacer.Fixtures.API/Dockerfile
+    image: betplacer.fixtures.api:latest
+    environment:
+      - BETPLACER_CoreApiAddress=http://betplacer_core_api:8080/api/core/
+      - BETPLACER_LeaguesApiAddress=http://betplacer_leagues_api:8080/api/leagues/
+      - BETPLACER_TeamsApiAddress=http://betplacer_teams_api:8080/api/teams/
+      - BETPLACER_FixturesApiAddress=http://betplacer_fixtures_api:8080/api/fixtures/
+    networks:
+      - betplacer-network
+    ports:
+      - "3004:8080"
+      
+  betplacer_punter_api:
+    build:
+      context: .
+      dockerfile: src/services/BetPlacer.Punter.API/Dockerfile
+    image: betplacer.punter.api:latest
+    networks:
+      - betplacer-network
+    ports:
+      - "3006:8080"
+
+  betplacer_db:
+    container_name: betplacer_db
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "@sql2024"
+      POSTGRES_DB: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - betplacer-network
+    ports:
+      - "5432:5432"
+
+networks:
+  betplacer-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

@@ -5,6 +5,7 @@ using BetPlacer.Punter.API.Models.ValueObjects.Intervals;
 using BetPlacer.Punter.API.Models.ValueObjects.Strategy;
 using BetPlacer.Punter.API.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.Runtime.CompilerServices;
 
 public class PunterRepository : IPunterRepository
@@ -87,7 +88,7 @@ public class PunterRepository : IPunterRepository
         foreach (var fixtureStrategy in fixtureStrategies)
         {
             var existentFixtureStrategy =
-                _context.FixtureStrategy.Where(f => f.FixtureCode == fixtureStrategy.FixtureCode && f.StrategyName == fixtureStrategy.StrategyName).FirstOrDefault();
+                _context.FixtureStrategy.Where(f => f.FixtureCode == fixtureStrategy.FixtureCode && (f.StrategyName == fixtureStrategy.StrategyName || f.StrategyName == null)).FirstOrDefault();
 
             if (existentFixtureStrategy == null)
                 _context.FixtureStrategy.Add(fixtureStrategy);
@@ -96,7 +97,7 @@ public class PunterRepository : IPunterRepository
         _context.SaveChanges();
     }
 
-    public async void Create(int leagueCode, List<StrategyInfo> strategies)
+    public async Task Create(int leagueCode, List<StrategyInfo> strategies)
     {
         foreach (StrategyInfo strategy in strategies)
         {

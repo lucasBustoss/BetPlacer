@@ -444,7 +444,7 @@ namespace BetPlacer.Fixtures.API.Utils
             if (name == "Botafogo FR RJ")
                 return "Botafogo";
 
-            if (name == "Atlético Goianiense")
+            if (name == "Atletico Goianiense")
                 return "Atlético GO";
 
             if (name == "Atlanta United")

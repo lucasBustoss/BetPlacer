@@ -2,6 +2,7 @@ using BetPlacer.Core.Config;
 using BetPlacer.Leagues.Config;
 using Microsoft.EntityFrameworkCore;
 using BetPlacer.Leagues.API.Repositories;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
