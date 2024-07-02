@@ -11,12 +11,12 @@ namespace BetPlacer.Teams.API.Controllers
     [Route("api/teams")]
     public class TeamsController : BaseController
     {
-        private readonly TeamsRepository _teamsRepository;
+        private readonly ITeamsRepository _teamsRepository;
         private readonly HttpClient _httpClient;
         private readonly string _apiUrl;
         private readonly string _apiKey;
 
-        public TeamsController(TeamsRepository teamsRepository, IConfiguration configuration)
+        public TeamsController(ITeamsRepository teamsRepository, IConfiguration configuration)
         {
             _teamsRepository = teamsRepository;
 

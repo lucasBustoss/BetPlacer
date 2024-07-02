@@ -10,16 +10,15 @@ builder.Services.AddApiConfiguration();
 #region DbContextConfig
 
 var connection = builder.Configuration.GetConnectionString("Postgres");
-builder.Services.AddDbContext<TeamsDbContext>(options => options.UseNpgsql(connection));
-
-var dbContextBuilder = new DbContextOptionsBuilder<TeamsDbContext>();
-dbContextBuilder.UseNpgsql(connection);
+builder.Services.AddDbContext<TeamsDbContext>(options =>
+    options.UseNpgsql(connection),
+    ServiceLifetime.Scoped);
 
 #endregion
 
 #region RepositoriesConfig
 
-builder.Services.AddSingleton(new TeamsRepository(dbContextBuilder.Options));
+builder.Services.AddScoped<ITeamsRepository, TeamsRepository>();
 
 #endregion
 

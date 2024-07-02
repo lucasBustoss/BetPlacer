@@ -10,11 +10,11 @@ namespace BetPlacer.Leagues.Controllers
     [Route("api/leagues")]
     public class LeaguesController : BaseController
     {
-        private readonly LeaguesRepository _leaguesRepository;
+        private readonly ILeaguesRepository _leaguesRepository;
         private readonly HttpClient _httpClient;
         private readonly string _apiUrl;
 
-        public LeaguesController(LeaguesRepository leaguesRepository, IConfiguration configuration)
+        public LeaguesController(ILeaguesRepository leaguesRepository, IConfiguration configuration)
         {
             _leaguesRepository = leaguesRepository;
 
@@ -79,7 +79,7 @@ namespace BetPlacer.Leagues.Controllers
                     var responseLeaguesString = await request.Content.ReadAsStringAsync();
                     BaseCoreResponseModel<LeaguesFootballResponseModel> response = JsonSerializer.Deserialize<BaseCoreResponseModel<LeaguesFootballResponseModel>>(responseLeaguesString);
 
-                    await _leaguesRepository.CreateOrUpdate(response.Data);
+                    _leaguesRepository.CreateOrUpdate(response.Data);
 
                     var leagues = _leaguesRepository.List(true);
 

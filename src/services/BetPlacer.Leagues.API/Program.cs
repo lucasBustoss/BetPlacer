@@ -11,16 +11,15 @@ builder.Services.AddApiConfiguration();
 #region DbContextConfig
 
 var connection = builder.Configuration.GetConnectionString("Postgres");
-builder.Services.AddDbContext<LeaguesDbContext>(options => options.UseNpgsql(connection));
-
-var dbContextBuilder = new DbContextOptionsBuilder<LeaguesDbContext>();
-dbContextBuilder.UseNpgsql(connection);
+builder.Services.AddDbContext<LeaguesDbContext>(options =>
+    options.UseNpgsql(connection),
+    ServiceLifetime.Scoped);
 
 #endregion
 
 #region RepositoriesConfig
 
-builder.Services.AddSingleton(new LeaguesRepository(dbContextBuilder.Options));
+builder.Services.AddScoped<ILeaguesRepository, LeaguesRepository>();
 
 #endregion
 

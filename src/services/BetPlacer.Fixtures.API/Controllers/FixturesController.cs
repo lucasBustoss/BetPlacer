@@ -18,7 +18,7 @@ namespace BetPlacer.Fixtures.API.Controllers
     [Route("api/fixtures")]
     public class FixturesController : BaseController
     {
-        private readonly FixturesRepository _fixturesRepository;
+        private readonly IFixturesRepository _fixturesRepository;
         private readonly HttpClient _coreClient;
         private readonly string _apiUrl;
         private readonly string _apiKey;
@@ -38,7 +38,7 @@ namespace BetPlacer.Fixtures.API.Controllers
         HttpClient _telegramClient = new HttpClient();
         private readonly string _telegramApiUrl;
 
-        public FixturesController(FixturesRepository fixturesRepository, IConfiguration configuration)
+        public FixturesController(IFixturesRepository fixturesRepository, IConfiguration configuration)
         {
             _fixturesRepository = fixturesRepository;
 
@@ -131,7 +131,7 @@ namespace BetPlacer.Fixtures.API.Controllers
             }
             else
             {
-                var fixtures = await _fixturesRepository.List(type, leagues, teams, withGoals, withStats, saveAsMessage, backtestHash);
+                var fixtures = _fixturesRepository.List(type, leagues, teams, withGoals, withStats, saveAsMessage, backtestHash);
                 return OkResponse(fixtures.ToList());
             }
         }
@@ -167,11 +167,11 @@ namespace BetPlacer.Fixtures.API.Controllers
         }
 
         [HttpPost("odds")]
-        public async Task<ActionResult> CreateOdds([FromBody] FixtureOddsRequest oddsRequest)
+        public ActionResult CreateOdds([FromBody] FixtureOddsRequest oddsRequest)
         {
             try
             {
-                await _fixturesRepository.CreateOdds(new Models.Entities.FixtureOdds(oddsRequest));
+                _fixturesRepository.CreateOdds(new Models.Entities.FixtureOdds(oddsRequest));
 
                 return OkResponse("odds created");
             }
@@ -182,11 +182,11 @@ namespace BetPlacer.Fixtures.API.Controllers
         }
 
         [HttpPut("odds")]
-        public async Task<ActionResult> UpdateOdds([FromBody] FixtureOddsRequest oddsRequest)
+        public ActionResult UpdateOdds([FromBody] FixtureOddsRequest oddsRequest)
         {
             try
             {
-                await _fixturesRepository.UpdateOdds(new Models.Entities.FixtureOdds(oddsRequest));
+                _fixturesRepository.UpdateOdds(new Models.Entities.FixtureOdds(oddsRequest));
 
                 return OkResponse("odds updated");
             }
@@ -227,7 +227,7 @@ namespace BetPlacer.Fixtures.API.Controllers
                     var responseLeaguesString = await request.Content.ReadAsStringAsync();
                     BaseCoreResponseModel<FixturesFootballResponseModel> response = JsonSerializer.Deserialize<BaseCoreResponseModel<FixturesFootballResponseModel>>(responseLeaguesString);
 
-                    await _fixturesRepository.CreateOrUpdateCompleteFixtures(response.Data);
+                    _fixturesRepository.CreateOrUpdateCompleteFixtures(response.Data);
 
                     return OkResponse("Fixtures completed synchronized");
                 }
@@ -265,7 +265,7 @@ namespace BetPlacer.Fixtures.API.Controllers
                         var league = leagues.Where(l => l.Season.Any(s => s.Code == syncRequestModel.LeagueSeasonCode)).FirstOrDefault();
                         List<PinnacleOddsModel> pinnacleOdds = await GetPinnacleOdds(league.Code);
 
-                        var matchesNotFound = await _fixturesRepository.CreateOrUpdateNextFixtures(response.Data, pinnacleOdds);
+                        var matchesNotFound = _fixturesRepository.CreateOrUpdateNextFixtures(response.Data, pinnacleOdds);
 
                         if (matchesNotFound != null && matchesNotFound.Count > 0)
 #pragma warning disable 4014
@@ -291,14 +291,14 @@ namespace BetPlacer.Fixtures.API.Controllers
         }
 
         [HttpPost("stats")]
-        public async Task<ActionResult> CalculateStats([FromBody] FixturesRequestModel syncRequestModel)
+        public ActionResult CalculateStats([FromBody] FixturesRequestModel syncRequestModel)
         {
             try
             {
                 if (syncRequestModel == null || !syncRequestModel.IsValid())
                     throw new Exception("param leagueSeasonCode is required.");
 
-                await _fixturesRepository.CalculateFixtureStats(syncRequestModel.LeagueSeasonCode.Value);
+                _fixturesRepository.CalculateFixtureStats(syncRequestModel.LeagueSeasonCode.Value);
 
                 return OkResponse("stats calculated.");
             }

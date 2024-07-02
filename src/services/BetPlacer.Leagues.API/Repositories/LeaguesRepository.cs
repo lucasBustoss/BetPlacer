@@ -3,6 +3,7 @@ using BetPlacer.Leagues.API.Models;
 using Microsoft.EntityFrameworkCore;
 using BetPlacer.Core.Models.Response.FootballAPI.Leagues;
 using BetPlacer.Leagues.API.Models.ValueObjects;
+using System.Threading;
 
 namespace BetPlacer.Leagues.API.Repositories
 {
@@ -14,7 +15,6 @@ namespace BetPlacer.Leagues.API.Repositories
         {
             _context = new LeaguesDbContext(db);
         }
-
 
         public IEnumerable<League> List(bool withSeason)
         {
@@ -37,7 +37,6 @@ namespace BetPlacer.Leagues.API.Repositories
             return leaguesVO;
         }
 
-
         public IEnumerable<League> GetLeagueById(int leagueId)
         {
             List<League> leaguesVO = new List<League>();
@@ -59,7 +58,7 @@ namespace BetPlacer.Leagues.API.Repositories
             var seasons = UpdateCurrentSeasons();
 
             var leagues = _context.Leagues.ToList();
-            
+
             foreach (var league in leagues)
             {
                 var leagueSeasons = seasons.Where(s => s.LeagueCode == league.Code).ToList();
@@ -71,7 +70,7 @@ namespace BetPlacer.Leagues.API.Repositories
             return newLeagues;
         }
 
-        public async Task CreateOrUpdate(IEnumerable<LeaguesFootballResponseModel> leaguesResponse)
+        public void CreateOrUpdate(IEnumerable<LeaguesFootballResponseModel> leaguesResponse)
         {
             #region Leagues
 
@@ -96,7 +95,7 @@ namespace BetPlacer.Leagues.API.Repositories
                 leaguesSaved.Add(leagueModel);
             }
 
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
 
             #endregion
 
@@ -112,15 +111,14 @@ namespace BetPlacer.Leagues.API.Repositories
                 return Enumerable.Empty<LeagueSeasonModel>();
             }).ToList();
 
-            await Task.Run(() => CreateSeasons(leagueSeasons));
-
+            CreateSeasons(leagueSeasons);
 
             #endregion
         }
 
         #region Private methods
 
-        private async Task CreateSeasons(List<LeagueSeasonModel> leagueSeasons)
+        private void CreateSeasons(List<LeagueSeasonModel> leagueSeasons)
         {
             foreach (var leagueSeason in leagueSeasons)
             {
@@ -129,7 +127,7 @@ namespace BetPlacer.Leagues.API.Repositories
                 if (leagueSeasonBd == null)
                 {
                     _context.LeagueSeasons.Add(leagueSeason);
-                    await _context.SaveChangesAsync();
+                    _context.SaveChanges();
                 }
             }
         }
@@ -137,23 +135,23 @@ namespace BetPlacer.Leagues.API.Repositories
         private List<LeagueSeasonModel> UpdateCurrentSeasons()
         {
             string queryUpdateCurrent = @"
-                UPDATE league_seasons 
-                    SET current = 
-                        CASE 
-                            WHEN EXISTS (
-                                SELECT 1
-                                FROM fixtures f
-                                WHERE f.season_code = league_seasons.code
-                                AND f.status = 'incomplete'
-                            ) THEN TRUE
-                            ELSE FALSE
-                        END";
+                    UPDATE league_seasons 
+                        SET current = 
+                            CASE 
+                                WHEN EXISTS (
+                                    SELECT 1
+                                    FROM fixtures f
+                                    WHERE f.season_code = league_seasons.code
+                                    AND f.status = 'incomplete'
+                                ) THEN TRUE
+                                ELSE FALSE
+                            END";
 
             _context.Database.ExecuteSqlRaw(queryUpdateCurrent);
 
             var seasons = _context.LeagueSeasons.ToList();
 
-            foreach (var leagueSeason in seasons) 
+            foreach (var leagueSeason in seasons)
                 _context.Entry(leagueSeason).Reload();
 
             return _context.LeagueSeasons.Where(ls => ls.Current).ToList();

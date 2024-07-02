@@ -11,16 +11,15 @@ builder.Services.AddApiConfiguration();
 #region DbContextConfig
 
 var connection = builder.Configuration.GetConnectionString("Postgres");
-builder.Services.AddDbContext<FixturesDbContext>(options => options.UseNpgsql(connection));
-
-var dbContextBuilder = new DbContextOptionsBuilder<FixturesDbContext>();
-dbContextBuilder.UseNpgsql(connection);
+builder.Services.AddDbContext<FixturesDbContext>(options =>
+    options.UseNpgsql(connection),
+    ServiceLifetime.Scoped);
 
 #endregion
 
 #region RepositoriesConfig
 
-builder.Services.AddSingleton(new FixturesRepository(dbContextBuilder.Options));
+builder.Services.AddScoped<IFixturesRepository, FixturesRepository>();
 
 #endregion
 
