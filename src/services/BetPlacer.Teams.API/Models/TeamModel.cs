@@ -10,7 +10,7 @@ namespace BetPlacer.Teams.API.Models
         public TeamModel(TeamsFootballResponseModel teamResponseModel)
         {
             Code = teamResponseModel.Id;
-            Name = teamResponseModel.Name;
+            Name = teamResponseModel.Name.Replace("'", "");
             Country = teamResponseModel.Country;
         }
 

@@ -59,6 +59,7 @@ services:
       - BETPLACER_LeaguesApiAddress=http://betplacer_leagues_api:8080/api/leagues/
       - BETPLACER_TeamsApiAddress=http://betplacer_teams_api:8080/api/teams/
       - BETPLACER_FixturesApiAddress=http://betplacer_fixtures_api:8080/api/fixtures/
+      - BETPLACER_TelegramApiAddress=http://betplacer_telegram_api:8080/api/telegram/
     networks:
       - betplacer-network
     ports:
@@ -73,6 +74,16 @@ services:
       - betplacer-network
     ports:
       - "3006:8080"
+      
+  betplacer_telegram_api:
+    build:
+      context: .
+      dockerfile: src/services/BetPlacer.Telegram.API/Dockerfile
+    image: betplacer.telegram.api:latest
+    networks:
+      - betplacer-network
+    ports:
+      - "3007:8080"
 
   betplacer_db:
     container_name: betplacer_db

@@ -39,7 +39,6 @@ namespace BetPlacer.Leagues.Controllers
         [HttpGet]
         public ActionResult GetLeagues(bool? withSeasons)
         {
-            Console.WriteLine("oieeeeeeeeee");
             try
             {
                 bool getLeaguesWithSeason = withSeasons != null ? withSeasons.Value : false;

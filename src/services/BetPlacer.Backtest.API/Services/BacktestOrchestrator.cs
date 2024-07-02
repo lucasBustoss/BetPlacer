@@ -37,7 +37,6 @@ namespace BetPlacer.Backtest.API.Services
 
                 while (consumers.Count(consumer => consumer.IsFinished) < 1)
                 {
-                    Console.WriteLine("Calculando backtest...");
                     await Task.Delay(2000);
                 }
 

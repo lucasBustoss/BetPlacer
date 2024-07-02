@@ -352,7 +352,7 @@ namespace BetPlacer.Fixtures.API.Utils
                 return "El Daklyeh FC";
 
             if (name == "Smouha Sc")
-                return "Smouha";
+                return "Smouha SC";
 
             if (name == "Talaea El Gaish")
                 return "El Geish";
@@ -468,6 +468,12 @@ namespace BetPlacer.Fixtures.API.Utils
             if (name == "Charlotte FC")
                 return "Charlotte";
 
+            if (name == "St. Louis City SC")
+                return "St. Louis City";
+
+            if (name == "San Jose Earthquakes")
+                return "SJ Earthquakes";
+
             //if (name == "")
             //    return "Sporting KC";
 
@@ -483,8 +489,11 @@ namespace BetPlacer.Fixtures.API.Utils
             //if (name == "")
             //    return "Vancouver Whitecaps";
 
-            //if (name == "")
-            //    return "St.Louis City";
+            if (name == "Goias")
+                return "Goiás";
+
+            if (name == "America Mineiro")
+                return "América Mineiro";
 
             return name;
         }

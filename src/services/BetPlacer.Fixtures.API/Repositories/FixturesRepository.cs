@@ -102,7 +102,7 @@ namespace BetPlacer.Fixtures.API.Repositories
 
         public List<int> GetFixtureCodesByDate(DateTime startDate, DateTime finalDate)
         {
-            var fixtures = _context.Fixtures.Where(f => f.StartDate >= startDate && f.StartDate <= finalDate).ToList();
+            var fixtures = _context.Fixtures.Where(f => f.StartDate >= startDate.AddHours(3) && f.StartDate <= finalDate.AddHours(3)).ToList();
 
             return fixtures.Select(f => f.Code).ToList();
         }
@@ -230,7 +230,7 @@ namespace BetPlacer.Fixtures.API.Repositories
             #endregion
         }
 
-        public async Task CreateOrUpdateNextFixtures(IEnumerable<FixturesFootballResponseModel> fixturesResponse, List<PinnacleOddsModel> odds)
+        public async Task<List<string>> CreateOrUpdateNextFixtures(IEnumerable<FixturesFootballResponseModel> fixturesResponse, List<PinnacleOddsModel> odds)
         {
             #region Fixtures
 
@@ -268,6 +268,8 @@ namespace BetPlacer.Fixtures.API.Repositories
 
             #region FixtureOdds
 
+            List<string> teamsNotFound = new List<string>();
+
             if (odds != null)
             {
                 foreach (PinnacleOddsModel odd in odds)
@@ -281,11 +283,18 @@ namespace BetPlacer.Fixtures.API.Repositories
                             FixtureUtils.TimestampToDatetime(fr.DateTimestamp).AddHours(3).ToString("yyyy-MM-dd'T'HH:mm:ss") == odd.Date)
                         .FirstOrDefault();
 
-
                     if (fixtureToOdd != null)
-                        await CreateOdds(new FixtureOdds(fixtureToOdd.Code, odd.HomeOdd, odd.DrawOdd, odd.AwayOdd, odd.Over25Odd, odd.Under25Odd, odd.BttsYesOdd.Value, odd.BttsNoOdd.Value));
+                    {
+                        await UpdateOdds(new FixtureOdds(fixtureToOdd.Code, odd.HomeOdd, odd.DrawOdd, odd.AwayOdd, odd.Over25Odd, odd.Under25Odd, odd.BttsYesOdd.Value, odd.BttsNoOdd.Value));
+                    }
+                    // Só vou enviar a mensagem pro Telegram caso o nome do time da Pinnacle seja igual antes e depois de converter.
+                    // Isso pode ser um indicativo de que não tenho o parse correto
+                    else if (homeFootyStatsName == odd.HomeTeam || awayFootyStatsName == odd.AwayTeam)
+                        teamsNotFound.Add($"{homeFootyStatsName} x {awayFootyStatsName}");
                 }
             }
+
+            return teamsNotFound;
 
             #endregion
         }
@@ -310,6 +319,10 @@ namespace BetPlacer.Fixtures.API.Repositories
                 var newOdds = odds;
                 newOdds.Code = existingOdd.Code;
                 _context.Entry(existingOdd).CurrentValues.SetValues(newOdds);
+                await _context.SaveChangesAsync();
+            } else
+            {
+                _context.FixtureOdds.Add(odds);
                 await _context.SaveChangesAsync();
             }
         }

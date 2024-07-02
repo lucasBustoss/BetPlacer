@@ -73,7 +73,6 @@ namespace BetPlacer.Sync.API.Controllers
 
                     }
                 }
-                Console.WriteLine(5);
 
                 return OkResponse("data synchronized.");
             }
@@ -121,9 +120,7 @@ namespace BetPlacer.Sync.API.Controllers
         {
             try
             {
-                Console.WriteLine(1);
                 var leagues = await GetLeagueWithCurrentSeason();
-                Console.WriteLine(2);
 
                 if (leagues != null && leagues.Count > 0)
                 {
@@ -199,7 +196,6 @@ namespace BetPlacer.Sync.API.Controllers
 
         private async Task<List<LeagueSyncResponseModel>> GetLeagueWithCurrentSeason()
         {
-            Console.WriteLine($"LEAGUE_API_URL: {_leaguesApiUrl}");
             var requestLeagues = await _httpClient.GetAsync($"{_leaguesApiUrl}/season/current");
 
             if (requestLeagues.IsSuccessStatusCode)

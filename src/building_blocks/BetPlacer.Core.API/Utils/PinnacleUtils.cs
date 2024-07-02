@@ -24,6 +24,14 @@
                     pinnacleLeagueCode = 2663;
                     break;
 
+                case 1683:
+                    pinnacleLeagueCode = 9885;
+                    break;
+
+                case 1682:
+                    pinnacleLeagueCode = 2157;
+                    break;
+
                 default:
                     break;
             }

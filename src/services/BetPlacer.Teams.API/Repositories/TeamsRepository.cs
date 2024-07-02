@@ -35,7 +35,7 @@ namespace BetPlacer.Teams.API.Repositories
 
             foreach (var teamResponse in teamsResponse)
             {
-                if (!existingTeams.ContainsKey(teamResponse.Name))
+                if (!existingTeams.ContainsKey(teamResponse.Name.Replace("'", "")))
                 {
                     var teamModel = new TeamModel(teamResponse);
                     _context.Teams.Add(teamModel);

@@ -206,11 +206,6 @@ namespace BetPlacer.Punter.API.Utils
             {
                 double result = variableInterval.Result;
 
-                if (variableInterval.Interval == "0,56 - 0,58")
-                {
-                    Console.WriteLine("oie");
-                }
-
                 if (result <= 0)
                 {
                     if (currentTolerate == maxTolerate)

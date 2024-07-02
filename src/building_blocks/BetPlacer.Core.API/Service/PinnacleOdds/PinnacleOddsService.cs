@@ -2,6 +2,7 @@
 using BetPlacer.Core.API.Models.Request.PinnacleOdds.SpecialMarket;
 using BetPlacer.Core.API.Models.Request.PinnacleOdds;
 using System.Text.Json;
+using System.Globalization;
 
 namespace BetPlacer.Core.API.Service.PinnacleOdds
 {
@@ -17,7 +18,7 @@ namespace BetPlacer.Core.API.Service.PinnacleOdds
             handler.AutomaticDecompression = System.Net.DecompressionMethods.GZip | System.Net.DecompressionMethods.Deflate;
 
             _apiUrl = configuration.GetValue<string>("PinnacleOddsApi:AppUrl");
-            _apiKey = configuration.GetValue<string>("PinnacleOddsApi:AppKey");
+            _apiKey = configuration.GetValue<string>("PinnacleOddsApi:AppKey4");
 
             _httpClient = new HttpClient(handler) { BaseAddress = new Uri(_apiUrl) };
             _httpClient.DefaultRequestHeaders.Accept.Clear();
@@ -68,7 +69,8 @@ namespace BetPlacer.Core.API.Service.PinnacleOdds
                         bttsYesMarket != null ? bttsYesMarket.Price : 0,
                         bttsNoMarket != null ? bttsNoMarket.Price : 0);
 
-                    pinnacleOdds.Add(pinnacleOdd);
+                    if (DateTime.ParseExact(match.Date, "yyyy-MM-dd'T'HH:mm:ss", CultureInfo.InvariantCulture) <= DateTime.UtcNow.AddDays(2))
+                        pinnacleOdds.Add(pinnacleOdd);
                 }
             }
 

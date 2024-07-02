@@ -7,13 +7,11 @@ using BetPlacer.Fixtures.API.Models.Enums;
 using BetPlacer.Fixtures.API.Models.RequestModel;
 using BetPlacer.Fixtures.API.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using System.Net.Http;
 using System.Text.Json;
-using BetPlacer.Fixtures.API.Models.ValueObjects;
-using BetPlacer.Fixtures.API.Models.Entities.Trade;
 using BetPlacer.Backtest.API.Models;
 using BetPlacer.Core.API.Models.Request.PinnacleOdds;
+using BetPlacer.Fixtures.API.Models.RequestModel.Telegram;
+using System.Text;
 
 namespace BetPlacer.Fixtures.API.Controllers
 {
@@ -36,6 +34,9 @@ namespace BetPlacer.Fixtures.API.Controllers
 
         HttpClient _punterClient = new HttpClient();
         private readonly string _punterApiUrl;
+
+        HttpClient _telegramClient = new HttpClient();
+        private readonly string _telegramApiUrl;
 
         public FixturesController(FixturesRepository fixturesRepository, IConfiguration configuration)
         {
@@ -88,11 +89,20 @@ namespace BetPlacer.Fixtures.API.Controllers
 
             #endregion
 
-            Console.WriteLine(_leaguesApiUrl);
+            #region TelegramApi
+
+            var telegramApiAddress = Environment.GetEnvironmentVariable("BETPLACER_TelegramApiAddress") ?? configuration["BetPlacer:TelegramApiAddress"];
+            if (string.IsNullOrEmpty(telegramApiAddress))
+                throw new Exception("A variável de ambiente BETPLACER_TelegramApiAddress não está definida.");
+
+            _telegramApiUrl = telegramApiAddress;
+
+            #endregion
 
             _leaguesClient = new HttpClient() { BaseAddress = new Uri(_leaguesApiUrl) };
             _teamsClient = new HttpClient() { BaseAddress = new Uri(_teamsApiUrl) };
             _punterClient = new HttpClient() { BaseAddress = new Uri(_punterApiUrl) };
+            _telegramClient = new HttpClient() { BaseAddress = new Uri(_telegramApiUrl) };
         }
 
         [HttpGet("")]
@@ -255,7 +265,13 @@ namespace BetPlacer.Fixtures.API.Controllers
                         var league = leagues.Where(l => l.Season.Any(s => s.Code == syncRequestModel.LeagueSeasonCode)).FirstOrDefault();
                         List<PinnacleOddsModel> pinnacleOdds = await GetPinnacleOdds(league.Code);
 
-                        await _fixturesRepository.CreateOrUpdateNextFixtures(response.Data, pinnacleOdds);
+                        var matchesNotFound = await _fixturesRepository.CreateOrUpdateNextFixtures(response.Data, pinnacleOdds);
+
+                        if (matchesNotFound != null && matchesNotFound.Count > 0)
+#pragma warning disable 4014
+                            SendTelegramMessage(1, matchesNotFound);
+#pragma warning restore 4014
+
                     }
 
                     return OkResponse("Next fixtures synchronized");
@@ -412,6 +428,23 @@ namespace BetPlacer.Fixtures.API.Controllers
                 Console.WriteLine(errorMessage);
                 Console.WriteLine(request.StatusCode);
                 return null;
+            }
+        }
+
+        private async Task SendTelegramMessage(int type, List<string> objectName)
+        {
+            try
+            {
+                TelegramRequestModel requestModel = new TelegramRequestModel(type, objectName);
+                string jsonRequest = Newtonsoft.Json.JsonConvert.SerializeObject(requestModel);
+                var httpContent = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+                
+                var request = await _telegramClient.PostAsync("", httpContent);
+            } 
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                throw;
             }
         }
 

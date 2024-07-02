@@ -8,6 +8,6 @@ namespace BetPlacer.Fixtures.API.Repositories
     {
         /*IEnumerable<Fixture> List();*/
         Task CreateOrUpdateCompleteFixtures(IEnumerable<FixturesFootballResponseModel> fixtures);
-        Task CreateOrUpdateNextFixtures(IEnumerable<FixturesFootballResponseModel> fixtures, List<PinnacleOddsModel> odds);
+        Task<List<string>> CreateOrUpdateNextFixtures(IEnumerable<FixturesFootballResponseModel> fixtures, List<PinnacleOddsModel> odds);
     }
 }
