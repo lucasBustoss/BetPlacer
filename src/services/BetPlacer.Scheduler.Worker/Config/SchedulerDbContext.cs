@@ -1,20 +1,16 @@
 ﻿using BetPlacer.Core.Helpers.Database;
-using BetPlacer.Core.Models.Response.MicroserviceAPI.Fixtures.Entities;
-using BetPlacer.Fixtures.API.Models.Entities;
+using BetPlacer.Scheduler.Worker.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace BetPlacer.Fixtures.Config
+namespace BetPlacer.Scheduler.Worker.Config
 {
-    public class FixturesDbContext : DbContext
+    public class SchedulerDbContext : DbContext
     {
-        public FixturesDbContext() { }
+        public SchedulerDbContext() { }
 
-        public FixturesDbContext(DbContextOptions<FixturesDbContext> options) : base(options) { }
+        public SchedulerDbContext(DbContextOptions<SchedulerDbContext> options) : base(options) { }
 
-        public DbSet<FixtureModel> Fixtures { get; set; }
-        public DbSet<FixtureGoalsModel> FixtureGoals { get; set; }
-        public DbSet<FixtureStatsTradeModel> FixtureStatsTrade { get; set; }
-        public DbSet<FixtureOdds> FixtureOdds { get; set; }
+        public DbSet<SchedulerModel> SchedulerExecution { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -16,11 +16,11 @@ namespace BetPlacer.Telegram.API.Controllers
         }
 
         [HttpPost]
-        public ActionResult SendMessage([FromBody] SendMessageRequestModel sendMessageRequestModel)
+        public ActionResult SendMessageTeamNotFound([FromBody] SendMessageRequestModel sendMessageRequestModel)
         {
             try
             {
-                _telegramService.SendMessage((int)sendMessageRequestModel.Type, sendMessageRequestModel.Objects);
+                _telegramService.SendMessage((int)sendMessageRequestModel.Type, sendMessageRequestModel.Objects, sendMessageRequestModel.Markets);
                 return OkResponse("OK!");
             }
             catch (Exception ex)

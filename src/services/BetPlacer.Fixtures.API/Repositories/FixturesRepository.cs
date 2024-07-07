@@ -7,14 +7,14 @@ using BetPlacer.Fixtures.API.Models.ValueObjects;
 using BetPlacer.Core.Models.Response.Microservice.Teams;
 using BetPlacer.Core.Models.Response.Microservice.Leagues;
 using BetPlacer.Fixtures.API.Services;
-using BetPlacer.Fixtures.API.Models.Entities.Trade;
 using System.Diagnostics;
 using System.Collections.Concurrent;
 using BetPlacer.Fixtures.API.Messages.ModelToMessage;
-using BetPlacer.Fixtures.API.Models.ValueObjects.FixtureByDate;
 using BetPlacer.Backtest.API.Models;
 using BetPlacer.Core.API.Models.Request.PinnacleOdds;
 using BetPlacer.Fixtures.API.Utils;
+using BetPlacer.Core.Models.Response.MicroserviceAPI.Fixtures.Entities;
+using BetPlacer.Core.Models.Response.MicroserviceAPI.Fixtures.LeagueFixtureByDate;
 
 namespace BetPlacer.Fixtures.API.Repositories
 {

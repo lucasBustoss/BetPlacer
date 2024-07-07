@@ -18,7 +18,7 @@ namespace BetPlacer.Core.API.Service.PinnacleOdds
             handler.AutomaticDecompression = System.Net.DecompressionMethods.GZip | System.Net.DecompressionMethods.Deflate;
 
             _apiUrl = configuration.GetValue<string>("PinnacleOddsApi:AppUrl");
-            _apiKey = configuration.GetValue<string>("PinnacleOddsApi:AppKey4");
+            _apiKey = configuration.GetValue<string>("PinnacleOddsApi:AppKey");
 
             _httpClient = new HttpClient(handler) { BaseAddress = new Uri(_apiUrl) };
             _httpClient.DefaultRequestHeaders.Accept.Clear();

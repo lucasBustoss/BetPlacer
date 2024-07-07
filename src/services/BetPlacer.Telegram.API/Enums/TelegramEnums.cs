@@ -5,6 +5,7 @@
         public enum SendMessageType
         {
             PinnacleTeamNotFound = 1,
+            OddsNotInformed = 2,
         }
     }
 }

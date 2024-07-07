@@ -1,4 +1,5 @@
 using BetPlacer.Core.Controllers;
+using BetPlacer.Core.Models.Response.MicroserviceAPI.Punter;
 using BetPlacer.Punter.API.Models;
 using BetPlacer.Punter.API.Models.Entities;
 using BetPlacer.Punter.API.Models.Request;
@@ -35,6 +36,8 @@ namespace BetPlacer.Punter.API.Controllers
         [HttpPost("analyze")]
         public async Task<ActionResult> AnalyzeNextMatches([FromBody] AnalyzeMatchRequest analyzeMatchRequest)
         {
+            Console.WriteLine("Analisando partidas...");
+            List<string> listaJogos = new List<string>();
             if (analyzeMatchRequest != null && analyzeMatchRequest.LeagueCodes.Count > 0)
             {
                 foreach (int leagueCode in analyzeMatchRequest.LeagueCodes)
@@ -46,8 +49,9 @@ namespace BetPlacer.Punter.API.Controllers
 
                     List<MatchBaseData> lastMatches = await _punterRepository.GetLastMatches(leagueCode);
                     List<NextMatch> nextMatches = await _punterRepository.GetNextMatches(analyzeMatchRequest.Date, leagueCode);
+                    nextMatches = nextMatches.Where(nm => nm.HomeOdd != 0 && nm.DrawOdd != 0 && nm.AwayOdd != 0 && nm.Over25Odd != 0 && nm.Under25Odd != 0 && nm.BttsYesOdd != 0 && nm.BttsNoOdd != 0).ToList();
 
-                    List<FixtureStrategyModel> fixtureStrategies = _backtestService.FilterMatches(backtest, lastMatches, nextMatches);
+                    List<FixtureStrategyModel> fixtureStrategies = _backtestService.FilterMatches(backtest, lastMatches, nextMatches, listaJogos);
 
                     foreach (var nextMatch in nextMatches)
                     {
@@ -56,6 +60,8 @@ namespace BetPlacer.Punter.API.Controllers
                         if (existentAnalysis == null)
                             fixtureStrategies.Add(new FixtureStrategyModel(nextMatch.MatchCode, null));
                     }
+
+                    Console.WriteLine($"Total estratégias: {fixtureStrategies.Count}");
 
                     if (fixtureStrategies.Count > 0)
                         _punterRepository.SaveMatchAnalysis(fixtureStrategies);

@@ -10,8 +10,10 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using BetPlacer.Backtest.API.Models;
 using BetPlacer.Core.API.Models.Request.PinnacleOdds;
-using BetPlacer.Fixtures.API.Models.RequestModel.Telegram;
 using System.Text;
+using BetPlacer.Core.Models.Response.MicroserviceAPI.Fixtures.Request;
+using BetPlacer.Core.Models.Response.MicroserviceAPI.Fixtures.Entities;
+using BetPlacer.Core.Models.Response.MicroserviceAPI.Telegram;
 
 namespace BetPlacer.Fixtures.API.Controllers
 {
@@ -171,7 +173,7 @@ namespace BetPlacer.Fixtures.API.Controllers
         {
             try
             {
-                _fixturesRepository.CreateOdds(new Models.Entities.FixtureOdds(oddsRequest));
+                _fixturesRepository.CreateOdds(new FixtureOdds(oddsRequest));
 
                 return OkResponse("odds created");
             }
@@ -186,7 +188,7 @@ namespace BetPlacer.Fixtures.API.Controllers
         {
             try
             {
-                _fixturesRepository.UpdateOdds(new Models.Entities.FixtureOdds(oddsRequest));
+                _fixturesRepository.UpdateOdds(new FixtureOdds(oddsRequest));
 
                 return OkResponse("odds updated");
             }
@@ -435,7 +437,7 @@ namespace BetPlacer.Fixtures.API.Controllers
         {
             try
             {
-                TelegramRequestModel requestModel = new TelegramRequestModel(type, objectName);
+                TelegramRequestModel requestModel = new TelegramRequestModel(type, objectName, null);
                 string jsonRequest = Newtonsoft.Json.JsonConvert.SerializeObject(requestModel);
                 var httpContent = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
                 

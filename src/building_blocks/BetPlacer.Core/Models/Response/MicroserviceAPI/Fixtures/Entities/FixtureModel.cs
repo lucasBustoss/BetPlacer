@@ -1,7 +1,12 @@
 ﻿using BetPlacer.Core.Models.Response.FootballAPI.Fixtures;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace BetPlacer.Fixtures.API.Models.Entities
+namespace BetPlacer.Core.Models.Response.MicroserviceAPI.Fixtures.Entities
 {
     public class FixtureModel
     {

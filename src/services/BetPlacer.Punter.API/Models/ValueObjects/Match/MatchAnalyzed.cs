@@ -77,7 +77,7 @@
                         odd = 1.03;
                     }
 
-                    if (HomeOdd >= 1.66 && HomeOdd <= 1.83)
+                    if (HomeOdd >= 1.65 && HomeOdd <= 1.83)
                     {
                         odd = 1.05;
                     }

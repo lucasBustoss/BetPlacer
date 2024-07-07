@@ -12,7 +12,7 @@ namespace BetPlacer.Punter.API.Services
     public class BacktestService
     {
         // Método para filtrar os jogos incompletos e verificar se ele está dentro dos intervalos escolhidos
-        public List<FixtureStrategyModel> FilterMatches(List<StrategyInfo> backtests, List<MatchBaseData> matchBaseData, List<NextMatch> nextMatches)
+        public List<FixtureStrategyModel> FilterMatches(List<StrategyInfo> backtests, List<MatchBaseData> matchBaseData, List<NextMatch> nextMatches, List<string> listaJogos)
         {
             #region Mount data
 
@@ -81,7 +81,13 @@ namespace BetPlacer.Punter.API.Services
                     foreach (var key in groupedClassifications.Keys)
                     {
                         if (!classificationAnalysis)
+                        {
+                            listaJogos.Add($"O jogo {fixtureToFilter.MatchCode} não entrou no método {backtest.Name} porque a classificação não bateu. " +
+                                $"Classificação do método: {backtest.Classifications.Aggregate((a, b) => a + " - " + b)}. " +
+                                $"Classificação da partida: {fixtureToFilter.MatchOddsClassification} - {fixtureToFilter.MatchOddsHTClassification} - {fixtureToFilter.GoalsClassification} - {fixtureToFilter.BttsClassification}");
+                            
                             break;
+                        }
                         
                         List<string> listClassifications = groupedClassifications[key].ToList();
 
@@ -109,7 +115,18 @@ namespace BetPlacer.Punter.API.Services
                     }
 
                     if (!classificationAnalysis)
+                    {
+                        if (!classificationAnalysis)
+                        {
+                            listaJogos.Add($"O jogo {fixtureToFilter.MatchCode} não entrou no método {backtest.Name} porque a classificação não bateu. " +
+                                $"Classificação do método: {backtest.Classifications.Aggregate((a, b) => a + " - " + b)}. " +
+                                $"Classificação da partida: {fixtureToFilter.MatchOddsClassification} - {fixtureToFilter.MatchOddsHTClassification} - {fixtureToFilter.GoalsClassification} - {fixtureToFilter.BttsClassification}");
+
+                            break;
+                        }
+
                         continue;
+                    }
 
                     ResultInterval activeInterval = backtest.ResultAfterIntervals.Count > 0 ? backtest.ResultAfterIntervals.Where(rai => rai.Active).FirstOrDefault() : null;
                     bool variablesAnalysis = true;
@@ -129,6 +146,9 @@ namespace BetPlacer.Punter.API.Services
                                 if (variableValue < variableInterval.InitialInterval || variableValue > variableInterval.FinalInterval )
                                 {
                                     variablesAnalysis = false;
+                                    listaJogos.Add($"O jogo {fixtureToFilter.MatchCode} não entrou no método {backtest.Name} porque a variável não bateu. " +
+                                        $"Variável do método: {variableName} - Initial: {variableInterval.InitialInterval} - Final: {variableInterval.FinalInterval} " +
+                                        $"Variável da partida: {variableValue}");
                                     break;
                                 }
                             }
@@ -205,11 +225,11 @@ namespace BetPlacer.Punter.API.Services
 
             foreach (Strategy strategy in strategies)
             {
-                var filteredClassifications = strategy.StrategyClassifications.Where(sc => sc.ProfitLoss > -5 && sc.HistoricalCoefficientVariation <= 0.3).ToList();
+                var filteredClassifications = strategy.StrategyClassifications.Where(sc => sc.ProfitLoss > -15 && sc.HistoricalCoefficientVariation <= 0.3).ToList();
                 strategy.StrategyClassifications = filteredClassifications;
             }
 
-            strategies = strategies.Where(s => s.StrategyClassifications.Count > 0 && s.StrategyClassifications.Select(sc => sc.TotalMatches).Sum() > totalMatches * 0.25).ToList();
+            strategies = strategies.Where(s => s.StrategyClassifications.Count > 0).ToList();
             List<StrategyInfo> strategyInfos = new List<StrategyInfo>();
 
             if (strategies.Count > 0)
@@ -1075,7 +1095,7 @@ namespace BetPlacer.Punter.API.Services
 
             List<string> groupPriority = StrategyUtils.GetPriorityRankingGroupByStrategy(strategy.Name);
 
-            double lastResult = 0;
+            double lastResult = -15;
 
             foreach (string priority in groupPriority)
             {
@@ -1107,7 +1127,7 @@ namespace BetPlacer.Punter.API.Services
 
             StrategyInfo strategyInfo = null;
 
-            if (matchesWithValue.Count > matches.Count * 0.25)
+            if (matchesWithValue.Count >= matches.Count * 0.20)
                 strategyInfo = new StrategyInfo(strategy.Name, classificationsApplied, matchesWithValue, lastResult);
 
             return strategyInfo;

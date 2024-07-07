@@ -3,11 +3,12 @@ using BetPlacer.Core.API.Models.Request.PinnacleOdds;
 using BetPlacer.Core.Models.Response.FootballAPI.Fixtures;
 using BetPlacer.Core.Models.Response.Microservice.Leagues;
 using BetPlacer.Core.Models.Response.Microservice.Teams;
+using BetPlacer.Core.Models.Response.MicroserviceAPI.Fixtures.Entities;
+using BetPlacer.Core.Models.Response.MicroserviceAPI.Fixtures.LeagueFixtureByDate;
 using BetPlacer.Fixtures.API.Models;
 using BetPlacer.Fixtures.API.Models.Entities;
 using BetPlacer.Fixtures.API.Models.Enums;
 using BetPlacer.Fixtures.API.Models.ValueObjects;
-using BetPlacer.Fixtures.API.Models.ValueObjects.FixtureByDate;
 
 namespace BetPlacer.Fixtures.API.Repositories
 {

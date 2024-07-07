@@ -1,8 +1,7 @@
-﻿using System.ComponentModel;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BetPlacer.Fixtures.API.Models.Entities.Trade
+namespace BetPlacer.Core.Models.Response.MicroserviceAPI.Fixtures.Entities
 {
     public class FixtureStatsTradeModel
     {
@@ -14,7 +13,7 @@ namespace BetPlacer.Fixtures.API.Models.Entities.Trade
 
         public int HomeMatchesCountOverall { get; set; }
         public int HomeMatchesCountAtHome { get; set; }
-        
+
         public int AwayMatchesCountOverall { get; set; }
         public int AwayMatchesCountAtAway { get; set; }
 
@@ -48,7 +47,7 @@ namespace BetPlacer.Fixtures.API.Models.Entities.Trade
 
         [Column("home_draws_percent_ht_total")]
         public double HomeDrawsPercentHTTotal { get; set; }
-        
+
         [Column("home_losses_percent_ht_total")]
         public double HomeLossesPercentHTTotal { get; set; }
 
@@ -66,16 +65,16 @@ namespace BetPlacer.Fixtures.API.Models.Entities.Trade
 
         [Column("home_clean_sheets_percent_ht_total")]
         public double HomeCleanSheetsPercentHTTotal { get; set; }
-        
+
         [Column("home_goals_scored_ht_total")]
         public int HomeGoalsScoredHTTotal { get; set; }
-        
+
         [Column("home_goals_conceded_ht_total")]
         public int HomeGoalsConcededHTTotal { get; set; }
-        
+
         [Column("home_avg_goals_scored_ht_total")]
         public double HomeAverageGoalsScoredHTTotal { get; set; }
-        
+
         [Column("home_average_goals_conceded_ht_total")]
         public double HomeAverageGoalsConcededHTTotal { get; set; }
 
@@ -232,10 +231,10 @@ namespace BetPlacer.Fixtures.API.Models.Entities.Trade
 
         [Column("home_wins_percent_ht_at_home")]
         public double HomeWinsPercentHTAtHome { get; set; }
-        
+
         [Column("home_draws_percent_ht_at_home")]
         public double HomeDrawsPercentHTAtHome { get; set; }
-        
+
         [Column("home_losses_percent_ht_at_home")]
         public double HomeLossesPercentHTAtHome { get; set; }
 
@@ -253,16 +252,16 @@ namespace BetPlacer.Fixtures.API.Models.Entities.Trade
 
         [Column("home_clean_sheets_percent_ht_at_home")]
         public double HomeCleanSheetsPercentHTAtHome { get; set; }
-        
+
         [Column("home_goals_scored_ht_at_home")]
         public int HomeGoalsScoredHTAtHome { get; set; }
-        
+
         [Column("home_goals_conceded_ht_at_home")]
         public int HomeGoalsConcededHTAtHome { get; set; }
-        
+
         [Column("home_avg_goals_scored_ht_at_home")]
         public double HomeAverageGoalsScoredHTAtHome { get; set; }
-        
+
         [Column("home_avg_goals_conceded_ht_at_home")]
         public double HomeAverageGoalsConcededHTAtHome { get; set; }
 

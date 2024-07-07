@@ -1,7 +1,7 @@
 ﻿using BetPlacer.Core.Models.Response.Microservice.Leagues;
 using BetPlacer.Core.Models.Response.Microservice.Teams;
+using BetPlacer.Core.Models.Response.MicroserviceAPI.Fixtures.Entities;
 using BetPlacer.Fixtures.API.Models.Entities;
-using BetPlacer.Fixtures.API.Models.Entities.Trade;
 
 namespace BetPlacer.Fixtures.API.Models.ValueObjects
 {

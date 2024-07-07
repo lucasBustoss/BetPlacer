@@ -1,5 +1,5 @@
-﻿using BetPlacer.Fixtures.API.Models.Entities;
-using BetPlacer.Fixtures.API.Models.Entities.Trade;
+﻿using BetPlacer.Core.Models.Response.MicroserviceAPI.Fixtures.Entities;
+using BetPlacer.Fixtures.API.Models.Entities;
 using BetPlacer.Fixtures.API.Models.Enums;
 using BetPlacer.Fixtures.API.Models.ValueObjects;
 using BetPlacer.Fixtures.API.Services.Models;

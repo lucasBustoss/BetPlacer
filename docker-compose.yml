@@ -10,6 +10,11 @@ services:
       - betplacer-network
     ports:
       - "3000:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
       
   betplacer_leagues_api:
     build:
@@ -22,6 +27,12 @@ services:
       - betplacer-network
     ports:
       - "3001:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    
       
   betplacer_teams_api:
     build:
@@ -34,6 +45,12 @@ services:
       - betplacer-network
     ports:
       - "3002:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    
       
   betplacer_sync_api:
     build:
@@ -48,6 +65,12 @@ services:
       - betplacer-network
     ports:
       - "3003:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    
       
   betplacer_fixtures_api:
     build:
@@ -64,6 +87,12 @@ services:
       - betplacer-network
     ports:
       - "3004:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    
       
   betplacer_punter_api:
     build:
@@ -74,6 +103,12 @@ services:
       - betplacer-network
     ports:
       - "3006:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    
       
   betplacer_telegram_api:
     build:
@@ -84,6 +119,32 @@ services:
       - betplacer-network
     ports:
       - "3007:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    
+      
+  betplacer_scheduler_worker:
+    build:
+      context: .
+      dockerfile: src/services/BetPlacer.Scheduler.Worker/Dockerfile
+    image: betplacer.scheduler.worker:latest
+    environment:
+      - BETPLACER_LeaguesApiAddress=http://betplacer_leagues_api:8080/api/leagues
+      - BETPLACER_SyncApiAddress=http://betplacer_sync_api:8080/api/sync
+      - BETPLACER_FixturesApiAddress=http://betplacer_fixtures_api:8080/api/fixtures
+      - BETPLACER_PunterApiAddress=http://betplacer_punter_api:8080/api/punter
+      - BETPLACER_TelegramApiAddress=http://betplacer_telegram_api:8080/api/telegram
+    networks:
+      - betplacer-network
+    depends_on:
+      - betplacer_leagues_api
+      - betplacer_sync_api
+      - betplacer_fixtures_api
+      - betplacer_punter_api
+      - betplacer_telegram_api
 
   betplacer_db:
     container_name: betplacer_db
@@ -98,6 +159,11 @@ services:
       - betplacer-network
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 networks:
   betplacer-network:

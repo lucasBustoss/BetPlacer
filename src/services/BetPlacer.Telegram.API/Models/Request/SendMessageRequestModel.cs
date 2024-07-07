@@ -6,5 +6,6 @@ namespace BetPlacer.Telegram.API.Models.Request
     {
         public SendMessageType Type { get; set; }
         public List<string> Objects { get; set; }
+        public Dictionary<string, string> Markets { get; set; }
     }
 }

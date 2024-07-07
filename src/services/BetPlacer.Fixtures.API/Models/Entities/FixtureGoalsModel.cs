@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using BetPlacer.Core.Models.Response.MicroserviceAPI.Fixtures.Entities;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BetPlacer.Fixtures.API.Models.Entities
