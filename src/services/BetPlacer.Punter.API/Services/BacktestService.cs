@@ -225,7 +225,7 @@ namespace BetPlacer.Punter.API.Services
 
             foreach (Strategy strategy in strategies)
             {
-                var filteredClassifications = strategy.StrategyClassifications.Where(sc => sc.ProfitLoss > -15 && sc.HistoricalCoefficientVariation <= 0.3).ToList();
+                var filteredClassifications = strategy.StrategyClassifications.Where(sc => sc.ProfitLoss > -10 && sc.HistoricalCoefficientVariation <= 0.3).ToList();
                 strategy.StrategyClassifications = filteredClassifications;
             }
 
@@ -1095,7 +1095,7 @@ namespace BetPlacer.Punter.API.Services
 
             List<string> groupPriority = StrategyUtils.GetPriorityRankingGroupByStrategy(strategy.Name);
 
-            double lastResult = -15;
+            double lastResult = -10;
 
             foreach (string priority in groupPriority)
             {
