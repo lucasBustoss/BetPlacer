@@ -39,8 +39,8 @@ namespace BetPlacer.Core.API.Service.PinnacleOdds
             {
                 foreach (var match in market.Events)
                 {
-                    PinnacleOddsMoneyLineRequest moOdds = match.Odds.FTOdds.MoneyLine;
-                    PinnacleOddsTotalsRequest goalsOdds = match.Odds.FTOdds.Totals;
+                    PinnacleOddsMoneyLineRequest moOdds = match.Odds?.FTOdds?.MoneyLine;
+                    PinnacleOddsTotalsRequest goalsOdds = match.Odds?.FTOdds?.Totals;
                     PinnacleOddsSpecialMarketRequest specialMarket = await GetSpecialMarkets(match.Code);
                     PinnacleOddsSpecialMarketMarketsRequest bttsMarket = null;
 

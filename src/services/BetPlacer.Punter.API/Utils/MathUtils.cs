@@ -1,5 +1,4 @@
 ﻿using MathNet.Numerics.Distributions;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BetPlacer.Punter.API.Utils
 {
@@ -20,9 +19,11 @@ namespace BetPlacer.Punter.API.Utils
 
         public static double PoissonProbability(double lambda, int k)
         {
-            double numerator = Math.Pow(lambda, k) * Math.Exp(-lambda);
-            double denominator = Factorial(k);
-            return numerator / denominator;
+            if (lambda == 0)
+                return 0;
+            
+            double result = 1 - Poisson.CDF(lambda, k);
+            return result;
         }
 
         public static double Confidence(double alpha, double stdDev, double sampleSize)

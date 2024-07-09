@@ -33,7 +33,6 @@ namespace BetPlacer.Punter.API.Utils
                 //"PUNTER - Handicap -0.5 Fora",
                 "PUNTER - Handicap -0.75 Fora",
                 "PUNTER - Handicap -1.0 Fora",
-                "TRADE - Vencer HT Casa",
             ];
 
             return strategiesName;
@@ -86,13 +85,6 @@ namespace BetPlacer.Punter.API.Utils
                     ranking.Add("Grupo 3");
                     ranking.Add("Grupo 1");
                     ranking.Add("Grupo 2");
-
-                    break;
-                case "TRADE - Vencer HT Casa":
-                    ranking.Add("Grupo 2");
-                    ranking.Add("Grupo 1");
-                    ranking.Add("Grupo 3");
-                    ranking.Add("Grupo 4");
 
                     break;
                 default:
@@ -328,116 +320,9 @@ namespace BetPlacer.Punter.API.Utils
                         result = stake * -1;
 
                     break;
-                case "TRADE - Vencer HT Casa":
-                    if (match.HomeHTGoals > match.AwayHTGoals)
-                    {
-                        double greenMultiplicator = GetTradeGreenMultiplicator(match.HomeOdd);
-                        result = stake * match.HomeOdd * greenMultiplicator - stake;
-
-                    }
-                    else if (match.AwayHTGoals > match.HomeHTGoals)
-                    {
-                        double redMultiplicator = GetTradeRedMultiplicator(match.HomeOdd);
-                        result = stake * -1 * redMultiplicator;
-                    }
-                    else
-                    {
-                        double varianceMultiplicator = GetTradeVarianceMultiplicator(match.HomeOdd);
-                        result = stake * -1 * varianceMultiplicator;
-                    }
-
-                    break;
-                default:
-                    break;
             }
 
             return result;
         }
-
-        #region Private methods
-
-        private static double GetTradeGreenMultiplicator(double odd)
-        {
-            double multiplicator = 1;
-
-            switch (odd)
-            {
-                case double o when o > 1.01 && o <= 1.25:
-                    multiplicator = 0.37;
-                    break;
-                case double o when o > 1.25 && o <= 1.5:
-                    multiplicator = 0.41;
-                    break;
-                case double o when o > 1.5 && o <= 1.75:
-                    multiplicator = 0.44;
-                    break;
-                case double o when o > 1.75 && o <= 1.90:
-                    multiplicator = 0.47;
-                    break;
-                case double o when o > 1.9:
-                    multiplicator = 0.5;
-                    break;
-            }
-
-            return multiplicator;
-        }
-
-        private static double GetTradeRedMultiplicator(double odd)
-        {
-            double multiplicator = 1;
-
-            switch (odd)
-            {
-                case double o when o > 1.01 && o <= 1.25:
-                    multiplicator = 0.37;
-                    break;
-                case double o when o > 1.25 && o <= 1.5:
-                    multiplicator = 0.44;
-                    break;
-                case double o when o > 1.5 && o <= 1.75:
-                    multiplicator = 0.48;
-                    break;
-                case double o when o > 1.75 && o <= 1.90:
-                    multiplicator = 0.55;
-                    break;
-                case double o when o > 1.9:
-                    multiplicator = 0.6;
-                    break;
-            }
-
-            return multiplicator;
-        }
-
-        private static double GetTradeVarianceMultiplicator(double odd)
-        {
-            double multiplicator = 1;
-
-            switch (odd)
-            {
-                case double o when o > 1.01 && o <= 1.25:
-                    multiplicator = 0.05;
-                    break;
-                case double o when o > 1.25 && o <= 1.5:
-                    multiplicator = 0.1;
-                    break;
-                case double o when o > 1.5 && o <= 1.75:
-                    multiplicator = 0.17;
-                    break;
-                case double o when o > 1.75 && o <= 1.90:
-                    multiplicator = 0.22;
-                    break;
-                case double o when o > 1.9 && o <= 2.5:
-                    multiplicator = 0.3;
-                    break;
-                case double o when o > 2.5:
-                    multiplicator = 0.4;
-                    break;
-            }
-
-            return multiplicator;
-        }
-
-        #endregion
-
     }
 }

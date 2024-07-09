@@ -6,11 +6,15 @@
         {
             return $@"
                 
+                
+                
                 WITH base_league_data AS (
                     SELECT 
                         f.code as ""MatchCode"",
+                        f.status as ""Status"",
                         ls.year AS ""Season"",
-                        TO_CHAR(DATE(f.start_date), 'dd/MM/yyyy') AS ""Date"",
+                        f.start_date as ""UtcDate"",
+                        TO_CHAR(DATE(f.start_date- INTERVAL '3 hours'), 'dd/MM/yyyy') AS ""Date"",
                         f.home_team_name AS ""HomeTeam"",
                         f.away_team_name AS ""AwayTeam"",
                         fo.home_odd AS ""HomeOdd"",
@@ -84,8 +88,8 @@
                             -COALESCE((SELECT COUNT(*) FROM fixture_goals WHERE fixture_code = f.code AND team_id = f.away_team_id AND MINUTE::FLOAT < 46), 0) AS ""HomeGoalsDifferenceHT"",
                         COALESCE((SELECT COUNT(*) FROM fixture_goals WHERE fixture_code = f.code AND team_id = f.away_team_id AND MINUTE::FLOAT < 46), 0) 
                             -COALESCE((SELECT COUNT(*) FROM fixture_goals WHERE fixture_code = f.code AND team_id = f.home_team_id AND MINUTE::FLOAT < 46), 0) AS ""AwayGoalsDifferenceHT"",
-                        ROUND((1 / fo.home_odd)::numeric, 2) AS ""HomePercentageOdd"",
-                        ROUND((1 / fo.away_odd)::numeric, 2) AS ""AwayPercentageOdd""
+                        (1 / fo.home_odd) AS ""HomePercentageOdd"",
+                        (1 / fo.away_odd) AS ""AwayPercentageOdd""
                     FROM fixtures f
                     INNER JOIN fixture_odds fo ON fo.fixture_code = f.code
                     INNER JOIN league_seasons ls ON ls.""code"" = f.season_code
@@ -95,7 +99,9 @@
 
                 SELECT
                     ""MatchCode"",
+                    ""Status"",
                     ""Season"",
+                    ""UtcDate"",
                     ""Date"",
                     ""HomeTeam"",
                     ""AwayTeam"",
@@ -124,63 +130,65 @@
                     ""AwayGoalsDifferenceHT"",
                     ""HomePercentageOdd"",
                     ""AwayPercentageOdd"",
-                    ROUND((""HomeGoals"" * ""AwayPercentageOdd"")::NUMERIC, 2) AS ""HomeScoredGoalValue"",
+                    (""HomeGoals"" * ""AwayPercentageOdd"") AS ""HomeScoredGoalValue"",
                     CASE
                         WHEN ""HomeGoals"" > 0
-                        THEN ROUND((""HomePercentageOdd"" / ""HomeGoals"")::NUMERIC, 2)
+                        THEN ""HomePercentageOdd"" / ""HomeGoals""
                         ELSE 1
                     END AS ""HomeScoredGoalCost"",
-                    ROUND((""AwayGoals"" * ""HomePercentageOdd"")::NUMERIC, 2) AS ""AwayScoredGoalValue"",
+                    ""AwayGoals"" * ""HomePercentageOdd"" AS ""AwayScoredGoalValue"",
                     CASE
                         WHEN ""AwayGoals"" > 0
-                        THEN ROUND((""AwayPercentageOdd"" / ""AwayGoals"")::NUMERIC, 2)
+                        THEN ""AwayPercentageOdd"" / ""AwayGoals""
                         ELSE 1
                     END AS ""AwayScoredGoalCost"",
-                    ROUND((""AwayGoals"" * ""AwayPercentageOdd"")::NUMERIC, 2) AS ""HomeConcededGoalValue"",
+                    ""AwayGoals"" * ""AwayPercentageOdd"" AS ""HomeConcededGoalValue"",
                     CASE
                         WHEN ""AwayGoals"" > 0
-                        THEN ROUND((""HomePercentageOdd"" / ""AwayGoals"")::numeric, 2)
+                        THEN ""HomePercentageOdd"" / ""AwayGoals""
                         ELSE 0
                     END AS ""HomeConcededGoalCost"",
-                    ROUND((""HomeGoals"" * ""HomePercentageOdd"")::NUMERIC, 2) AS ""AwayConcededGoalValue"",
+                    ""HomeGoals"" * ""HomePercentageOdd"" AS ""AwayConcededGoalValue"",
                     CASE
                         WHEN ""HomeGoals"" > 0
-                        THEN ROUND((""AwayPercentageOdd"" / ""HomeGoals"")::NUMERIC, 2)
+                        THEN ""AwayPercentageOdd"" / ""HomeGoals""
                         ELSE 0
                     END AS ""AwayConcededGoalCost"",
-                    ROUND((""HomePoints"" * ""AwayPercentageOdd"")::NUMERIC, 2) AS ""HomePointsValue"",
-                    ROUND((""AwayPoints"" * ""HomePercentageOdd"")::NUMERIC, 2) AS ""AwayPointsValue"",
-                    ROUND((""HomeGoalsDifference"" * ""AwayPercentageOdd"")::NUMERIC, 2) AS ""HomeGoalsDifferenceValue"",
-                    ROUND((""AwayGoalsDifference"" * ""HomePercentageOdd"")::NUMERIC, 2) AS ""AwayGoalsDifferenceValue"",
-                    ROUND((""HomeGoalsHT"" * ""AwayPercentageOdd"")::NUMERIC, 2) AS ""HomeScoredGoalValueHT"",
+                    ""HomePoints"" * ""AwayPercentageOdd"" AS ""HomePointsValue"",
+                    ""AwayPoints"" * ""HomePercentageOdd"" AS ""AwayPointsValue"",
+                    ""HomeGoalsDifference"" * ""AwayPercentageOdd"" AS ""HomeGoalsDifferenceValue"",
+                    ""AwayGoalsDifference"" * ""HomePercentageOdd"" AS ""AwayGoalsDifferenceValue"",
+                    ""HomeGoalsHT"" * ""AwayPercentageOdd"" AS ""HomeScoredGoalValueHT"",
                     CASE
                         WHEN ""HomeGoalsHT"" > 0
-                        THEN ROUND((""HomePercentageOdd"" / ""HomeGoalsHT"")::NUMERIC, 2)
+                        THEN ""HomePercentageOdd"" / ""HomeGoalsHT""
                         ELSE 1
                     END AS ""HomeScoredGoalCostHT"",
-                    ROUND((""AwayGoalsHT"" * ""HomePercentageOdd"")::NUMERIC, 2) AS ""AwayScoredGoalValueHT"",
+                    ""AwayGoalsHT"" * ""HomePercentageOdd"" AS ""AwayScoredGoalValueHT"",
                     CASE
                         WHEN ""AwayGoalsHT"" > 0
-                        THEN ROUND((""AwayPercentageOdd"" / ""AwayGoalsHT"")::NUMERIC, 2)
+                        THEN ""AwayPercentageOdd"" / ""AwayGoalsHT""
                         ELSE 1
                     END AS ""AwayScoredGoalCostHT"",
-                    ROUND((""AwayGoalsHT"" * ""AwayPercentageOdd"")::NUMERIC, 2) AS ""HomeConcededGoalValueHT"",
+                    ""AwayGoalsHT"" * ""AwayPercentageOdd"" AS ""HomeConcededGoalValueHT"",
                     CASE
                         WHEN ""AwayGoalsHT"" > 0
-                        THEN ROUND((""HomePercentageOdd"" / ""AwayGoalsHT"")::numeric, 2)
+                        THEN ""HomePercentageOdd"" / ""AwayGoalsHT""
                         ELSE 0
                     END AS ""HomeConcededGoalCostHT"",
-                    ROUND((""HomeGoalsHT"" * ""HomePercentageOdd"")::NUMERIC, 2) AS ""AwayConcededGoalValueHT"",
+                    ""HomeGoalsHT"" * ""HomePercentageOdd"" AS ""AwayConcededGoalValueHT"",
                     CASE
                         WHEN ""HomeGoalsHT"" > 0
-                        THEN ROUND((""AwayPercentageOdd"" / ""HomeGoalsHT"")::NUMERIC, 2)
+                        THEN ""AwayPercentageOdd"" / ""HomeGoalsHT""
                         ELSE 0
                     END AS ""AwayConcededGoalCostHT"",
-                    ROUND((""HomePointsHT"" * ""AwayPercentageOdd"")::NUMERIC, 2) AS ""HomePointsValueHT"",
-                    ROUND((""AwayPointsHT"" * ""HomePercentageOdd"")::NUMERIC, 2) AS ""AwayPointsValueHT"",
-                    ROUND((""HomeGoalsDifferenceHT"" * ""AwayPercentageOdd"")::NUMERIC, 2) AS ""HomeGoalsDifferenceValueHT"",
-                    ROUND((""AwayGoalsDifferenceHT"" * ""HomePercentageOdd"")::NUMERIC, 2) AS ""AwayGoalsDifferenceValueHT""
+                    ""HomePointsHT"" * ""AwayPercentageOdd"" AS ""HomePointsValueHT"",
+                    ""AwayPointsHT"" * ""HomePercentageOdd"" AS ""AwayPointsValueHT"",
+                    ""HomeGoalsDifferenceHT"" * ""AwayPercentageOdd"" AS ""HomeGoalsDifferenceValueHT"",
+                    ""AwayGoalsDifferenceHT"" * ""HomePercentageOdd"" AS ""AwayGoalsDifferenceValueHT""
                 FROM base_league_data;
+            
+            
             
             ";
         }
@@ -192,7 +200,9 @@
                 WITH base_league_data AS (
                     SELECT 
                         f.code as ""MatchCode"",
+                        f.status as ""Status"",
                         ls.year AS ""Season"",
+                        f.date as ""UtcDate"",
                         TO_CHAR(DATE(f.start_date), 'dd/MM/yyyy') AS ""Date"",
                         f.home_team_name AS ""HomeTeam"",
                         f.away_team_name AS ""AwayTeam"",
@@ -278,7 +288,9 @@
 
                 SELECT
                     ""MatchCode"",
+                    ""Status"",
                     ""Season"",
+                    ""UtcDate"",
                     ""Date"",
                     ""HomeTeam"",
                     ""AwayTeam"",
@@ -374,6 +386,7 @@
                 SELECT 
 	                f.code as ""MatchCode"",
 	                ls.year AS ""Season"",
+                    f.date as ""UtcDate"",
 	                TO_CHAR(DATE(f.start_date), 'dd/MM/yyyy') AS ""Date"",
 	                f.home_team_name AS ""HomeTeam"",
 	                f.away_team_name AS ""AwayTeam"",

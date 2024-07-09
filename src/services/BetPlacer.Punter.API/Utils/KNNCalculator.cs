@@ -16,83 +16,57 @@ namespace BetPlacer.Punter.API.Utils
         public void CalculateKNN(MatchBarCode matchToCalculate, MatchBarCode matchReference)
         {
             double difference =
-                Math.Abs((matchToCalculate.HomeOdd - matchReference.HomeOdd) +
-                (matchToCalculate.DrawOdd - matchReference.DrawOdd) +
-                (matchToCalculate.AwayOdd - matchReference.AwayOdd) +
-                (matchToCalculate.Over25Odd - matchReference.Over25Odd) +
-                (matchToCalculate.Under25Odd - matchReference.Under25Odd) +
-                (matchToCalculate.BttsYesOdd - matchReference.BttsYesOdd) +
-                (matchToCalculate.BttsNoOdd - matchReference.BttsNoOdd) +
+                Math.Abs((matchToCalculate.HomeOdd.Value - matchReference.HomeOdd.Value) +
+                (matchToCalculate.DrawOdd.Value - matchReference.DrawOdd.Value) +
+                (matchToCalculate.AwayOdd.Value - matchReference.AwayOdd.Value) +
                 (matchToCalculate.PowerPoint.Value - matchReference.PowerPoint.Value) +
-                (matchToCalculate.PowerPointHT.Value - matchReference.PowerPointHT.Value) +
-                (matchToCalculate.CVMatchOdds - matchReference.CVMatchOdds) +
-                (matchToCalculate.HomeCVPointsHT - matchReference.HomeCVPointsHT) +
-                (matchToCalculate.HomePoints - matchReference.HomePoints) +
-                (matchToCalculate.HomePointsHT - matchReference.HomePointsHT) +
-                (matchToCalculate.HomeDifferenceGoals - matchReference.HomeDifferenceGoals) +
-                (matchToCalculate.HomeDifferenceGoalsHT - matchReference.HomeDifferenceGoalsHT) +
-                (matchToCalculate.HomeCVDifferenceGoals - matchReference.HomeCVDifferenceGoals) +
-                (matchToCalculate.HomeCVDifferenceGoalsHT - matchReference.HomeCVDifferenceGoalsHT) +
-                (matchToCalculate.HomePoisson - matchReference.HomePoisson) +
-                (matchToCalculate.HomePoissonHT - matchReference.HomePoissonHT) +
-                (matchToCalculate.HomeGoalsScored - matchReference.HomeGoalsScored) +
-                (matchToCalculate.HomeGoalsScoredValue - matchReference.HomeGoalsScoredValue) +
-                (matchToCalculate.HomeGoalsScoredCost - matchReference.HomeGoalsScoredCost) +
-                (matchToCalculate.HomeGoalsScoredCV - matchReference.HomeGoalsScoredCV) +
-                (matchToCalculate.HomeGoalsScoredHT - matchReference.HomeGoalsScoredHT) +
-                (matchToCalculate.HomeGoalsScoredValueHT - matchReference.HomeGoalsScoredValueHT) +
-                (matchToCalculate.HomeGoalsScoredCostHT - matchReference.HomeGoalsScoredCostHT) +
-                (matchToCalculate.HomeGoalsScoredCVHT - matchReference.HomeGoalsScoredCVHT) +
-                (matchToCalculate.HomeGoalsConceded - matchReference.HomeGoalsConceded) +
-                (matchToCalculate.HomeGoalsConcededValue - matchReference.HomeGoalsConcededValue) +
-                (matchToCalculate.HomeGoalsConcededCost - matchReference.HomeGoalsConcededCost) +
-                (matchToCalculate.HomeGoalsConcededCV - matchReference.HomeGoalsConcededCV) +
-                (matchToCalculate.HomeGoalsConcededHT - matchReference.HomeGoalsConcededHT) +
-                (matchToCalculate.HomeGoalsConcededValueHT - matchReference.HomeGoalsConcededValueHT) +
-                (matchToCalculate.HomeGoalsConcededCostHT - matchReference.HomeGoalsConcededCostHT) +
-                (matchToCalculate.HomeGoalsConcededCVHT - matchReference.HomeGoalsConcededCVHT) +
-                (matchToCalculate.HomeOddsCV - matchReference.HomeOddsCV) +
-                (matchToCalculate.HomeMatchOddsRPS - matchReference.HomeMatchOddsRPS) +
-                (matchToCalculate.HomeMatchOddsHTRPS - matchReference.HomeMatchOddsHTRPS) +
-                (matchToCalculate.HomeGoalsRPS - matchReference.HomeGoalsRPS) +
-                (matchToCalculate.HomeBTTSRPS - matchReference.HomeBTTSRPS) +
-                (matchToCalculate.AwayCVPointsHT - matchReference.AwayCVPointsHT) +
-                (matchToCalculate.AwayPoints - matchReference.AwayPoints) +
-                (matchToCalculate.AwayPointsHT - matchReference.AwayPointsHT) +
-                (matchToCalculate.AwayDifferenceGoals - matchReference.AwayDifferenceGoals) +
-                (matchToCalculate.AwayDifferenceGoalsHT - matchReference.AwayDifferenceGoalsHT) +
-                (matchToCalculate.AwayCVDifferenceGoals - matchReference.AwayCVDifferenceGoals) +
-                (matchToCalculate.AwayCVDifferenceGoalsHT - matchReference.AwayCVDifferenceGoalsHT) +
-                (matchToCalculate.AwayPoisson - matchReference.AwayPoisson) +
-                (matchToCalculate.AwayPoissonHT - matchReference.AwayPoissonHT) +
-                (matchToCalculate.AwayGoalsScored - matchReference.AwayGoalsScored) +
-                (matchToCalculate.AwayGoalsScoredValue - matchReference.AwayGoalsScoredValue) +
-                (matchToCalculate.AwayGoalsScoredCost - matchReference.AwayGoalsScoredCost) +
-                (matchToCalculate.AwayGoalsScoredCV - matchReference.AwayGoalsScoredCV) +
-                (matchToCalculate.AwayGoalsScoredHT - matchReference.AwayGoalsScoredHT) +
-                (matchToCalculate.AwayGoalsScoredValueHT - matchReference.AwayGoalsScoredValueHT) +
-                (matchToCalculate.AwayGoalsScoredCostHT - matchReference.AwayGoalsScoredCostHT) +
-                (matchToCalculate.AwayGoalsScoredCVHT - matchReference.AwayGoalsScoredCVHT) +
-                (matchToCalculate.AwayGoalsConceded - matchReference.AwayGoalsConceded) +
-                (matchToCalculate.AwayGoalsConcededValue - matchReference.AwayGoalsConcededValue) +
-                (matchToCalculate.AwayGoalsConcededCost - matchReference.AwayGoalsConcededCost) +
-                (matchToCalculate.AwayGoalsConcededCV - matchReference.AwayGoalsConcededCV) +
-                (matchToCalculate.AwayGoalsConcededHT - matchReference.AwayGoalsConcededHT) +
-                (matchToCalculate.AwayGoalsConcededValueHT - matchReference.AwayGoalsConcededValueHT) +
-                (matchToCalculate.AwayGoalsConcededCostHT - matchReference.AwayGoalsConcededCostHT) +
-                (matchToCalculate.AwayGoalsConcededCVHT - matchReference.AwayGoalsConcededCVHT) +
-                (matchToCalculate.AwayOddsCV - matchReference.AwayOddsCV) +
-                (matchToCalculate.AwayMatchOddsRPS - matchReference.AwayMatchOddsRPS) +
-                (matchToCalculate.AwayMatchOddsHTRPS - matchReference.AwayMatchOddsHTRPS) +
-                (matchToCalculate.AwayGoalsRPS - matchReference.AwayGoalsRPS) +
-                (matchToCalculate.AwayBTTSRPS - matchReference.AwayBTTSRPS));
+                (matchToCalculate.Over25Odd.Value - matchReference.Over25Odd.Value) +
+                (matchToCalculate.Under25Odd.Value - matchReference.Under25Odd.Value) +
+                (matchToCalculate.BttsYesOdd.Value - matchReference.BttsYesOdd.Value) +
+                (matchToCalculate.BttsNoOdd.Value - matchReference.BttsNoOdd.Value) +
+                (matchToCalculate.CVMatchOdds.Value - matchReference.CVMatchOdds.Value) +
+                (matchToCalculate.HomePoints.Value - matchReference.HomePoints.Value) +
+                (matchToCalculate.HomeCVPoints.Value - matchReference.HomeCVPoints.Value) +
+                (matchToCalculate.HomeDifferenceGoals.Value - matchReference.HomeDifferenceGoals.Value) +
+                (matchToCalculate.HomeCVDifferenceGoals.Value - matchReference.HomeCVDifferenceGoals.Value) +
+                (matchToCalculate.HomePoisson.Value - matchReference.HomePoisson.Value) +
+                (matchToCalculate.HomeGoalsScored.Value - matchReference.HomeGoalsScored.Value) +
+                (matchToCalculate.HomeGoalsScoredValue.Value - matchReference.HomeGoalsScoredValue.Value) +
+                (matchToCalculate.HomeGoalsScoredCost.Value - matchReference.HomeGoalsScoredCost.Value) +
+                (matchToCalculate.HomeGoalsScoredCV.Value - matchReference.HomeGoalsScoredCV.Value) +
+                (matchToCalculate.HomeGoalsConceded.Value - matchReference.HomeGoalsConceded.Value) +
+                (matchToCalculate.HomeGoalsConcededValue.Value - matchReference.HomeGoalsConcededValue.Value) +
+                (matchToCalculate.HomeGoalsConcededCost.Value - matchReference.HomeGoalsConcededCost.Value) +
+                (matchToCalculate.HomeGoalsConcededCV.Value - matchReference.HomeGoalsConcededCV.Value) +
+                (matchToCalculate.HomeOddsCV.Value - matchReference.HomeOddsCV.Value) +
+                (matchToCalculate.HomeMatchOddsRPS.Value - matchReference.HomeMatchOddsRPS.Value) +
+                (matchToCalculate.HomeGoalsRPS.Value - matchReference.HomeGoalsRPS.Value) +
+                (matchToCalculate.HomeBTTSRPS.Value - matchReference.HomeBTTSRPS.Value) +
+                (matchToCalculate.AwayPoints.Value - matchReference.AwayPoints.Value) +
+                (matchToCalculate.AwayCVPoints.Value - matchReference.AwayCVPoints.Value) +
+                (matchToCalculate.AwayDifferenceGoals.Value - matchReference.AwayDifferenceGoals.Value) +
+                (matchToCalculate.AwayCVDifferenceGoals.Value - matchReference.AwayCVDifferenceGoals.Value) +
+                (matchToCalculate.AwayPoisson.Value - matchReference.AwayPoisson.Value) +
+                (matchToCalculate.AwayGoalsScored.Value - matchReference.AwayGoalsScored.Value) +
+                (matchToCalculate.AwayGoalsScoredValue.Value - matchReference.AwayGoalsScoredValue.Value) +
+                (matchToCalculate.AwayGoalsScoredCost.Value - matchReference.AwayGoalsScoredCost.Value) +
+                (matchToCalculate.AwayGoalsScoredCV.Value - matchReference.AwayGoalsScoredCV.Value) +
+                (matchToCalculate.AwayGoalsConceded.Value - matchReference.AwayGoalsConceded.Value) +
+                (matchToCalculate.AwayGoalsConcededValue.Value - matchReference.AwayGoalsConcededValue.Value) +
+                (matchToCalculate.AwayGoalsConcededCost.Value - matchReference.AwayGoalsConcededCost.Value) +
+                (matchToCalculate.AwayGoalsConcededCV.Value - matchReference.AwayGoalsConcededCV.Value) +
+                (matchToCalculate.AwayOddsCV.Value - matchReference.AwayOddsCV.Value) +
+                (matchToCalculate.AwayMatchOddsRPS.Value - matchReference.AwayMatchOddsRPS.Value) +
+                (matchToCalculate.AwayGoalsRPS.Value - matchReference.AwayGoalsRPS.Value) +
+                (matchToCalculate.AwayBTTSRPS.Value - matchReference.AwayBTTSRPS.Value));
 
             _listKNN.Add(matchReference, difference);
         }
 
-        public void GetTop3()
+        public void GetTop3(int currentMatchCode)
         {
-            _listTop3 = _listKNN.Where(l => l.Value != 0).OrderBy(knn => knn.Value).Take(3).Select(knn => knn.Key).ToList();
+            var teste = _listKNN.Where(l => l.Key.MatchCode != currentMatchCode).OrderBy(knn => knn.Value).Select(f => new {f.Key.MatchCode, f.Value}).ToList();
+            _listTop3 = _listKNN.Where(l => l.Key.MatchCode != currentMatchCode).OrderBy(knn => knn.Value).Take(3).Select(knn => knn.Key).ToList();
         }
 
         public string GetMatchOddsClassification()
@@ -103,16 +77,6 @@ namespace BetPlacer.Punter.API.Utils
                 result += item.MatchOddsResult;
 
             return GetNormalizedMatchOddsClassification(result);
-        }
-
-        public string GetMatchOddsHTClassification()
-        {
-            string result = "";
-
-            foreach (var item in _listTop3)
-                result += item.MatchOddsHTResult;
-
-            return GetNormalizedMatchOddsHTClassification(result);
         }
 
         public string GetGoalsClassification()

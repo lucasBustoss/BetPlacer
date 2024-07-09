@@ -6,6 +6,8 @@ using BetPlacer.Punter.API.Models.ValueObjects.Match;
 using BetPlacer.Punter.API.Models.ValueObjects.Match.Team;
 using BetPlacer.Punter.API.Models.ValueObjects.Strategy;
 using BetPlacer.Punter.API.Utils;
+using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace BetPlacer.Punter.API.Services
 {
@@ -18,21 +20,21 @@ namespace BetPlacer.Punter.API.Services
 
             List<TeamAverageData> teamsAverageData = new List<TeamAverageData>();
 
-            List<TeamMatchesBySeason> teamMatches = matchBaseData
+            List<TeamMatches> teamMatches = matchBaseData
                 .SelectMany(m => new[]
                 {
                     new { TeamName = m.HomeTeam, Match = m },
                     new { TeamName = m.AwayTeam, Match = m }
                 })
                 .GroupBy(t => new { t.TeamName })
-                .Select(g => new TeamMatchesBySeason
+                .Select(g => new TeamMatches
                 {
                     TeamName = g.Key.TeamName,
                     Matches = g.Select(x => x.Match).ToList()
                 })
                 .ToList();
 
-            foreach (TeamMatchesBySeason teamSeason in teamMatches)
+            foreach (TeamMatches teamSeason in teamMatches)
             {
                 TeamAverageData averageData = new TeamAverageData(teamSeason.TeamName);
                 var matches = teamSeason.Matches.ToList();
@@ -84,7 +86,7 @@ namespace BetPlacer.Punter.API.Services
                         {
                             listaJogos.Add($"O jogo {fixtureToFilter.MatchCode} não entrou no método {backtest.Name} porque a classificação não bateu. " +
                                 $"Classificação do método: {backtest.Classifications.Aggregate((a, b) => a + " - " + b)}. " +
-                                $"Classificação da partida: {fixtureToFilter.MatchOddsClassification} - {fixtureToFilter.MatchOddsHTClassification} - {fixtureToFilter.GoalsClassification} - {fixtureToFilter.BttsClassification}");
+                                $"Classificação da partida: {fixtureToFilter.MatchOddsClassification} - {fixtureToFilter.GoalsClassification} - {fixtureToFilter.BttsClassification}");
                             
                             break;
                         }
@@ -95,10 +97,6 @@ namespace BetPlacer.Punter.API.Services
                         {
                             case "Grupo 1":
                                 classificationAnalysis = listClassifications.Any(l => l == fixtureToFilter.MatchOddsClassification);
-
-                                break;
-                            case "Grupo 2":
-                                classificationAnalysis = listClassifications.Any(l => l == fixtureToFilter.MatchOddsHTClassification);
 
                                 break;
                             case "Grupo 3":
@@ -120,7 +118,7 @@ namespace BetPlacer.Punter.API.Services
                         {
                             listaJogos.Add($"O jogo {fixtureToFilter.MatchCode} não entrou no método {backtest.Name} porque a classificação não bateu. " +
                                 $"Classificação do método: {backtest.Classifications.Aggregate((a, b) => a + " - " + b)}. " +
-                                $"Classificação da partida: {fixtureToFilter.MatchOddsClassification} - {fixtureToFilter.MatchOddsHTClassification} - {fixtureToFilter.GoalsClassification} - {fixtureToFilter.BttsClassification}");
+                                $"Classificação da partida: {fixtureToFilter.MatchOddsClassification} - {fixtureToFilter.GoalsClassification} - {fixtureToFilter.BttsClassification}");
 
                             break;
                         }
@@ -175,22 +173,22 @@ namespace BetPlacer.Punter.API.Services
 
             List<TeamAverageData> teamsAverageData = new List<TeamAverageData>();
 
-            List<TeamMatchesBySeason> teamMatches = matchBaseData
+            List<TeamMatches> teamMatches = matchBaseData
                 .Where(mbd => mbd.Season == "2013" || mbd.Season == "2013-2014")
                 .SelectMany(m => new[]
                 {
-                    new { TeamName = m.HomeTeam, Season = m.Season, Match = m },
-                    new { TeamName = m.AwayTeam, Season = m.Season, Match = m }
+                    new { TeamName = m.HomeTeam, Match = m },
+                    new { TeamName = m.AwayTeam, Match = m }
                 })
-                .GroupBy(t => new { t.TeamName, t.Season })
-                .Select(g => new TeamMatchesBySeason
+                .GroupBy(t => new { t.TeamName })
+                .Select(g => new TeamMatches
                 {
                     TeamName = g.Key.TeamName,
                     Matches = g.Select(x => x.Match).ToList()
                 })
                 .ToList();
 
-            foreach (TeamMatchesBySeason teamSeason in teamMatches)
+            foreach (TeamMatches teamSeason in teamMatches)
             {
                 TeamAverageData averageData = new TeamAverageData(teamSeason.TeamName);
                 var matches = teamSeason.Matches.ToList();
@@ -200,20 +198,21 @@ namespace BetPlacer.Punter.API.Services
             }
 
             List<MatchBaseData> matchesInOtherSeasons = matchBaseData
-                .Where(mbd => mbd.Season != "2013" && mbd.Season != "2013-2014").ToList();
+                .Where(mbd => mbd.Season != "2013" && mbd.Season != "2013-2014").OrderBy(m => m.UtcDate).ThenBy(m => m.MatchCode).ToList();
 
             #endregion
 
             #region Bar code
 
-            List<MatchBarCode> matchesBarCode = GetMatchesBarCode(matchesInOtherSeasons, teamsAverageData, teamMatches, false);
-            List<MatchBarCode> matchesKNN = GetMatchesBarCode(matchesInOtherSeasons, teamsAverageData, teamMatches, true);
+            List<MatchBarCode> matchesBarCode = GetMatchesBarCode(matchesInOtherSeasons, teamsAverageData, teamMatches);
+            List<MatchBarCode> matchesKNN = GetNormalizedBarCode(matchesBarCode);
 
             #endregion
 
             #region KNN
 
             List<MatchAnalyzed> matchesAnalyzed = CalculateKNN(matchesKNN, matchesInOtherSeasons);
+            var first = matchesAnalyzed.FirstOrDefault();
 
             #endregion
 
@@ -262,8 +261,8 @@ namespace BetPlacer.Punter.API.Services
 
         private void CalculateAverage(TeamAverageData averageData, List<MatchBaseData> matches)
         {
-            var last10MatchesHome = matches.Where(m => m.HomeTeam == averageData.TeamName).OrderByDescending(m => m.Date).Take(10).ToList();
-            var last10MatchesAway = matches.Where(m => m.AwayTeam == averageData.TeamName).OrderByDescending(m => m.Date).Take(10).ToList();
+            var last10MatchesHome = matches.Where(m => m.HomeTeam == averageData.TeamName).OrderByDescending(m => m.UtcDate).Take(10).ToList();
+            var last10MatchesAway = matches.Where(m => m.AwayTeam == averageData.TeamName).OrderByDescending(m => m.UtcDate).Take(10).ToList();
 
             CalculateScoredAverage(averageData, last10MatchesHome, last10MatchesAway);
             CalculateConcededAverage(averageData, last10MatchesHome, last10MatchesAway);
@@ -287,13 +286,13 @@ namespace BetPlacer.Punter.API.Services
 
             double stdHomeGoalScored = MathUtils.StandardDeviation(homeMatches.Select(mh => (double)mh.HomeGoals).ToList());
 
-            double avgHomeGoalScored = sumAwayPercentageOdd != 0 ? sumHomeScoredGoalsValue / sumAwayPercentageOdd : 0;
-            double avgHomeGoalScoredValue = homeMatches.Count() != 0 ? sumHomeScoredGoalsValue / homeMatches.Count() : 0;
-            double avgHomeGoalScoredCost = homeMatches.Count() != 0 ? sumHomeScoredGoalsCost / homeMatches.Count() : 0;
+            double? avgHomeGoalScored = sumAwayPercentageOdd != 0 ? sumHomeScoredGoalsValue / sumAwayPercentageOdd : null;
+            double? avgHomeGoalScoredValue = homeMatches.Count() != 0 ? sumHomeScoredGoalsValue / homeMatches.Count() : null;
+            double? avgHomeGoalScoredCost = homeMatches.Count() != 0 ? sumHomeScoredGoalsCost / homeMatches.Count() : null;
 
             averageData.HomeGoalScoredAvg = avgHomeGoalScored;
             averageData.HomeGoalScoredStd = stdHomeGoalScored;
-            averageData.HomeGoalScoredCv = avgHomeGoalScored != 0 ? stdHomeGoalScored / avgHomeGoalScored : 0;
+            averageData.HomeGoalScoredCv = avgHomeGoalScored != 0 && avgHomeGoalScored != null ? stdHomeGoalScored / avgHomeGoalScored : null;
             averageData.HomeGoalScoredValueAvg = avgHomeGoalScoredValue;
             averageData.HomeGoalScoredCostAvg = avgHomeGoalScoredCost;
 
@@ -306,57 +305,15 @@ namespace BetPlacer.Punter.API.Services
 
             double stdAwayGoalScored = MathUtils.StandardDeviation(awayMatches.Select(mh => (double)mh.AwayGoals).ToList());
 
-            double avgAwayGoalScored = sumHomePercentageOdd != 0 ? sumAwayScoredGoalsValue / sumHomePercentageOdd : 0;
-            double avgAwayGoalScoredValue = awayMatches.Count() != 0 ? sumAwayScoredGoalsValue / awayMatches.Count() : 0;
-            double avgAwayGoalScoredCost = awayMatches.Count() != 0 ? sumAwayScoredGoalsCost / awayMatches.Count() : 0;
+            double? avgAwayGoalScored = sumHomePercentageOdd != 0 ? sumAwayScoredGoalsValue / sumHomePercentageOdd : null;
+            double? avgAwayGoalScoredValue = awayMatches.Count() != 0 ? sumAwayScoredGoalsValue / awayMatches.Count() : null;
+            double? avgAwayGoalScoredCost = awayMatches.Count() != 0 ? sumAwayScoredGoalsCost / awayMatches.Count() : null;
 
             averageData.AwayGoalScoredAvg = avgAwayGoalScored;
             averageData.AwayGoalScoredStd = stdAwayGoalScored;
-            averageData.AwayGoalScoredCv = avgAwayGoalScored != 0 ? stdAwayGoalScored / avgAwayGoalScored : avgAwayGoalScored;
+            averageData.AwayGoalScoredCv = avgAwayGoalScored != 0 && avgAwayGoalScored != null ? stdAwayGoalScored / avgAwayGoalScored : null;
             averageData.AwayGoalScoredValueAvg = avgAwayGoalScoredValue;
             averageData.AwayGoalScoredCostAvg = avgAwayGoalScoredCost;
-
-            #endregion
-
-            #endregion
-
-            #region HT
-
-            #region Home
-
-            double sumHomeScoredGoalsValueHT = homeMatches.Sum(mh => mh.HomeScoredGoalValueHT);
-            double sumHomeScoredGoalsCostHT = homeMatches.Sum(mh => mh.HomeScoredGoalCostHT);
-
-            double stdHomeGoalScoredHT = MathUtils.StandardDeviation(homeMatches.Select(mh => (double)mh.HomeGoalsHT).ToList());
-
-            double avgHomeGoalScoredHT = sumAwayPercentageOdd != 0 ? sumHomeScoredGoalsValueHT / sumAwayPercentageOdd : 0;
-            double avgHomeGoalScoredValueHT = homeMatches.Count() != 0 ? sumHomeScoredGoalsValueHT / homeMatches.Count() : 0;
-            double avgHomeGoalScoredCostHT = homeMatches.Count() != 0 ? sumHomeScoredGoalsCostHT / homeMatches.Count() : 0;
-
-            averageData.HomeGoalScoredHTAvg = avgHomeGoalScoredHT;
-            averageData.HomeGoalScoredHTStd = stdHomeGoalScoredHT;
-            averageData.HomeGoalScoredHTCv = avgHomeGoalScoredHT != 0 ? stdHomeGoalScoredHT / avgHomeGoalScoredHT : avgHomeGoalScoredHT;
-            averageData.HomeGoalScoredValueHTAvg = avgHomeGoalScoredValueHT;
-            averageData.HomeGoalScoredCostHTAvg = avgHomeGoalScoredCostHT;
-
-            #endregion
-
-            #region Away
-
-            double sumAwayScoredGoalsValueHT = awayMatches.Sum(ma => ma.AwayScoredGoalValueHT);
-            double sumAwayScoredGoalsCostHT = awayMatches.Sum(ma => ma.AwayScoredGoalCostHT);
-
-            double stdAwayGoalScoredHT = MathUtils.StandardDeviation(awayMatches.Select(mh => (double)mh.AwayGoalsHT).ToList());
-
-            double avgAwayGoalScoredHT = sumHomePercentageOdd != 0 ? sumAwayScoredGoalsValueHT / sumHomePercentageOdd : 0;
-            double avgAwayGoalScoredValueHT = awayMatches.Count() != 0 ? sumAwayScoredGoalsValueHT / awayMatches.Count() : 0;
-            double avgAwayGoalScoredCostHT = awayMatches.Count() != 0 ? sumAwayScoredGoalsCostHT / awayMatches.Count() : 0;
-
-            averageData.AwayGoalScoredHTAvg = avgAwayGoalScoredHT;
-            averageData.AwayGoalScoredHTStd = stdAwayGoalScoredHT;
-            averageData.AwayGoalScoredHTCv = avgAwayGoalScoredHT != 0 ? stdAwayGoalScoredHT / avgAwayGoalScoredHT : avgAwayGoalScoredHT;
-            averageData.AwayGoalScoredValueHTAvg = avgAwayGoalScoredValueHT;
-            averageData.AwayGoalScoredCostHTAvg = avgAwayGoalScoredCostHT;
 
             #endregion
 
@@ -375,13 +332,13 @@ namespace BetPlacer.Punter.API.Services
 
             double stdHomeGoalConcededValue = MathUtils.StandardDeviation(homeMatches.Select(mh => (double)mh.AwayGoals).ToList());
 
-            double avgHomeGoalConcededValue = sumAwayPercentageOdd == 0 ? 0 : sumHomeConcededGoalsValue / sumAwayPercentageOdd;
+            double? avgHomeGoalConcededValue = sumAwayPercentageOdd == 0 ? null : sumHomeConcededGoalsValue / sumAwayPercentageOdd;
 
             averageData.HomeGoalConcededAvg = avgHomeGoalConcededValue;
             averageData.HomeGoalConcededStd = stdHomeGoalConcededValue;
-            averageData.HomeGoalConcededCv = avgHomeGoalConcededValue == 0 ? 0 : stdHomeGoalConcededValue / avgHomeGoalConcededValue;
-            averageData.HomeGoalConcededValueAvg = homeMatches.Count() == 0 ? 0 : sumHomeConcededGoalsValue / homeMatches.Count();
-            averageData.HomeGoalConcededCostAvg = homeMatches.Count() == 0 ? 0 : sumHomeConcededGoalsCost / homeMatches.Count();
+            averageData.HomeGoalConcededCv = avgHomeGoalConcededValue == 0 || avgHomeGoalConcededValue == null ? null : stdHomeGoalConcededValue / avgHomeGoalConcededValue;
+            averageData.HomeGoalConcededValueAvg = homeMatches.Count() == 0 ? null : sumHomeConcededGoalsValue / homeMatches.Count();
+            averageData.HomeGoalConcededCostAvg = homeMatches.Count() == 0 ? null : sumHomeConcededGoalsCost / homeMatches.Count();
 
             #endregion
 
@@ -393,57 +350,18 @@ namespace BetPlacer.Punter.API.Services
 
             double stdAwayGoalConcededValue = MathUtils.StandardDeviation(awayMatches.Select(mh => (double)mh.HomeGoals).ToList());
 
-            double avgAwayGoalConcededValue = sumHomePercentageOdd == 0 ? 0 : sumAwayConcededGoalsValue / sumHomePercentageOdd;
+            double? avgAwayGoalConcededValue = sumHomePercentageOdd == 0 ? null : sumAwayConcededGoalsValue / sumHomePercentageOdd;
 
             averageData.AwayGoalConcededAvg = avgAwayGoalConcededValue;
             averageData.AwayGoalConcededStd = stdAwayGoalConcededValue;
-            averageData.AwayGoalConcededCv = avgAwayGoalConcededValue == 0 ? 0 : stdAwayGoalConcededValue / avgAwayGoalConcededValue;
-            averageData.AwayGoalConcededValueAvg = awayMatches.Count() == 0 ? 0 : sumAwayConcededGoalsValue / awayMatches.Count();
-            averageData.AwayGoalConcededCostAvg = awayMatches.Count() == 0 ? 0 : sumAwayConcededGoalsCost / awayMatches.Count();
+            averageData.AwayGoalConcededCv = avgAwayGoalConcededValue == 0 || avgAwayGoalConcededValue == null ? null : stdAwayGoalConcededValue / avgAwayGoalConcededValue;
+            averageData.AwayGoalConcededValueAvg = awayMatches.Count() == 0 ? null : sumAwayConcededGoalsValue / awayMatches.Count();
+            averageData.AwayGoalConcededCostAvg = awayMatches.Count() == 0 ? null : sumAwayConcededGoalsCost / awayMatches.Count();
 
             #endregion
 
             #endregion
 
-            #region HT
-
-            #region Home
-
-            double sumHomeConcededGoalsValueHT = homeMatches.Sum(mh => mh.HomeConcededGoalValueHT);
-            double sumHomeConcededGoalsCostHT = homeMatches.Sum(mh => mh.HomeConcededGoalCostHT);
-            double sumAwayPercentageOddHT = homeMatches.Sum(mh => mh.AwayPercentageOdd);
-
-            double stdHomeGoalConcededValueHT = MathUtils.StandardDeviation(homeMatches.Select(mh => (double)mh.AwayGoalsHT).ToList());
-
-            double avgHomeGoalConcededValueHT = sumAwayPercentageOddHT == 0 ? 0 : sumHomeConcededGoalsValueHT / sumAwayPercentageOddHT;
-
-            averageData.HomeGoalConcededHTAvg = avgHomeGoalConcededValueHT;
-            averageData.HomeGoalConcededHTStd = stdHomeGoalConcededValueHT;
-            averageData.HomeGoalConcededHTCv = avgHomeGoalConcededValueHT == 0 ? 0 : stdHomeGoalConcededValueHT / avgHomeGoalConcededValueHT;
-            averageData.HomeGoalConcededValueHTAvg = homeMatches.Count() == 0 ? 0 : sumHomeConcededGoalsValueHT / homeMatches.Count();
-            averageData.HomeGoalConcededCostHTAvg = homeMatches.Count() == 0 ? 0 : sumHomeConcededGoalsCostHT / homeMatches.Count();
-
-            #endregion
-
-            #region Away
-
-            double sumAwayConcededGoalsValueHT = awayMatches.Sum(mh => mh.AwayConcededGoalValueHT);
-            double sumAwayConcededGoalsCostHT = awayMatches.Sum(mh => mh.AwayConcededGoalCostHT);
-            double sumHomePercentageOddHT = awayMatches.Sum(mh => mh.HomePercentageOdd);
-
-            double stdAwayGoalConcededValueHT = MathUtils.StandardDeviation(awayMatches.Select(mh => (double)mh.HomeGoalsHT).ToList());
-
-            double avgAwayGoalConcededValueHT = sumHomePercentageOddHT == 0 ? 0 : sumAwayConcededGoalsValueHT / sumHomePercentageOddHT;
-
-            averageData.AwayGoalConcededHTAvg = avgAwayGoalConcededValueHT;
-            averageData.AwayGoalConcededHTStd = stdAwayGoalConcededValueHT;
-            averageData.AwayGoalConcededHTCv = avgAwayGoalConcededValueHT == 0 ? 0 : stdAwayGoalConcededValueHT / avgAwayGoalConcededValueHT;
-            averageData.AwayGoalConcededValueHTAvg = awayMatches.Count() == 0 ? 0 : sumAwayConcededGoalsValueHT / awayMatches.Count();
-            averageData.AwayGoalConcededCostHTAvg = awayMatches.Count() == 0 ? 0 : sumAwayConcededGoalsCostHT / awayMatches.Count();
-
-            #endregion
-
-            #endregion
         }
 
         private void CalculatePointsAverage(TeamAverageData averageData, List<MatchBaseData> homeMatches, List<MatchBaseData> awayMatches)
@@ -459,11 +377,11 @@ namespace BetPlacer.Punter.API.Services
 
             double stdHomePoints = MathUtils.StandardDeviation(homeMatches.Select(hm => (double)hm.HomePoints).ToList());
 
-            double avgHomePointsValue = sumAwayPercentageOdd == 0 ? 0 : sumHomePointsValue / sumAwayPercentageOdd;
+            double? avgHomePointsValue = sumAwayPercentageOdd == 0 ? null : sumHomePointsValue / sumAwayPercentageOdd;
 
             averageData.HomePointsAvg = avgHomePointsValue;
             averageData.HomePointsStd = stdHomePoints;
-            averageData.HomePointsCv = avgHomePointsValue == 0 ? 0 : stdHomePoints / avgHomePointsValue;
+            averageData.HomePointsCv = avgHomePointsValue == null || avgHomePointsValue == 0 ? null : stdHomePoints / avgHomePointsValue;
 
             #endregion
 
@@ -473,47 +391,16 @@ namespace BetPlacer.Punter.API.Services
 
             double stdAwayPoints = MathUtils.StandardDeviation(awayMatches.Select(am => (double)am.AwayPoints).ToList());
 
-            double avgAwayPointsValue = sumHomePercentageOdd == 0 ? 0 : sumAwayPointsValue / sumHomePercentageOdd;
+            double? avgAwayPointsValue = sumHomePercentageOdd == 0 ? null : sumAwayPointsValue / sumHomePercentageOdd;
 
             averageData.AwayPointsAvg = avgAwayPointsValue;
             averageData.AwayPointsStd = stdAwayPoints;
-            averageData.AwayPointsCv = avgAwayPointsValue == 0 ? 0 : stdAwayPoints / avgAwayPointsValue;
+            averageData.AwayPointsCv = avgAwayPointsValue == 0 || avgAwayPointsValue == null ? null : stdAwayPoints / avgAwayPointsValue;
 
             #endregion
 
             #endregion
 
-            #region HT
-
-            #region Home
-
-            double sumHomePointsValueHT = homeMatches.Sum(hm => hm.HomePointsValueHT);
-
-            double stdHomePointsHT = MathUtils.StandardDeviation(homeMatches.Select(hm => (double)hm.HomePointsHT).ToList());
-
-            double avgHomePointsValueHT = sumAwayPercentageOdd == 0 ? 0 : sumHomePointsValueHT / sumAwayPercentageOdd;
-
-            averageData.HomePointsHTAvg = avgHomePointsValueHT;
-            averageData.HomePointsHTStd = stdHomePointsHT;
-            averageData.HomePointsHTCv = avgHomePointsValueHT == 0 ? 0 : stdHomePointsHT / avgHomePointsValueHT;
-
-            #endregion
-
-            #region Away
-
-            double sumAwayPointsValueHT = awayMatches.Sum(am => am.AwayPointsValueHT);
-
-            double stdAwayPointsHT = MathUtils.StandardDeviation(awayMatches.Select(am => (double)am.AwayPointsHT).ToList());
-
-            double avgAwayPointsValueHT = sumHomePercentageOdd == 0 ? 0 : sumAwayPointsValueHT / sumHomePercentageOdd;
-
-            averageData.AwayPointsHTAvg = avgAwayPointsValueHT;
-            averageData.AwayPointsHTStd = stdAwayPointsHT;
-            averageData.AwayPointsHTCv = avgAwayPointsValueHT == 0 ? 0 : stdAwayPointsHT / avgAwayPointsValueHT;
-
-            #endregion
-
-            #endregion
         }
 
         private void CalculateDifferenceGoalsAverage(TeamAverageData averageData, List<MatchBaseData> homeMatches, List<MatchBaseData> awayMatches)
@@ -529,11 +416,11 @@ namespace BetPlacer.Punter.API.Services
 
             double stdHomeGoalsDifferenceValue = MathUtils.StandardDeviation(homeMatches.Select(mh => (double)mh.HomeGoalsDifference).ToList());
 
-            double avgHomeGoalDifferenceValue = sumAwayPercentageOdd == 0 ? 0 : sumHomeGoalsDifferenceValue / sumAwayPercentageOdd;
+            double? avgHomeGoalDifferenceValue = sumAwayPercentageOdd == 0 ? null : sumHomeGoalsDifferenceValue / sumAwayPercentageOdd;
 
             averageData.HomeGoalsDifferenceAvg = avgHomeGoalDifferenceValue;
             averageData.HomeGoalsDifferenceStd = stdHomeGoalsDifferenceValue;
-            averageData.HomeGoalsDifferenceCv = avgHomeGoalDifferenceValue == 0 ? 0 : Math.Abs(Math.Round(stdHomeGoalsDifferenceValue / avgHomeGoalDifferenceValue));
+            averageData.HomeGoalsDifferenceCv = avgHomeGoalDifferenceValue == 0 || avgHomeGoalDifferenceValue == null ? null : Math.Abs(stdHomeGoalsDifferenceValue / avgHomeGoalDifferenceValue.Value);
 
             #endregion
 
@@ -543,47 +430,16 @@ namespace BetPlacer.Punter.API.Services
 
             double stdAwayGoalsDifferenceValue = MathUtils.StandardDeviation(awayMatches.Select(mh => (double)mh.AwayGoalsDifference).ToList());
 
-            double avgAwayGoalDifferenceValue = sumHomePercentageOdd == 0 ? 0 : sumAwayGoalsDifferenceValue / sumHomePercentageOdd;
+            double? avgAwayGoalDifferenceValue = sumHomePercentageOdd == 0 ? null : sumAwayGoalsDifferenceValue / sumHomePercentageOdd;
 
             averageData.AwayGoalsDifferenceAvg = avgAwayGoalDifferenceValue;
             averageData.AwayGoalsDifferenceStd = stdAwayGoalsDifferenceValue;
-            averageData.AwayGoalsDifferenceCv = avgAwayGoalDifferenceValue == 0 ? 0 : Math.Abs(Math.Round(stdAwayGoalsDifferenceValue / avgAwayGoalDifferenceValue));
+            averageData.AwayGoalsDifferenceCv = avgAwayGoalDifferenceValue == 0 || avgAwayGoalDifferenceValue == null ? null : Math.Abs(stdAwayGoalsDifferenceValue / avgAwayGoalDifferenceValue.Value);
 
             #endregion
 
             #endregion
 
-            #region HT
-
-            #region Home
-
-            double sumHomeGoalsDifferenceValueHT = homeMatches.Sum(mh => mh.HomeGoalsDifferenceValueHT);
-
-            double stdHomeGoalsDifferenceValueHT = MathUtils.StandardDeviation(homeMatches.Select(mh => (double)mh.HomeGoalsDifferenceHT).ToList());
-
-            double avgHomeGoalDifferenceValueHT = sumAwayPercentageOdd == 0 ? 0 : sumHomeGoalsDifferenceValueHT / sumAwayPercentageOdd;
-
-            averageData.HomeGoalsDifferenceHTAvg = avgHomeGoalDifferenceValueHT;
-            averageData.HomeGoalsDifferenceHTStd = stdHomeGoalsDifferenceValueHT;
-            averageData.HomeGoalsDifferenceHTCv = avgHomeGoalDifferenceValueHT == 0 ? 0 : Math.Abs(Math.Round(stdHomeGoalsDifferenceValueHT / avgHomeGoalDifferenceValueHT));
-
-            #endregion
-
-            #region Away
-
-            double sumAwayGoalsDifferenceValueHT = awayMatches.Sum(mh => mh.AwayGoalsDifferenceValueHT);
-
-            double stdAwayGoalsDifferenceValueHT = MathUtils.StandardDeviation(awayMatches.Select(mh => (double)mh.AwayGoalsDifferenceHT).ToList());
-
-            double avgAwayGoalDifferenceValueHT = sumHomePercentageOdd == 0 ? 0 : sumAwayGoalsDifferenceValueHT / sumHomePercentageOdd;
-
-            averageData.AwayGoalsDifferenceHTAvg = avgAwayGoalDifferenceValueHT;
-            averageData.AwayGoalsDifferenceHTStd = stdAwayGoalsDifferenceValueHT;
-            averageData.AwayGoalsDifferenceHTCv = avgAwayGoalDifferenceValueHT == 0 ? 0 : Math.Abs(Math.Round(stdAwayGoalsDifferenceValueHT / avgAwayGoalDifferenceValueHT));
-
-            #endregion
-
-            #endregion
         }
 
         private void CalculateOddsAverage(TeamAverageData averageData, List<MatchBaseData> homeMatches, List<MatchBaseData> awayMatches)
@@ -594,11 +450,11 @@ namespace BetPlacer.Punter.API.Services
 
             var stdHomeOdds = MathUtils.StandardDeviation(homeMatches.Select(hm => hm.HomeOdd).ToList());
 
-            var avgHomeOdds = homeMatches.Count() == 0 ? 0 : sumHomeOdds / homeMatches.Count();
+            double? avgHomeOdds = homeMatches.Count() == 0 ? null : sumHomeOdds / homeMatches.Count();
 
             averageData.HomeOddsAvg = avgHomeOdds;
             averageData.HomeOddsStd = stdHomeOdds;
-            averageData.HomeOddsCv = avgHomeOdds == 0 ? 0 : stdHomeOdds / avgHomeOdds;
+            averageData.HomeOddsCv = avgHomeOdds == 0 || avgHomeOdds == null ? null : stdHomeOdds / avgHomeOdds;
 
             #endregion
 
@@ -608,11 +464,11 @@ namespace BetPlacer.Punter.API.Services
 
             var stdAwayOdds = MathUtils.StandardDeviation(awayMatches.Select(hm => hm.AwayOdd).ToList());
 
-            var avgAwayOdds = awayMatches.Count() == 0 ? 0 : sumAwayOdds / awayMatches.Count();
+            double? avgAwayOdds = awayMatches.Count() == 0 ? null : sumAwayOdds / awayMatches.Count();
 
             averageData.AwayOddsAvg = avgAwayOdds;
             averageData.AwayOddsStd = stdAwayOdds;
-            averageData.AwayOddsCv = avgAwayOdds == 0 ? 0 : stdAwayOdds / avgAwayOdds;
+            averageData.AwayOddsCv = avgAwayOdds == 0 || avgAwayOdds == null ? null : stdAwayOdds / avgAwayOdds;
 
             #endregion
         }
@@ -637,10 +493,9 @@ namespace BetPlacer.Punter.API.Services
                 homeRPSBTTSTotal += CalculateRPSBTTS(homeMatch.BttsYesOdd, homeMatch.BttsNoOdd, homeMatch.BttsResult);
             }
 
-            averageData.HomeRPSMO = homeMatches.Count == 0 ? 0 : homeRPSMOTotal / homeMatches.Count;
-            averageData.HomeRPSMOHT = homeMatches.Count == 0 ? 0 : homeRPSMOHTTotal / homeMatches.Count;
-            averageData.HomeRPSGoals = homeMatches.Count == 0 ? 0 : homeRPSGoalsTotal / homeMatches.Count;
-            averageData.HomeRPSBTTS = homeMatches.Count == 0 ? 0 : homeRPSBTTSTotal / homeMatches.Count;
+            averageData.HomeRPSMO = homeMatches.Count == 0 ? null : homeRPSMOTotal / homeMatches.Count;
+            averageData.HomeRPSGoals = homeMatches.Count == 0 ? null : homeRPSGoalsTotal / homeMatches.Count;
+            averageData.HomeRPSBTTS = homeMatches.Count == 0 ? null : homeRPSBTTSTotal / homeMatches.Count;
 
             foreach (var awayMatch in awayMatches)
             {
@@ -650,10 +505,9 @@ namespace BetPlacer.Punter.API.Services
                 awayRPSBTTSTotal += CalculateRPSBTTS(awayMatch.BttsYesOdd, awayMatch.BttsNoOdd, awayMatch.BttsResult);
             }
 
-            averageData.AwayRPSMO = awayMatches.Count == 0 ? 0 : awayRPSMOTotal / awayMatches.Count;
-            averageData.AwayRPSMOHT = awayMatches.Count == 0 ? 0 : awayRPSMOHTTotal / awayMatches.Count;
-            averageData.AwayRPSGoals = awayMatches.Count == 0 ? 0 : awayRPSGoalsTotal / awayMatches.Count;
-            averageData.AwayRPSBTTS = awayMatches.Count == 0 ? 0 : awayRPSBTTSTotal / awayMatches.Count;
+            averageData.AwayRPSMO = awayMatches.Count == 0 ? null : awayRPSMOTotal / awayMatches.Count;
+            averageData.AwayRPSGoals = awayMatches.Count == 0 ? null : awayRPSGoalsTotal / awayMatches.Count;
+            averageData.AwayRPSBTTS = awayMatches.Count == 0 ? null : awayRPSBTTSTotal / awayMatches.Count;
         }
 
         #region RPS calculates 
@@ -698,25 +552,27 @@ namespace BetPlacer.Punter.API.Services
 
         #endregion
 
-        private void UpdateTeamAverageData(List<TeamAverageData> teamsAverageData, List<TeamMatchesBySeason> teamMatches, MatchBaseData match, bool isHomeTeam)
+        private void UpdateTeamAverageData(List<TeamAverageData> teamsAverageData, List<TeamMatches> teamMatches, MatchBaseData match, bool isHomeTeam)
         {
             string teamName = isHomeTeam ? match.HomeTeam : match.AwayTeam;
-            TeamMatchesBySeason teamData = teamMatches
-                .FirstOrDefault(tmb => tmb.TeamName == teamName && tmb.Season == match.Season);
-
+            TeamMatches teamData = teamMatches
+                .FirstOrDefault(tmb => tmb.TeamName == teamName);
+            
             if (teamData == null)
             {
-                teamData = new TeamMatchesBySeason
+                teamData = new TeamMatches
                 {
                     TeamName = teamName,
-                    Season = match.Season,
                     Matches = new List<MatchBaseData>()
                 };
+
                 teamMatches.Add(teamData);
             }
 
             teamData.Matches.Add(match);
-            var matchesToAverageData = teamData.Matches.OrderBy(m => m.Date).TakeLast(10).ToList();
+            string currentSeason = match.Season;
+            string lastSeason = GetLastSeason(currentSeason);
+            var matchesToAverageData = teamData.Matches.Where(m => m.Season == currentSeason || m.Season == lastSeason).ToList();
 
             var averageIndex = teamsAverageData.FindIndex(tad => tad.TeamName == teamName);
 
@@ -732,46 +588,35 @@ namespace BetPlacer.Punter.API.Services
 
         private void CalculateHomeAwayStatsToBarCode(MatchBarCode barCode, List<TeamAverageData> teamsAverageData, string homeTeam, string awayTeam, double homeOdd, double drawOdd, double awayOdd)
         {
+            double homeOddPercent = 1 / homeOdd;
+            double drawOddPercent = 1 / drawOdd;
+            double awayOddPercent = 1 / awayOdd;
+
             var homeAverageData = teamsAverageData.Where(t => t.TeamName == homeTeam).FirstOrDefault();
             var awayAverageData = teamsAverageData.Where(t => t.TeamName == awayTeam).FirstOrDefault();
-            var stdMatchOdds = MathUtils.StandardDeviation(new List<double>() { homeOdd, drawOdd, awayOdd });
-            var avgMatchOdds = (homeOdd + drawOdd + awayOdd) / 3;
+            var stdMatchOdds = MathUtils.StandardDeviation(new List<double>() { homeOddPercent, drawOddPercent, awayOddPercent });
+            var avgMatchOdds = (homeOddPercent + drawOddPercent + awayOddPercent) / 3;
 
             barCode.PowerPoint = (homeAverageData != null && awayAverageData != null) ? homeAverageData.HomePointsAvg - awayAverageData.AwayPointsAvg : (double?)null;
-            barCode.PowerPointHT = (homeAverageData != null && awayAverageData != null) ? homeAverageData.HomePointsHTAvg - awayAverageData.AwayPointsHTAvg : (double?)null;
             barCode.CVMatchOdds = stdMatchOdds / avgMatchOdds;
 
             if (homeAverageData != null)
             {
                 barCode.HomePoints = homeAverageData.HomePointsAvg;
-                barCode.HomePointsHT = homeAverageData.HomePointsHTAvg;
                 barCode.HomeCVPoints = homeAverageData.HomePointsCv;
-                barCode.HomeCVPointsHT = homeAverageData.HomePointsHTCv;
                 barCode.HomeDifferenceGoals = homeAverageData.HomeGoalsDifferenceAvg;
                 barCode.HomeCVDifferenceGoals = homeAverageData.HomeGoalsDifferenceCv;
-                barCode.HomeDifferenceGoalsHT = homeAverageData.HomeGoalsDifferenceHTAvg;
-                barCode.HomeCVDifferenceGoalsHT = homeAverageData.HomeGoalsDifferenceHTCv;
-                barCode.HomePoisson = MathUtils.PoissonProbability(homeAverageData.HomeGoalScoredAvg, 2);
-                barCode.HomePoissonHT = MathUtils.PoissonProbability(homeAverageData.HomeGoalScoredHTAvg, 1);
+                barCode.HomePoisson = homeAverageData.HomeGoalScoredAvg != null ? MathUtils.PoissonProbability(homeAverageData.HomeGoalScoredAvg.Value, 2) : null;
                 barCode.HomeGoalsScored = homeAverageData.HomeGoalScoredAvg;
                 barCode.HomeGoalsScoredValue = homeAverageData.HomeGoalScoredValueAvg;
                 barCode.HomeGoalsScoredCost = homeAverageData.HomeGoalScoredCostAvg;
-                barCode.HomeGoalsScoredHT = homeAverageData.HomeGoalScoredHTAvg;
-                barCode.HomeGoalsScoredValueHT = homeAverageData.HomeGoalScoredValueHTAvg;
-                barCode.HomeGoalsScoredCostHT = homeAverageData.HomeGoalScoredCostHTAvg;
                 barCode.HomeGoalsConceded = homeAverageData.HomeGoalConcededAvg;
                 barCode.HomeGoalsConcededValue = homeAverageData.HomeGoalConcededValueAvg;
                 barCode.HomeGoalsConcededCost = homeAverageData.HomeGoalConcededCostAvg;
-                barCode.HomeGoalsConcededHT = homeAverageData.HomeGoalConcededHTAvg;
-                barCode.HomeGoalsConcededValueHT = homeAverageData.HomeGoalConcededValueHTAvg;
-                barCode.HomeGoalsConcededCostHT = homeAverageData.HomeGoalConcededCostHTAvg;
                 barCode.HomeGoalsScoredCV = homeAverageData.HomeGoalScoredCv;
-                barCode.HomeGoalsScoredCVHT = homeAverageData.HomeGoalScoredHTCv;
                 barCode.HomeGoalsConcededCV = homeAverageData.HomeGoalConcededCv;
-                barCode.HomeGoalsConcededCVHT = homeAverageData.HomeGoalConcededHTCv;
                 barCode.HomeOddsCV = homeAverageData.HomeOddsCv;
                 barCode.HomeMatchOddsRPS = homeAverageData.HomeRPSMO;
-                barCode.HomeMatchOddsHTRPS = homeAverageData.HomeRPSMOHT;
                 barCode.HomeGoalsRPS = homeAverageData.HomeRPSGoals;
                 barCode.HomeBTTSRPS = homeAverageData.HomeRPSBTTS;
             }
@@ -779,34 +624,20 @@ namespace BetPlacer.Punter.API.Services
             if (awayAverageData != null)
             {
                 barCode.AwayPoints = awayAverageData.AwayPointsAvg;
-                barCode.AwayPointsHT = awayAverageData.AwayPointsHTAvg;
                 barCode.AwayCVPoints = awayAverageData.AwayPointsCv;
-                barCode.AwayCVPointsHT = awayAverageData.AwayPointsHTCv;
                 barCode.AwayDifferenceGoals = awayAverageData.AwayGoalsDifferenceAvg;
                 barCode.AwayCVDifferenceGoals = awayAverageData.AwayGoalsDifferenceCv;
-                barCode.AwayDifferenceGoalsHT = awayAverageData.AwayGoalsDifferenceHTAvg;
-                barCode.AwayCVDifferenceGoalsHT = awayAverageData.AwayGoalsDifferenceHTCv;
-                barCode.AwayPoisson = MathUtils.PoissonProbability(awayAverageData.AwayGoalScoredAvg, 2);
-                barCode.AwayPoissonHT = MathUtils.PoissonProbability(awayAverageData.AwayGoalScoredHTAvg, 1);
+                barCode.AwayPoisson = awayAverageData.AwayGoalScoredAvg != null ? MathUtils.PoissonProbability(awayAverageData.AwayGoalScoredAvg.Value, 2) : null;
                 barCode.AwayGoalsScored = awayAverageData.AwayGoalScoredAvg;
                 barCode.AwayGoalsScoredValue = awayAverageData.AwayGoalScoredValueAvg;
                 barCode.AwayGoalsScoredCost = awayAverageData.AwayGoalScoredCostAvg;
-                barCode.AwayGoalsScoredHT = awayAverageData.AwayGoalScoredHTAvg;
-                barCode.AwayGoalsScoredValueHT = awayAverageData.AwayGoalScoredValueHTAvg;
-                barCode.AwayGoalsScoredCostHT = awayAverageData.AwayGoalScoredCostHTAvg;
                 barCode.AwayGoalsConceded = awayAverageData.AwayGoalConcededAvg;
                 barCode.AwayGoalsConcededValue = awayAverageData.AwayGoalConcededValueAvg;
                 barCode.AwayGoalsConcededCost = awayAverageData.AwayGoalConcededCostAvg;
-                barCode.AwayGoalsConcededHT = awayAverageData.AwayGoalConcededHTAvg;
-                barCode.AwayGoalsConcededValueHT = awayAverageData.AwayGoalConcededValueHTAvg;
-                barCode.AwayGoalsConcededCostHT = awayAverageData.AwayGoalConcededCostHTAvg;
                 barCode.AwayGoalsScoredCV = awayAverageData.AwayGoalScoredCv;
-                barCode.AwayGoalsScoredCVHT = awayAverageData.AwayGoalScoredHTCv;
                 barCode.AwayGoalsConcededCV = awayAverageData.AwayGoalConcededCv;
-                barCode.AwayGoalsConcededCVHT = awayAverageData.AwayGoalConcededHTCv;
                 barCode.AwayOddsCV = awayAverageData.AwayOddsCv;
                 barCode.AwayMatchOddsRPS = awayAverageData.AwayRPSMO;
-                barCode.AwayMatchOddsHTRPS = awayAverageData.AwayRPSMOHT;
                 barCode.AwayGoalsRPS = awayAverageData.AwayRPSGoals;
                 barCode.AwayBTTSRPS = awayAverageData.AwayRPSBTTS;
             }
@@ -825,7 +656,6 @@ namespace BetPlacer.Punter.API.Services
                 match.BttsYesOdd,
                 match.BttsNoOdd,
                 match.MatchResult,
-                match.MatchResultHT,
                 match.BttsResult,
                 match.HomeGoals,
                 match.AwayGoals);
@@ -857,7 +687,7 @@ namespace BetPlacer.Punter.API.Services
         {
             List<MatchAnalyzed> matchesAnalyzed = new List<MatchAnalyzed>();
 
-            for (int k = 100; k < matches.Count; k++)
+            for (int k = 98; k < matches.Count; k++)
             {
                 KNNCalculator knnCalculator = new KNNCalculator();
                 MatchBarCode matchToCalculate = matches[k];
@@ -870,14 +700,13 @@ namespace BetPlacer.Punter.API.Services
                     knnCalculator.CalculateKNN(matchToCalculate, matchReference);
                 }
 
-                knnCalculator.GetTop3();
+                knnCalculator.GetTop3(baseMatch.MatchCode);
 
                 string matchOddsClassification = knnCalculator.GetMatchOddsClassification();
-                string matchOddsHTClassification = knnCalculator.GetMatchOddsHTClassification();
                 string goalsClassification = knnCalculator.GetGoalsClassification();
                 string bttsClassification = knnCalculator.GetBttsClassification();
 
-                MatchAnalyzed matchAnalyzed = new MatchAnalyzed(baseMatch, matchOddsClassification, matchOddsHTClassification, goalsClassification, bttsClassification);
+                MatchAnalyzed matchAnalyzed = new MatchAnalyzed(baseMatch, matchOddsClassification, goalsClassification, bttsClassification);
                 matchesAnalyzed.Add(matchAnalyzed);
             }
 
@@ -898,14 +727,13 @@ namespace BetPlacer.Punter.API.Services
                 knnCalculator.CalculateKNN(matchToCalculate, matchReference);
             }
 
-            knnCalculator.GetTop3();
+            knnCalculator.GetTop3(nextMatch.MatchCode);
 
             string matchOddsClassification = knnCalculator.GetMatchOddsClassification();
-            string matchOddsHTClassification = knnCalculator.GetMatchOddsHTClassification();
             string goalsClassification = knnCalculator.GetGoalsClassification();
             string bttsClassification = knnCalculator.GetBttsClassification();
 
-            matchAnalyzed = new MatchAnalyzed(nextMatch, matchOddsClassification, matchOddsHTClassification, goalsClassification, bttsClassification);
+            matchAnalyzed = new MatchAnalyzed(nextMatch, matchOddsClassification, goalsClassification, bttsClassification);
             return matchAnalyzed;
         }
 
@@ -968,15 +796,6 @@ namespace BetPlacer.Punter.API.Services
             matchesByClassification.Add("LayH", new List<MatchAnalyzed>());
             matchesByClassification.Add("Misto", new List<MatchAnalyzed>());
 
-            // Match Odds HT
-            matchesByClassification.Add("BackH-HT", new List<MatchAnalyzed>());
-            matchesByClassification.Add("BackD-HT", new List<MatchAnalyzed>());
-            matchesByClassification.Add("BackA-HT", new List<MatchAnalyzed>());
-            matchesByClassification.Add("LayA-HT", new List<MatchAnalyzed>());
-            matchesByClassification.Add("LayD-HT", new List<MatchAnalyzed>());
-            matchesByClassification.Add("LayH-HT", new List<MatchAnalyzed>());
-            matchesByClassification.Add("Misto-HT", new List<MatchAnalyzed>());
-
             // Goals
             matchesByClassification.Add("Over", new List<MatchAnalyzed>());
             matchesByClassification.Add("Und", new List<MatchAnalyzed>());
@@ -993,9 +812,6 @@ namespace BetPlacer.Punter.API.Services
             {
                 var classificationMO = matchesByClassification.Where(k => k.Key == match.MatchOddsClassification).FirstOrDefault();
                 classificationMO.Value.Add(match);
-
-                var classificationMOHT = matchesByClassification.Where(k => k.Key == match.MatchOddsHTClassification).FirstOrDefault();
-                classificationMOHT.Value.Add(match);
 
                 var classificationGoals = matchesByClassification.Where(k => k.Key == match.GoalsClassification).FirstOrDefault();
                 classificationGoals.Value.Add(match);
@@ -1143,19 +959,15 @@ namespace BetPlacer.Punter.API.Services
             return null;
         }
 
-        private List<MatchBarCode> GetMatchesBarCode(List<MatchBaseData> matches, List<TeamAverageData> teamsAverageData, List<TeamMatchesBySeason> teamMatches, bool withNormalization)
+        private List<MatchBarCode> GetMatchesBarCode(List<MatchBaseData> matches, List<TeamAverageData> teamsAverageData, List<TeamMatches> teamMatches)
         {
             List<MatchBarCode> barCodes = new List<MatchBarCode>();
 
             for (int i = 0; i < matches.Count; i++)
             {
                 MatchBaseData match = matches[i];
-
                 MatchBarCode matchBarCode = GetMatchBarCodeToPastMatch(match, teamsAverageData, i);
-
-                if (withNormalization)
-                    matchBarCode.NormalizeValues();
-
+                
                 barCodes.Add(matchBarCode);
 
                 UpdateTeamAverageData(teamsAverageData, teamMatches, match, true);
@@ -1165,13 +977,34 @@ namespace BetPlacer.Punter.API.Services
             return barCodes;
         }
 
-        private List<MatchBarCode> GetMatchesBarCodeNormalizedToNextMatch(List<MatchBaseData> matches, List<TeamAverageData> teamsAverageData, List<TeamMatchesBySeason> teamMatches, NextMatch nextMatch)
+        private List<MatchBarCode> GetNormalizedBarCode(List<MatchBarCode> matchesBarCode)
+        {
+            List<MatchBarCode> normalizedBarCodes = new List<MatchBarCode>();
+            
+            foreach (var matchBarCode in matchesBarCode)
+            {
+                if (matchBarCode.MatchCode == 5406567)
+                {
+
+                }
+
+                matchBarCode.NormalizeValues();
+                normalizedBarCodes.Add(matchBarCode);
+            }
+
+            return normalizedBarCodes;
+        }
+
+        private List<MatchBarCode> GetMatchesBarCodeNormalizedToNextMatch(List<MatchBaseData> matches, List<TeamAverageData> teamsAverageData, List<TeamMatches> teamMatches, NextMatch nextMatch)
         {
             List<MatchBarCode> barCodes = new List<MatchBarCode>();
 
             for (int i = 0; i < matches.Count; i++)
             {
                 MatchBaseData match = matches[i];
+
+                if (match.Status == "incomplete")
+                    continue;
 
                 MatchBarCode matchBarCode = GetMatchBarCodeToPastMatch(match, teamsAverageData, i);
 
@@ -1190,7 +1023,7 @@ namespace BetPlacer.Punter.API.Services
             return barCodes;
         }
 
-        public double GetVariableValue(string variableName, FixtureToFilter fixture)
+        private double GetVariableValue(string variableName, FixtureToFilter fixture)
         {
             var propertyInfo = fixture.GetType().GetProperty(variableName);
 
@@ -1200,6 +1033,19 @@ namespace BetPlacer.Punter.API.Services
             throw new Exception($"Propriedade {propertyInfo} não encontrada no objeto FixtureToFilter.");
         }
 
+        private string GetLastSeason(string currentSeason)
+        {
+            if (currentSeason.Length == 8)
+            {
+                string currentYear = currentSeason.Split("-")[0].Trim();
+                string lastYear = (Convert.ToInt32(currentYear) + 1).ToString();
+
+
+                return $"{lastYear}-{currentYear}";
+            }
+
+            return (Convert.ToInt32(currentSeason) - 1).ToString();
+        }
         #endregion
     }
 }

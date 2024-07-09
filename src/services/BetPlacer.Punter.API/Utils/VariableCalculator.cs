@@ -29,11 +29,12 @@ namespace BetPlacer.Punter.API.Utils
                         variableByResult.Add(Tuple.Create(variableValue, matchResult));
                     }
 
+                    double maxValue = variableByResult.Select(v => v.Item1).ToList().Max();
                     List<Tuple<double, double>> selectedBestIntervals = new List<Tuple<double, double>>();
 
-                    for (int i = 1; i <= 5; i++)
+                    for (int i = Convert.ToInt32(maxValue); i <= maxValue * 100; i++)
                     {
-                        List<VariableInterval> groupedVariableResults = GroupedVariableResults(variableByResult, i, 1);
+                        List<VariableInterval> groupedVariableResults = GroupedVariableResults(variableByResult, maxValue);
                         Tuple<double, double> bestInterval = GetBestInterval(groupedVariableResults, strategy.Matches.Count);
 
                         if (bestInterval != null)
@@ -162,13 +163,13 @@ namespace BetPlacer.Punter.API.Utils
             return -1;
         }
 
-        private static List<VariableInterval> GroupedVariableResults(List<Tuple<double, double>> variableResults, double multiplicator = 1, double maxValue = 1)
+        private static List<VariableInterval> GroupedVariableResults(List<Tuple<double, double>> variableResults, double reference)
         {
             List<VariableInterval> intervals = new List<VariableInterval>();
             double accumulateResult = 0;
-            double decimalMultiplicator = multiplicator / 100;
+            double decimalMultiplicator = reference / 1000;
 
-            for (double initialValue = 0; initialValue < maxValue; initialValue += decimalMultiplicator)
+            for (double initialValue = 0; initialValue < reference; initialValue += decimalMultiplicator)
             {
                 double finalValue = initialValue + decimalMultiplicator;
                 List<double> matchesResult = variableResults.Where(vr => vr.Item1 >= initialValue && vr.Item1 < finalValue).Select(vr => vr.Item2).ToList();

@@ -2,7 +2,7 @@
 {
     public class MatchAnalyzed
     {
-        public MatchAnalyzed(MatchBaseData match, string matchOddsClassification, string matchOddsHTClassification, string goalsClassification, string bttsClassification)
+        public MatchAnalyzed(MatchBaseData match, string matchOddsClassification, string goalsClassification, string bttsClassification)
         {
             MatchCode = match.MatchCode;
             Date = match.Date;
@@ -16,14 +16,11 @@
             BttsNoOdd = match.BttsNoOdd;
             HomeGoals = match.HomeGoals;
             AwayGoals = match.AwayGoals;
-            HomeHTGoals = match.HomeGoalsHT;
-            AwayHTGoals = match.AwayGoalsHT;
             MatchOddsClassification = matchOddsClassification;
-            MatchOddsHTClassification = matchOddsHTClassification;
             GoalsClassification = goalsClassification;
             BttsClassification = bttsClassification;
         }
-        public MatchAnalyzed(NextMatch match, string matchOddsClassification, string matchOddsHTClassification, string goalsClassification, string bttsClassification)
+        public MatchAnalyzed(NextMatch match, string matchOddsClassification, string goalsClassification, string bttsClassification)
         {
             MatchCode = match.MatchCode;
             Date = match.Date;
@@ -37,10 +34,7 @@
             BttsNoOdd = match.BttsNoOdd;
             HomeGoals = 0;
             AwayGoals = 0;
-            HomeHTGoals = 0;
-            AwayHTGoals = 0;
             MatchOddsClassification = matchOddsClassification;
-            MatchOddsHTClassification = matchOddsHTClassification;
             GoalsClassification = goalsClassification;
             BttsClassification = bttsClassification;
         }
@@ -57,10 +51,7 @@
         public double BttsNoOdd { get; set; }
         public int HomeGoals { get; set; }
         public int AwayGoals { get; set; }
-        public int HomeHTGoals { get; set; }
-        public int AwayHTGoals { get; set; }
         public string MatchOddsClassification { get; set; }
-        public string MatchOddsHTClassification { get; set; }
         public string GoalsClassification { get; set; }
         public string BttsClassification { get; set; }
 
@@ -103,17 +94,17 @@
                         odd = 1.05;
                     }
 
-                    if (HomeOdd >= 1.41 && HomeOdd <= 1.49)
+                    if (HomeOdd > 1.40 && HomeOdd <= 1.50)
                     {
                         odd = 1.07;
                     }
 
-                    if (HomeOdd >= 1.5 && HomeOdd <= 1.62)
+                    if (HomeOdd > 1.5 && HomeOdd <= 1.62)
                     {
                         odd = 1.1;
                     }
 
-                    if (HomeOdd >= 1.63 && HomeOdd <= 1.8)
+                    if (HomeOdd > 1.62 && HomeOdd <= 1.8)
                     {
                         odd = 1.12;
                     }
@@ -719,27 +710,11 @@
             }
         }
 
-        public int TotalHTGoals
-        {
-            get
-            {
-                return HomeHTGoals + AwayHTGoals;
-            }
-        }
-
         public int DifferenceGoals
         {
             get
             {
                 return HomeGoals - AwayGoals;
-            }
-        }
-
-        public int DifferenceHTGoals
-        {
-            get
-            {
-                return HomeHTGoals - AwayHTGoals;
             }
         }
     }

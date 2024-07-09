@@ -15,6 +15,7 @@ namespace BetPlacer.Punter.API.Models
         public MatchBaseData(NextMatch nextMatch)
         {
             MatchCode = nextMatch.MatchCode;
+            Status = "incomplete";
             Season = nextMatch.Season;
             Date = nextMatch.Date;
             HomeTeam = nextMatch.HomeTeam;
@@ -30,6 +31,7 @@ namespace BetPlacer.Punter.API.Models
 
         public int MatchCode { get; set; }
         public string Season { get; set; }
+        public string Status { get; set; }
 
         public string FormattedSeason
         {
@@ -42,6 +44,7 @@ namespace BetPlacer.Punter.API.Models
             }
         }
 
+        public DateTime UtcDate { get; set; }
         public string Date { get; set; }
         public string HomeTeam { get; set; }
         public string AwayTeam { get; set; }

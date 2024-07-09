@@ -2,29 +2,31 @@
 {
     public class ValueNormalizer
     {
-        private Queue<double> _queue;
+        private Queue<double?> _queue;
+        private Queue<Tuple<int, double?>> _valuePerId;
 
         public ValueNormalizer()
         {
-            _queue = new Queue<double>(5);
+            _queue = new Queue<double?>(5);
+            _valuePerId = new Queue<Tuple<int, double?>>(5);
         }
 
-        public double[] ToArray()
+        public double?[] ToArray()
         {
             return _queue.ToArray();
         }
 
-        public double Normalize(double value, int index)
+        public double Normalize(int matchCode, double? value, int index)
         {
-            Enqueue(value);
+            Enqueue(matchCode, value);
 
-            if (index < 4)
+            if (index < 4 || value == null)
                 return 0;
 
             double maxValue = GetMaxItem();
             double minValue = GetMinItem();
 
-            double dividend = value - minValue;
+            double dividend = value.Value - minValue;
             double divider = maxValue - minValue;
 
             if (divider == 0)
@@ -34,22 +36,26 @@
             return result;
         }
 
-        public void Enqueue(double item)
+        public void Enqueue(int matchCode, double? item)
         {
             if (_queue.Count >= 5)
+            {
                 _queue.Dequeue();
+                _valuePerId.Dequeue();
+            }
 
             _queue.Enqueue(item);
+            _valuePerId.Enqueue(Tuple.Create(matchCode, item));
         }
 
         private double GetMaxItem()
         {
-            return _queue.Max();
+            return _queue.Max().Value;
         }
 
         private double GetMinItem()
         {
-            return _queue.Min();
+            return _queue.Min().Value;
         }
     }
 }
