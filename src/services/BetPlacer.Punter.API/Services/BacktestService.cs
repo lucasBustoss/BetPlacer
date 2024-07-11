@@ -18,9 +18,13 @@ namespace BetPlacer.Punter.API.Services
         {
             #region Mount data
 
+            if (nextMatches.Count == 0)
+                return new List<FixtureStrategyModel>();
+
             List<TeamAverageData> teamsAverageData = new List<TeamAverageData>();
 
             List<TeamMatches> teamMatches = matchBaseData
+                .Where(mbd => mbd.Season == "2013" || mbd.Season == "2013-2014")
                 .SelectMany(m => new[]
                 {
                     new { TeamName = m.HomeTeam, Match = m },
@@ -44,18 +48,19 @@ namespace BetPlacer.Punter.API.Services
             }
 
             List<MatchBaseData> matchesInOtherSeasons = matchBaseData
-                .Where(mbd => mbd.Season != "2013" && mbd.Season != "2013-2014").ToList();
+                .Where(mbd => mbd.Season != "2013" && mbd.Season != "2013-2014").OrderBy(m => m.UtcDate).ThenBy(m => m.MatchCode).ToList();
+
+            List<MatchBarCode> matchesBarCode = GetMatchesBarCode(matchesInOtherSeasons, teamsAverageData, teamMatches);
+            List<MatchBarCode> matchesKNN = GetNormalizedBarCode(matchesBarCode);
 
             List<FixtureToFilter> fixturesToFilter = new List<FixtureToFilter>();
 
             foreach (NextMatch nextMatch in nextMatches)
             {
-                List<MatchBarCode> matchesKNN = GetMatchesBarCodeNormalizedToNextMatch(matchesInOtherSeasons, teamsAverageData, teamMatches, nextMatch);
-
                 MatchBarCode barCode = CalculateMatchBarCodeForNextMatch(nextMatch, teamsAverageData);
-                MatchBarCode barCodeToKNN = matchesKNN.Where(m => m.MatchCode == nextMatch.MatchCode).FirstOrDefault();
+                MatchBarCode barCodeKNN = GetMatchesBarCodeNormalizedToNextMatch(matchesInOtherSeasons, teamsAverageData, teamMatches, nextMatch);
 
-                MatchAnalyzed matchAnalyzed = CalculateKNNToNextMatch(barCodeToKNN, matchesKNN, nextMatch);
+                MatchAnalyzed matchAnalyzed = CalculateKNNToNextMatch(barCodeKNN, matchesKNN, nextMatch);
 
                 FixtureToFilter fixtureToFilter = new FixtureToFilter(matchAnalyzed, barCode);
                 fixturesToFilter.Add(fixtureToFilter);
@@ -87,10 +92,10 @@ namespace BetPlacer.Punter.API.Services
                             listaJogos.Add($"O jogo {fixtureToFilter.MatchCode} não entrou no método {backtest.Name} porque a classificação não bateu. " +
                                 $"Classificação do método: {backtest.Classifications.Aggregate((a, b) => a + " - " + b)}. " +
                                 $"Classificação da partida: {fixtureToFilter.MatchOddsClassification} - {fixtureToFilter.GoalsClassification} - {fixtureToFilter.BttsClassification}");
-                            
+
                             break;
                         }
-                        
+
                         List<string> listClassifications = groupedClassifications[key].ToList();
 
                         switch (key)
@@ -114,14 +119,9 @@ namespace BetPlacer.Punter.API.Services
 
                     if (!classificationAnalysis)
                     {
-                        if (!classificationAnalysis)
-                        {
-                            listaJogos.Add($"O jogo {fixtureToFilter.MatchCode} não entrou no método {backtest.Name} porque a classificação não bateu. " +
-                                $"Classificação do método: {backtest.Classifications.Aggregate((a, b) => a + " - " + b)}. " +
-                                $"Classificação da partida: {fixtureToFilter.MatchOddsClassification} - {fixtureToFilter.GoalsClassification} - {fixtureToFilter.BttsClassification}");
-
-                            break;
-                        }
+                        listaJogos.Add($"O jogo {fixtureToFilter.MatchCode} não entrou no método {backtest.Name} porque a classificação não bateu. " +
+                            $"Classificação do método: {backtest.Classifications.Aggregate((a, b) => a + " - " + b)}. " +
+                            $"Classificação da partida: {fixtureToFilter.MatchOddsClassification} - {fixtureToFilter.GoalsClassification} - {fixtureToFilter.BttsClassification}");
 
                         continue;
                     }
@@ -137,17 +137,18 @@ namespace BetPlacer.Punter.API.Services
                         {
                             BestInterval variableInterval = backtest.BestIntervals.Where(b => b.PropertyName == variableName).FirstOrDefault();
 
-                            if (variableInterval != null) 
-                            { 
+                            if (variableInterval != null)
+                            {
                                 double variableValue = GetVariableValue(variableName, fixtureToFilter);
 
-                                if (variableValue < variableInterval.InitialInterval || variableValue > variableInterval.FinalInterval )
+                                if (variableValue < variableInterval.InitialInterval || variableValue > variableInterval.FinalInterval)
                                 {
                                     variablesAnalysis = false;
                                     listaJogos.Add($"O jogo {fixtureToFilter.MatchCode} não entrou no método {backtest.Name} porque a variável não bateu. " +
                                         $"Variável do método: {variableName} - Initial: {variableInterval.InitialInterval} - Final: {variableInterval.FinalInterval} " +
                                         $"Variável da partida: {variableValue}");
-                                    break;
+
+                                    continue;
                                 }
                             }
                         }
@@ -158,8 +159,6 @@ namespace BetPlacer.Punter.API.Services
 
                     fixtureStrategies.Add(new FixtureStrategyModel(fixtureToFilter.MatchCode, backtest.Name));
                 }
-
-                return fixtureStrategies;
             }
 
             return fixtureStrategies;
@@ -224,7 +223,7 @@ namespace BetPlacer.Punter.API.Services
 
             foreach (Strategy strategy in strategies)
             {
-                var filteredClassifications = strategy.StrategyClassifications.Where(sc => sc.ProfitLoss > -10 && sc.HistoricalCoefficientVariation <= 0.3).ToList();
+                var filteredClassifications = strategy.StrategyClassifications.Where(sc => sc.ProfitLoss > -3 && sc.HistoricalCoefficientVariation <= 0.3).ToList();
                 strategy.StrategyClassifications = filteredClassifications;
             }
 
@@ -557,7 +556,7 @@ namespace BetPlacer.Punter.API.Services
             string teamName = isHomeTeam ? match.HomeTeam : match.AwayTeam;
             TeamMatches teamData = teamMatches
                 .FirstOrDefault(tmb => tmb.TeamName == teamName);
-            
+
             if (teamData == null)
             {
                 teamData = new TeamMatches
@@ -911,7 +910,12 @@ namespace BetPlacer.Punter.API.Services
 
             List<string> groupPriority = StrategyUtils.GetPriorityRankingGroupByStrategy(strategy.Name);
 
-            double lastResult = -10;
+            double lastResult = -3;
+
+            if (strategy.Name == "PUNTER - Back Casa")
+            {
+
+            }
 
             foreach (string priority in groupPriority)
             {
@@ -941,6 +945,7 @@ namespace BetPlacer.Punter.API.Services
 
             }
 
+            matchesWithValue = matchesWithValue.DistinctBy(fm => fm.MatchCode).ToList();
             StrategyInfo strategyInfo = null;
 
             if (matchesWithValue.Count >= matches.Count * 0.20)
@@ -967,7 +972,7 @@ namespace BetPlacer.Punter.API.Services
             {
                 MatchBaseData match = matches[i];
                 MatchBarCode matchBarCode = GetMatchBarCodeToPastMatch(match, teamsAverageData, i);
-                
+
                 barCodes.Add(matchBarCode);
 
                 UpdateTeamAverageData(teamsAverageData, teamMatches, match, true);
@@ -980,47 +985,23 @@ namespace BetPlacer.Punter.API.Services
         private List<MatchBarCode> GetNormalizedBarCode(List<MatchBarCode> matchesBarCode)
         {
             List<MatchBarCode> normalizedBarCodes = new List<MatchBarCode>();
-            
+
             foreach (var matchBarCode in matchesBarCode)
             {
-                if (matchBarCode.MatchCode == 5406567)
-                {
-
-                }
-
-                matchBarCode.NormalizeValues();
-                normalizedBarCodes.Add(matchBarCode);
+                MatchBarCode matchToNormalize = matchBarCode.DeepCopy();
+                matchToNormalize.NormalizeValues();
+                normalizedBarCodes.Add(matchToNormalize);
             }
 
             return normalizedBarCodes;
         }
 
-        private List<MatchBarCode> GetMatchesBarCodeNormalizedToNextMatch(List<MatchBaseData> matches, List<TeamAverageData> teamsAverageData, List<TeamMatches> teamMatches, NextMatch nextMatch)
+        private MatchBarCode GetMatchesBarCodeNormalizedToNextMatch(List<MatchBaseData> matches, List<TeamAverageData> teamsAverageData, List<TeamMatches> teamMatches, NextMatch nextMatch)
         {
-            List<MatchBarCode> barCodes = new List<MatchBarCode>();
-
-            for (int i = 0; i < matches.Count; i++)
-            {
-                MatchBaseData match = matches[i];
-
-                if (match.Status == "incomplete")
-                    continue;
-
-                MatchBarCode matchBarCode = GetMatchBarCodeToPastMatch(match, teamsAverageData, i);
-
-                matchBarCode.NormalizeValues();
-
-                barCodes.Add(matchBarCode);
-
-                UpdateTeamAverageData(teamsAverageData, teamMatches, match, true);
-                UpdateTeamAverageData(teamsAverageData, teamMatches, match, false);
-            }
-
             MatchBarCode barCode = CalculateMatchBarCodeForNextMatch(nextMatch, teamsAverageData, matches.Count);
             barCode.NormalizeValues();
-            barCodes.Add(barCode);
 
-            return barCodes;
+            return barCode;
         }
 
         private double GetVariableValue(string variableName, FixtureToFilter fixture)
@@ -1035,7 +1016,7 @@ namespace BetPlacer.Punter.API.Services
 
         private string GetLastSeason(string currentSeason)
         {
-            if (currentSeason.Length == 8)
+            if (currentSeason.Length > 4)
             {
                 string currentYear = currentSeason.Split("-")[0].Trim();
                 string lastYear = (Convert.ToInt32(currentYear) + 1).ToString();
@@ -1046,6 +1027,7 @@ namespace BetPlacer.Punter.API.Services
 
             return (Convert.ToInt32(currentSeason) - 1).ToString();
         }
+
         #endregion
     }
 }

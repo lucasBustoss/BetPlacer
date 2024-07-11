@@ -20,8 +20,7 @@ namespace BetPlacer.Fixtures.API.Repositories
         List<LeagueFixtureByDate> ListFixturesByDate(IEnumerable<LeaguesApiResponseModel> leagues, IEnumerable<TeamsApiResponseModel> teams, IEnumerable<PunterBacktestFixture> fixturesStrategy);
         void CreateOrUpdateCompleteFixtures(IEnumerable<FixturesFootballResponseModel> fixturesResponse);
         List<string> CreateOrUpdateNextFixtures(IEnumerable<FixturesFootballResponseModel> fixturesResponse, List<PinnacleOddsModel> odds);
-        void CreateOdds(FixtureOdds odds);
-        void UpdateOdds(FixtureOdds odds);
+        void CreateOrUpdateOdds(FixtureOdds odds);
         void CalculateFixtureStats(int leagueSeasonCode);
     }
 }

@@ -173,7 +173,7 @@ namespace BetPlacer.Fixtures.API.Controllers
         {
             try
             {
-                _fixturesRepository.CreateOdds(new FixtureOdds(oddsRequest));
+                _fixturesRepository.CreateOrUpdateOdds(new FixtureOdds(oddsRequest));
 
                 return OkResponse("odds created");
             }
@@ -188,7 +188,7 @@ namespace BetPlacer.Fixtures.API.Controllers
         {
             try
             {
-                _fixturesRepository.UpdateOdds(new FixtureOdds(oddsRequest));
+                _fixturesRepository.CreateOrUpdateOdds(new FixtureOdds(oddsRequest));
 
                 return OkResponse("odds updated");
             }

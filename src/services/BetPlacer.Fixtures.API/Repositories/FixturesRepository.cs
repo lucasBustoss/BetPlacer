@@ -92,10 +92,34 @@ namespace BetPlacer.Fixtures.API.Repositories
                                                         .Any(fo => fo.FixtureCode == f.Code)
                                                   && leagueSeasonCodes.Contains(f.SeasonCode)
                                                   && f.StartDate < DateTime.UtcNow.AddDays(-1))
-                                      .OrderBy(f => f.StartDate)
                                       .ToList();
 
-            return fixturesWithoutOdds.ToList();
+            var query = from fixture in _context.Fixtures
+                                                         join odd in _context.FixtureOdds on fixture.Code equals odd.FixtureCode
+                                                         where leagueSeasonCodes.Contains(fixture.SeasonCode) &&
+                                                               (odd.HomeOdd == 0 || odd.DrawOdd == 0 || odd.AwayOdd == 0 ||
+                                                                odd.Over25Odd == 0 || odd.Under25Odd == 0 ||
+                                                                odd.BTTSYesOdd == 0 || odd.BTTSNoOdd == 0)
+                                                         select fixture;
+
+            var fixtures = query.ToList();
+
+            var combinedFixtures = new List<FixtureModel>();
+            var addedFixtureCodes = new HashSet<int>();
+
+            foreach (var fixture in fixturesWithoutOdds)
+            {
+                if (addedFixtureCodes.Add(fixture.Code))
+                    combinedFixtures.Add(fixture);
+            }
+
+            foreach (var fixture in fixtures)
+            {
+                if (addedFixtureCodes.Add(fixture.Code))
+                    combinedFixtures.Add(fixture);
+            }
+
+            return combinedFixtures.OrderBy(f => f.StartDate).ToList();
         }
 
         public List<int> GetFixtureCodesByDate(DateTime startDate, DateTime finalDate)
@@ -276,7 +300,7 @@ namespace BetPlacer.Fixtures.API.Repositories
 
                     if (fixtureToOdd != null)
                     {
-                        UpdateOdds(new FixtureOdds(fixtureToOdd.Code, odd.HomeOdd, odd.DrawOdd, odd.AwayOdd, odd.Over25Odd, odd.Under25Odd, odd.BttsYesOdd.Value, odd.BttsNoOdd.Value));
+                        CreateOrUpdateOdds(new FixtureOdds(fixtureToOdd.Code, odd.HomeOdd, odd.DrawOdd, odd.AwayOdd, odd.Over25Odd, odd.Under25Odd, odd.BttsYesOdd.Value, odd.BttsNoOdd.Value));
                     }
                     // Só vou enviar a mensagem pro Telegram caso o nome do time da Pinnacle seja igual antes e depois de converter.
                     // Isso pode ser um indicativo de que não tenho o parse correto
@@ -290,18 +314,7 @@ namespace BetPlacer.Fixtures.API.Repositories
             #endregion
         }
 
-        public void CreateOdds(FixtureOdds odds)
-        {
-            var existingOdd = _context.FixtureOdds.Where(o => o.FixtureCode == odds.FixtureCode).FirstOrDefault();
-
-            if (existingOdd == null)
-            {
-                _context.FixtureOdds.Add(odds);
-                _context.SaveChanges();
-            }
-        }
-
-        public void UpdateOdds(FixtureOdds odds)
+        public void CreateOrUpdateOdds(FixtureOdds odds)
         {
             var existingOdd = _context.FixtureOdds.Where(o => o.FixtureCode == odds.FixtureCode).FirstOrDefault();
 

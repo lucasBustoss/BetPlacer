@@ -327,6 +327,14 @@
                 double odd = 2.36 * HomeOdd - 1.46;
 
                 if (odd < 1.01)
+                {
+                    if (HomeOdd >= 1 && HomeOdd <= 1.15)
+                    {
+                        odd = 1.2;
+                    }
+                }
+
+                if (odd < 1.01)
                     throw new Exception("Odd menor que 1.01");
 
                 return odd;

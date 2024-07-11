@@ -1,6 +1,7 @@
 ﻿using BetPlacer.Punter.API.Models.ValueObjects.Intervals;
 using BetPlacer.Punter.API.Models.ValueObjects.Match;
 using BetPlacer.Punter.API.Models.ValueObjects.Strategy;
+using ClosedXML.Excel;
 using System.Text.RegularExpressions;
 
 namespace BetPlacer.Punter.API.Utils
@@ -17,6 +18,7 @@ namespace BetPlacer.Punter.API.Utils
 
                 foreach (string variable in variables)
                 {
+
                     List<Tuple<double, double>> variableByResult = new List<Tuple<double, double>>();
 
                     foreach (MatchAnalyzed matchAnalyzed in strategy.Matches)
@@ -26,15 +28,22 @@ namespace BetPlacer.Punter.API.Utils
                         double variableValue = GetVariableValue(match, variable);
                         double matchResult = StrategyUtils.GetMatchResult(matchAnalyzed, strategy.Name, stake);
 
+                        if (matchResult == 19.752599999999987)
+                        {
+
+                        }
+
                         variableByResult.Add(Tuple.Create(variableValue, matchResult));
                     }
 
-                    double maxValue = variableByResult.Select(v => v.Item1).ToList().Max();
+                    CriarExcel(strategy.Name, variable, variableByResult);
+
+                    int maxValue = variableByResult.Select(v => v.Item1).ToList().Max() >= 3 ? 3 : 1;
                     List<Tuple<double, double>> selectedBestIntervals = new List<Tuple<double, double>>();
 
-                    for (int i = Convert.ToInt32(maxValue); i <= maxValue * 100; i++)
+                    for (int i = maxValue; i <= maxValue * 10; i++)
                     {
-                        List<VariableInterval> groupedVariableResults = GroupedVariableResults(variableByResult, maxValue);
+                        List<VariableInterval> groupedVariableResults = GroupedVariableResults(variableByResult, i, maxValue);
                         Tuple<double, double> bestInterval = GetBestInterval(groupedVariableResults, strategy.Matches.Count);
 
                         if (bestInterval != null)
@@ -61,6 +70,83 @@ namespace BetPlacer.Punter.API.Utils
 
                 strategy.BestIntervals = filteredIntervals;
                 strategy.ResultAfterIntervals = GetResultWithIntervalsApplied(strategy, matches, stake);
+
+                if (strategy.ResultAfterIntervals == null || strategy.ResultAfterIntervals.Count == 0)
+                    strategy.BestIntervals.Clear();
+            }
+        }
+
+        private static void CriarExcel(string metodo, string variable, List<Tuple<double, double>> variableByResult)
+        {
+            using (var workbook = new XLWorkbook())
+            {
+                // Adiciona uma nova planilha
+                var worksheet = workbook.Worksheets.Add(variable);
+
+                // Adiciona cabeçalhos
+                worksheet.Cell(1, 1).Value = "Variavel";
+                worksheet.Cell(1, 2).Value = "Resultado";
+
+                // Adiciona dados
+                for (int i = 0; i < variableByResult.Count; i++)
+                {
+                    worksheet.Cell(i + 2, 1).Value = variableByResult[i].Item1;
+                    worksheet.Cell(i + 2, 2).Value = variableByResult[i].Item2;
+                }
+
+                // Cria as 10 abas adicionais com agrupamento
+                for (int i = 0; i < 10; i++)
+                {
+                    double agrupamento = 0.01 * (i + 1);
+                    var worksheetVar = workbook.Worksheets.Add($"Agrupamento {agrupamento:0.00}");
+
+                    worksheetVar.Cell(1, 1).Value = "Valor Agrupado";
+                    worksheetVar.Cell(1, 2).Value = "Soma do Resultado";
+                    worksheetVar.Cell(1, 3).Value = "Acumulado";
+                    worksheetVar.Cell(1, 4).Value = "Total de Registros";
+
+                    var groupedData = variableByResult
+                        .GroupBy(d => Math.Floor(d.Item1 / agrupamento))
+                        .Select(g => new
+                        {
+                            IntervaloInicial = g.Key * agrupamento,
+                            IntervaloFinal = (g.Key + 1) * agrupamento,
+                            SomaResultado = g.Sum(d => d.Item2),
+                            TotalRegistros = g.Count()
+                        })
+                        .OrderBy(g => g.IntervaloInicial)
+                        .ToList();
+
+                    int row = 2;
+                    double acumulado = 0;
+
+                    foreach (var group in groupedData)
+                    {
+                        acumulado += group.SomaResultado;
+                        worksheetVar.Cell(row, 1).Value = $"{group.IntervaloInicial:0.00} - {group.IntervaloFinal:0.00}";
+                        worksheetVar.Cell(row, 2).Value = group.SomaResultado;
+                        worksheetVar.Cell(row, 3).Value = acumulado;
+                        worksheetVar.Cell(row, 4).Value = group.TotalRegistros;
+
+                        if (group.SomaResultado < 0)
+                            worksheetVar.Cell(row, 2).Style.Fill.BackgroundColor = XLColor.RedPigment;
+
+                        if (acumulado < 0)
+                            worksheetVar.Cell(row, 3).Style.Fill.BackgroundColor = XLColor.RedPigment;
+
+                        row++;
+                    }
+                }
+
+                try
+                {
+                    // Salva o arquivo
+                    workbook.SaveAs($"./variaveis/{metodo}/{variable}.xlsx");
+                }
+                catch
+                {
+
+                }
             }
         }
 
@@ -163,13 +249,13 @@ namespace BetPlacer.Punter.API.Utils
             return -1;
         }
 
-        private static List<VariableInterval> GroupedVariableResults(List<Tuple<double, double>> variableResults, double reference)
+        private static List<VariableInterval> GroupedVariableResults(List<Tuple<double, double>> variableResults, double reference, double maxValue)
         {
             List<VariableInterval> intervals = new List<VariableInterval>();
             double accumulateResult = 0;
-            double decimalMultiplicator = reference / 1000;
+            double decimalMultiplicator = reference / 100;
 
-            for (double initialValue = 0; initialValue < reference; initialValue += decimalMultiplicator)
+            for (double initialValue = 0; initialValue <= maxValue; initialValue += decimalMultiplicator)
             {
                 double finalValue = initialValue + decimalMultiplicator;
                 List<double> matchesResult = variableResults.Where(vr => vr.Item1 >= initialValue && vr.Item1 < finalValue).Select(vr => vr.Item2).ToList();
@@ -197,7 +283,7 @@ namespace BetPlacer.Punter.API.Utils
 
             int matchesInFilter = 0;
 
-            int maxTolerate = 1;
+            int maxTolerate = 2;
             int currentTolerate = 0;
 
             bool shouldSetInitialValue = true;
@@ -209,17 +295,22 @@ namespace BetPlacer.Punter.API.Utils
 
                 if (result <= 0)
                 {
+                    if (currentTolerate < maxTolerate)
+                    {
+                        currentAccumulate += result;
+                        matchesInFilter += variableInterval.MatchesCount;
+                        currentTolerate++;
+                    }
+
                     if (currentTolerate == maxTolerate)
                     {
                         finalValue = lastFinalValue;
                         shouldSetInitialValue = true;
                         shouldValidateValues = true;
-                        currentTolerate++;
-                    }
-                    else if (currentTolerate < maxTolerate)
-                    {
-                        currentAccumulate += result;
-                        matchesInFilter += variableInterval.MatchesCount;
+
+                        currentAccumulate -= result;
+                        matchesInFilter -= variableInterval.MatchesCount;
+
                         currentTolerate++;
                     }
                 }
@@ -242,11 +333,14 @@ namespace BetPlacer.Punter.API.Utils
 
                     double qtdPercentMatchesInFilter = (double)matchesInFilter / (double)totalMatches;
 
-                    if (currentAccumulate > bestAccumulate && qtdPercentMatchesInFilter >= 0.4 && qtdPercentMatchesInFilter <= 0.9)
+                    if (currentAccumulate > (bestAccumulate * 0.55) && qtdPercentMatchesInFilter >= 0.25 && qtdPercentMatchesInFilter <= 0.95)
                     {
                         validateInitialValue = initialValue;
-                        validateFinalValue = finalValue;
+                        // Se currentTolerate > maxTolerate, significa que to validando porque eu cheguei ao valor maximo de resultados negativos tolerados.
+                        // Sendo assim, eu ignoro o ultimo intervalo, tanto aqui quando no if "currentTolerate == maxTolerate"
+                        validateFinalValue = currentTolerate > maxTolerate ? lastFinalValue : finalValue;
                     }
+
 
                     matchesInFilter = 0;
                 }
@@ -266,6 +360,8 @@ namespace BetPlacer.Punter.API.Utils
             List<int> matchClassifiedCodes = strategy.Matches.Select(m => m.MatchCode).ToList();
 
             List<MatchBarCode> filteredList = matches.Where(obj => matchClassifiedCodes.Contains(obj.MatchCode)).ToList();
+            List<int> matchCodesInMatches = matches.Select(m => m.MatchCode).ToList();
+            List<int> missingMatchCodes = matchClassifiedCodes.Except(matchCodesInMatches).ToList();
 
             List<MatchBarCode> selectedMatches = filteredList.Where(m =>
             {
@@ -324,7 +420,7 @@ namespace BetPlacer.Punter.API.Utils
 
                 int totalMatches = filteredList.Count;
 
-                if (totalMatches != lastTotalMatches && result != lastResult && totalMatches > (matches.Count * 0.05))
+                if (totalMatches != lastTotalMatches && result != lastResult && totalMatches >= (matches.Count * 0.05))
                 {
                     var stdResult = MathUtils.StandardDeviation(results);
                     var avgResult = results.Average();

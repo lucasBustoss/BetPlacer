@@ -8,6 +8,11 @@ namespace BetPlacer.Punter.API.Models.ValueObjects.Match
         private int _index = -1;
         private int _matchCode;
 
+        public MatchBarCode()
+        {
+            
+        }
+
         // Ctor para NextMatch
         public MatchBarCode(int matchCode, double? homeOdd, double? drawOdd, double? awayOdd, double? over25Odd, double? under25Odd, double? bttsYesOdd, double? bttsNoOdd, int index)
         {
@@ -184,6 +189,66 @@ namespace BetPlacer.Punter.API.Models.ValueObjects.Match
 
         #endregion
 
+        #region DeepCopy
+
+        public MatchBarCode DeepCopy()
+        {
+            return new MatchBarCode
+            {
+                MatchCode = this.MatchCode,
+                MatchOddsResult = this.MatchOddsResult,
+                GoalsResult = this.GoalsResult,
+                BttsResult = this.BttsResult,
+                PowerPoint = this.PowerPoint,
+                CVMatchOdds = this.CVMatchOdds,
+                HomeOdd = this.HomeOdd,
+                DrawOdd = this.DrawOdd,
+                AwayOdd = this.AwayOdd,
+                Over25Odd = this.Over25Odd,
+                Under25Odd = this.Under25Odd,
+                BttsYesOdd = this.BttsYesOdd,
+                BttsNoOdd = this.BttsNoOdd,
+                HomeCVPoints = this.HomeCVPoints,
+                HomePoints = this.HomePoints,
+                HomeDifferenceGoals = this.HomeDifferenceGoals,
+                HomeCVDifferenceGoals = this.HomeCVDifferenceGoals,
+                HomePoisson = this.HomePoisson,
+                HomeGoalsScored = this.HomeGoalsScored,
+                HomeGoalsScoredValue = this.HomeGoalsScoredValue,
+                HomeGoalsScoredCost = this.HomeGoalsScoredCost,
+                HomeGoalsScoredCV = this.HomeGoalsScoredCV,
+                HomeGoalsConceded = this.HomeGoalsConceded,
+                HomeGoalsConcededValue = this.HomeGoalsConcededValue,
+                HomeGoalsConcededCost = this.HomeGoalsConcededCost,
+                HomeGoalsConcededCV = this.HomeGoalsConcededCV,
+                HomeOddsCV = this.HomeOddsCV,
+                HomeMatchOddsRPS = this.HomeMatchOddsRPS,
+                HomeGoalsRPS = this.HomeGoalsRPS,
+                HomeBTTSRPS = this.HomeBTTSRPS,
+                AwayCVPoints = this.AwayCVPoints,
+                AwayPoints = this.AwayPoints,
+                AwayDifferenceGoals = this.AwayDifferenceGoals,
+                AwayCVDifferenceGoals = this.AwayCVDifferenceGoals,
+                AwayPoisson = this.AwayPoisson,
+                AwayGoalsScored = this.AwayGoalsScored,
+                AwayGoalsScoredValue = this.AwayGoalsScoredValue,
+                AwayGoalsScoredCost = this.AwayGoalsScoredCost,
+                AwayGoalsScoredCV = this.AwayGoalsScoredCV,
+                AwayGoalsConceded = this.AwayGoalsConceded,
+                AwayGoalsConcededValue = this.AwayGoalsConcededValue,
+                AwayGoalsConcededCost = this.AwayGoalsConcededCost,
+                AwayGoalsConcededCV = this.AwayGoalsConcededCV,
+                AwayOddsCV = this.AwayOddsCV,
+                AwayMatchOddsRPS = this.AwayMatchOddsRPS,
+                AwayGoalsRPS = this.AwayGoalsRPS,
+                AwayBTTSRPS = this.AwayBTTSRPS,
+                _index = this._index,
+                _matchCode = this._matchCode,
+                _valuesNormalized = this._valuesNormalized
+            };
+        }
+
+        #endregion
 
         #region Methods
 
