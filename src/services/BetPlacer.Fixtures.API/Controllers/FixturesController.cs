@@ -151,7 +151,7 @@ namespace BetPlacer.Fixtures.API.Controllers
         public async Task<ActionResult> GetFixturesByDate()
         {
             var startDate = DateTime.UtcNow.Date;
-            var endDate = DateTime.UtcNow.Date.AddDays(1).AddMilliseconds(-1);
+            var endDate = DateTime.UtcNow.Date.AddDays(3).AddMilliseconds(-1);
             var fixtureCodes = _fixturesRepository.GetFixtureCodesByDate(startDate, endDate);
 
             IEnumerable<PunterBacktestFixture> fixturesStrategy = await GetFixturesStrategy(fixtureCodes);

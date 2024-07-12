@@ -32,8 +32,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-    
-      
+       
   betplacer_teams_api:
     build:
       context: .
@@ -51,7 +50,6 @@ services:
       timeout: 10s
       retries: 3
     
-      
   betplacer_sync_api:
     build:
       context: .
@@ -71,7 +69,6 @@ services:
       timeout: 10s
       retries: 3
     
-      
   betplacer_fixtures_api:
     build:
       context: .
@@ -164,7 +161,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-
+       
 networks:
   betplacer-network:
     driver: bridge
