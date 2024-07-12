@@ -57,6 +57,11 @@ namespace BetPlacer.Punter.API.Services
 
             foreach (NextMatch nextMatch in nextMatches)
             {
+                if (nextMatch.MatchCode == 7453263)
+                {
+
+                }
+
                 MatchBarCode barCode = CalculateMatchBarCodeForNextMatch(nextMatch, teamsAverageData);
                 MatchBarCode barCodeKNN = GetMatchesBarCodeNormalizedToNextMatch(matchesInOtherSeasons, teamsAverageData, teamMatches, nextMatch);
 
@@ -139,9 +144,9 @@ namespace BetPlacer.Punter.API.Services
 
                             if (variableInterval != null)
                             {
-                                double variableValue = GetVariableValue(variableName, fixtureToFilter);
+                                double? variableValue = GetVariableValue(variableName, fixtureToFilter);
 
-                                if (variableValue < variableInterval.InitialInterval || variableValue > variableInterval.FinalInterval)
+                                if (variableValue != null && (variableValue < variableInterval.InitialInterval || variableValue > variableInterval.FinalInterval))
                                 {
                                     variablesAnalysis = false;
                                     listaJogos.Add($"O jogo {fixtureToFilter.MatchCode} não entrou no método {backtest.Name} porque a variável não bateu. " +
@@ -975,6 +980,11 @@ namespace BetPlacer.Punter.API.Services
 
                 barCodes.Add(matchBarCode);
 
+                if (match.MatchCode == 7436714)
+                {
+
+                }
+
                 UpdateTeamAverageData(teamsAverageData, teamMatches, match, true);
                 UpdateTeamAverageData(teamsAverageData, teamMatches, match, false);
             }
@@ -1004,12 +1014,12 @@ namespace BetPlacer.Punter.API.Services
             return barCode;
         }
 
-        private double GetVariableValue(string variableName, FixtureToFilter fixture)
+        private double? GetVariableValue(string variableName, FixtureToFilter fixture)
         {
             var propertyInfo = fixture.GetType().GetProperty(variableName);
 
             if (propertyInfo != null)
-                return (double)propertyInfo.GetValue(fixture);
+                return (double?)propertyInfo.GetValue(fixture);
 
             throw new Exception($"Propriedade {propertyInfo} não encontrada no objeto FixtureToFilter.");
         }
@@ -1019,7 +1029,7 @@ namespace BetPlacer.Punter.API.Services
             if (currentSeason.Length > 4)
             {
                 string currentYear = currentSeason.Split("-")[0].Trim();
-                string lastYear = (Convert.ToInt32(currentYear) + 1).ToString();
+                string lastYear = (Convert.ToInt32(currentYear) - 1).ToString();
 
 
                 return $"{lastYear}-{currentYear}";

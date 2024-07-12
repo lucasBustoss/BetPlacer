@@ -12,7 +12,7 @@ namespace BetPlacer.Punter.API.Models.ValueObjects
             GoalsClassification = matchAnalyzed.GoalsClassification;
             BttsClassification = matchAnalyzed.BttsClassification;
 
-            PowerPoint = matchBarCode.PowerPoint.Value;
+            PowerPoint = matchBarCode.PowerPoint;
             CVMatchOdds = matchBarCode.CVMatchOdds;
             HomeOdd = matchBarCode.HomeOdd;
             DrawOdd = matchBarCode.DrawOdd;
@@ -22,11 +22,11 @@ namespace BetPlacer.Punter.API.Models.ValueObjects
             BttsYesOdd = matchBarCode.BttsYesOdd;
             BttsNoOdd = matchBarCode.BttsNoOdd;
 
-            HomeCVPoints = matchBarCode.HomeCVPoints.Value;
+            HomeCVPoints = matchBarCode.HomeCVPoints;
             HomePoints = matchBarCode.HomePoints;
             HomeDifferenceGoals = matchBarCode.HomeDifferenceGoals;
             HomeCVDifferenceGoals = matchBarCode.HomeCVDifferenceGoals;
-            HomePoisson = matchBarCode.HomePoisson.Value;
+            HomePoisson = matchBarCode.HomePoisson;
             HomeGoalsScored = matchBarCode.HomeGoalsScored;
             HomeGoalsScoredValue = matchBarCode.HomeGoalsScoredValue;
             HomeGoalsScoredCost = matchBarCode.HomeGoalsScoredCost;
@@ -44,7 +44,7 @@ namespace BetPlacer.Punter.API.Models.ValueObjects
             AwayPoints = matchBarCode.AwayPoints;
             AwayDifferenceGoals = matchBarCode.AwayDifferenceGoals;
             AwayCVDifferenceGoals = matchBarCode.AwayCVDifferenceGoals;
-            AwayPoisson = matchBarCode.AwayPoisson.Value;
+            AwayPoisson = matchBarCode.AwayPoisson;
             AwayGoalsScored = matchBarCode.AwayGoalsScored;
             AwayGoalsScoredValue = matchBarCode.AwayGoalsScoredValue;
             AwayGoalsScoredCost = matchBarCode.AwayGoalsScoredCost;

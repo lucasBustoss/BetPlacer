@@ -38,7 +38,7 @@ namespace BetPlacer.Punter.API.Models
             get
             {
                 if (Season.Length > 4)
-                    return $"{Season.Substring(0, 4)}-{Season.Substring(4, 4)}";
+                    return $"{Season.Substring(0, 4)}-{Season.Substring(5, 4)}";
 
                 return Season;
             }
