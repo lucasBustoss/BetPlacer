@@ -37,11 +37,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BetPlacer.Core.API", "src\b
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Telegram", "Telegram", "{94918289-2BD9-4B31-9370-AC90E0CB3983}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetPlacer.Telegram.API", "src\services\BetPlacer.Telegram.API\BetPlacer.Telegram.API.csproj", "{820596E4-3094-4081-8FE9-BB7A9B65E2A9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BetPlacer.Telegram.API", "src\services\BetPlacer.Telegram.API\BetPlacer.Telegram.API.csproj", "{820596E4-3094-4081-8FE9-BB7A9B65E2A9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scheduler", "Scheduler", "{85647062-3D15-41AA-9E1F-3A6A74876B0B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetPlacer.Scheduler.Worker", "src\services\BetPlacer.Scheduler.Worker\BetPlacer.Scheduler.Worker.csproj", "{BCE20E88-3D35-4292-8E18-A91A17302D86}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BetPlacer.Scheduler.Worker", "src\services\BetPlacer.Scheduler.Worker\BetPlacer.Scheduler.Worker.csproj", "{BCE20E88-3D35-4292-8E18-A91A17302D86}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scrapper", "Scrapper", "{9A6C7A9F-BA0E-47F9-8D42-E281A5430439}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetPlacer.Scrapper.Worker", "BetPlacer.Scrapper.Worker\BetPlacer.Scrapper.Worker.csproj", "{AC2760E9-E440-4ADB-BCBE-B444E0C4564E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -89,6 +93,10 @@ Global
 		{BCE20E88-3D35-4292-8E18-A91A17302D86}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BCE20E88-3D35-4292-8E18-A91A17302D86}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BCE20E88-3D35-4292-8E18-A91A17302D86}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC2760E9-E440-4ADB-BCBE-B444E0C4564E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC2760E9-E440-4ADB-BCBE-B444E0C4564E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC2760E9-E440-4ADB-BCBE-B444E0C4564E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC2760E9-E440-4ADB-BCBE-B444E0C4564E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -112,6 +120,8 @@ Global
 		{820596E4-3094-4081-8FE9-BB7A9B65E2A9} = {94918289-2BD9-4B31-9370-AC90E0CB3983}
 		{85647062-3D15-41AA-9E1F-3A6A74876B0B} = {7923EB71-2A62-4C17-96FF-D53EA50F4EB3}
 		{BCE20E88-3D35-4292-8E18-A91A17302D86} = {85647062-3D15-41AA-9E1F-3A6A74876B0B}
+		{9A6C7A9F-BA0E-47F9-8D42-E281A5430439} = {7923EB71-2A62-4C17-96FF-D53EA50F4EB3}
+		{AC2760E9-E440-4ADB-BCBE-B444E0C4564E} = {9A6C7A9F-BA0E-47F9-8D42-E281A5430439}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6CD21AEF-04AF-438C-9F63-71F6131D5CED}

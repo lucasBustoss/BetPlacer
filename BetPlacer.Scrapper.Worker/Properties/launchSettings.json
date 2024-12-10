@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "BetPlacer.Scrapper.Worker": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}
